@@ -1,0 +1,5 @@
+/build
+/release
+/debug
+/src/main/java/com/sgpublic/bilidownload/base/UmengSDK.java
+gradle.properties

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="6dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardCornerRadius="8dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/follow_image_placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/pic_doing_v"
+                tools:ignore="ContentDescription"
+                android:fitsSystemWindows="true" />
+
+            <ImageView
+                android:id="@+id/follow_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                android:alpha="0"
+                android:layout_marginBottom="26dp"
+                android:scaleType="centerCrop"
+                tools:ignore="ContentDescription" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/item_follow_badges_background"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                app:cardElevation="0dp"
+                app:cardCornerRadius="2dp">
+
+                <TextView
+                    android:id="@+id/item_follow_badges"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="1dp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    tools:ignore="SmallSp" />
+            </androidx.cardview.widget.CardView>
+        </FrameLayout>
+
+        <com.sgpublic.bilidownload.widget.ScrollTextView
+            android:id="@+id/follow_content"
+            android:layout_width="wrap_content"
+            android:layout_height="18dp"
+            android:layout_gravity="start|bottom"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:textSize="14sp"
+            android:textColor="@color/color_text_normal" />
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

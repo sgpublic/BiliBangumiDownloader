@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#2196F3</color>
+    <color name="colorAccent">#2196F3</color>
+    <color name="colorAlert">#0099ff</color>
+    <color name="colorCompat">#FFFFFF</color>
+    <color name="colorWindowBackground">#FAFAFA</color>
+
+    <color name="color_button_alert">#0097FE</color>
+    <color name="color_button_normal">#EEEEEE</color>
+
+    <color name="color_text_normal">#000000</color>
+    <color name="color_text_light">#BBBBBB</color>
+    <color name="color_text_dark">#888888</color>
+
+    <color name="color_mine_title">#888888</color>
+    <color name="color_mine_parting">#CCCCCC</color>
+    <color name="color_mine_category">#999999</color>
+
+    <color name="color_season_cover">#FFFFFF</color>
+    <color name="color_season_title_collapsed">#000000</color>
+    <color name="color_season_title_expanded">#EE222222</color>
+    <color name="color_season_tab_indicator">#666666</color>
+    <color name="color_season_score">#FF8D00</color>
+
+    <color name="color_random_1">#4CAF50</color>
+    <color name="color_random_2">#FF5722</color>
+    <color name="color_random_3">#3F51B5</color>
+    <color name="color_random_4">#673AB7</color>
+    <color name="color_random_5">#FF9800</color>
+
+    <color name="color_vip_big">#FA7298</color>
+</resources>

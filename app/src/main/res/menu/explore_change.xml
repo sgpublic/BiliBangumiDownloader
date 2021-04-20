@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/explore_change_storage"
+        android:title="@string/text_explore_storage" />
+    <item
+        android:id="@+id/explore_change_sdcard"
+        android:title="@string/text_explore_sdcard" />
+</menu>

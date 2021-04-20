@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:background="#FFFFFF">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:padding="10dp"
+        android:focusableInTouchMode="true"
+        app:cardCornerRadius="25dp"
+        android:elevation="4dp">
+
+        <EditText
+            android:id="@+id/search_edit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="16sp"
+            android:singleLine="true"
+            android:hint="@string/text_bangumi_edit"
+            android:paddingStart="60dp"
+            android:paddingEnd="15dp"
+            android:background="@null"
+            android:imeOptions="actionSearch"
+            android:completionThreshold="1"
+            tools:ignore="Autofill,TextFields" />
+
+        <ImageView
+            android:id="@+id/search_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_back"
+            app:tint="@color/color_text_dark"
+            android:layout_marginStart="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            tools:ignore="ContentDescription" />
+    </androidx.cardview.widget.CardView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="5dp">
+
+        <ScrollView
+            android:id="@+id/search_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/search_history"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:visibility="gone"
+                    android:alpha="0"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_gravity="center_vertical"
+                            android:text="@string/title_search_history"
+                            android:textColor="@color/color_text_normal"
+                            android:textStyle="bold"
+                            android:textSize="16sp" />
+
+                        <ImageView
+                            android:id="@+id/search_history_delete"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:padding="5dp"
+                            app:tint="@color/color_text_dark"
+                            android:src="@drawable/ic_delete"
+                            android:background="?android:attr/selectableItemBackgroundBorderless"
+                            tools:ignore="ContentDescription" />
+                    </LinearLayout>
+
+                    <com.sgpublic.bilidownload.widget.FlowLayout
+                        android:id="@+id/search_history_list"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/search_hot_word"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:alpha="0"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/title_search_hotWord"
+                        android:textColor="@color/color_text_normal"
+                        android:textStyle="bold"
+                        android:textSize="16sp" />
+
+                    <com.sgpublic.bilidownload.widget.FlowLayout
+                        android:id="@+id/search_hot_word_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <ScrollView
+            android:id="@+id/search_result"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:alpha="0"
+            android:visibility="invisible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <GridLayout
+                    android:id="@+id/search_result_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/pic_nomore"
+                    tools:ignore="ContentDescription" />
+            </LinearLayout>
+        </ScrollView>
+
+        <ImageView
+            android:id="@+id/search_load_state"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginTop="80dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/pic_load_failed"
+            android:visibility="invisible"
+            android:alpha="0"
+            tools:ignore="ContentDescription" />
+
+        <LinearLayout
+            android:id="@+id/search_suggestion_cover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0"
+            android:visibility="invisible"
+            android:orientation="vertical"
+            android:background="#AAFFFFFF">
+
+            <LinearLayout
+                android:id="@+id/search_suggestion_base"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="invisible"
+                android:background="#00FFFFFF"
+                android:alpha="0">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    app:cardCornerRadius="25dp"
+                    app:cardElevation="2dp">
+
+                    <GridLayout
+                        android:id="@+id/search_suggestion_result"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FFFFFF" />
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>

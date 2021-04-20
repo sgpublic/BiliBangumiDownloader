@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:overScrollMode="never">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="12dp"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="10dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/season_rating_string"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:textColor="@color/color_season_score"
+                        android:textSize="40sp" />
+
+                    <TextView
+                        android:id="@+id/season_rating_null"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal|bottom"
+                        android:text="@string/title_season_rating_null"
+                        android:textColor="@color/color_text_dark"
+                        android:textSize="14sp" />
+                </FrameLayout>
+
+                <RatingBar
+                    android:id="@+id/season_rating_start"
+                    style="@style/Widget.AppCompat.RatingBar.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:progressTint="@color/color_season_score"
+                    android:secondaryProgressTint="@color/color_season_score"
+                    android:max="100"
+                    android:numStars="5" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/season_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="30dp"
+                android:text="@string/text_season_placeholder"
+                android:lines="3"
+                android:lineSpacingExtra="4dp"
+                android:textSize="14sp"
+                android:textColor="@color/color_text_dark" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/season_alias_styles_base"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                android:id="@+id/season_alias_base"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_season_desc"
+                    android:textSize="14sp"
+                    android:textColor="@color/color_text_light" />
+
+                <TextView
+                    android:id="@+id/season_alias"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:textSize="14sp"
+                    android:textColor="@color/color_text_dark" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/season_styles_base"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_season_styles"
+                    android:textSize="14sp"
+                    android:textColor="@color/color_text_light" />
+
+                <TextView
+                    android:id="@+id/season_styles"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:textSize="14sp"
+                    android:textColor="@color/color_text_dark" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/season_actors_base"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/title_season_actors"
+                android:textSize="14sp"
+                android:maxLines="3"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/season_actors"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/text_season_placeholder"
+                android:textSize="14sp"
+                android:maxLines="3"
+                android:ellipsize="end"
+                android:textColor="@color/color_text_light"
+                android:background="?android:attr/selectableItemBackground" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/season_stuff_base"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/title_season_stuff"
+                android:textSize="14sp"
+                android:maxLines="3"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/season_stuff"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/text_season_placeholder"
+                android:textSize="14sp"
+                android:maxLines="3"
+                android:ellipsize="end"
+                android:textColor="@color/color_text_light"
+                android:background="?android:attr/selectableItemBackground" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/season_evaluate_base"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/title_season_evaluate"
+                android:textSize="14sp"
+                android:maxLines="3"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/season_evaluate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:lineSpacingExtra="4dp"
+                android:textColor="@color/color_text_light" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/season_series_base"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="80dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/title_season_series"
+                android:textSize="14sp"
+                android:maxLines="3"
+                android:ellipsize="end" />
+
+            <GridLayout
+                android:id="@+id/season_series"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

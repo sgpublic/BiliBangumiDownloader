@@ -1,0 +1,20 @@
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="ExpandedTitleTextAppearance" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/color_season_title_expanded</item>
+    </style>
+
+    <style name="CollapsedTitleTextAppearance" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/color_season_title_collapsed</item>
+    </style>
+</resources>

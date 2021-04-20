@@ -1,0 +1,130 @@
+<resources>
+    <string name="app_name">哔哩番剧</string>
+
+    <string name="title_bangumi">番剧</string>
+    <string name="title_mine">我的</string>
+
+    <string name="title_login_welcome">欢迎使用哔哩番剧</string>
+    <string name="text_login_welcome">请使用哔哩哔哩账号登录</string>
+    <string name="text_login_statement">哔哩番剧不保存您的账号密码，请放心登录。</string>
+    <string name="text_login_change_way">还是不放心？</string>
+    <string name="text_login_in_web">使用网页登陆</string>
+    <string name="text_login_username">用户名/手机号</string>
+    <string name="text_login_password">密码</string>
+    <string name="text_login_action">登录</string>
+    <string name="text_login_success">登录成功</string>
+    <string name="text_login_error_empty">账号或密码为空</string>
+
+    <string name="title_login_web">网页登录</string>
+
+    <string name="text_permission_title">欢迎使用哔哩番剧</string>
+    <string name="text_permission_detail">为了向您提供正常的服务，哔哩番剧将向您申请以下必要权限，如果您不授予这些权限，哔哩番剧可能无法正常运行。</string>
+    <string name="title_permission_title_write_external">读写手机存储</string>
+    <string name="text_permission_content_write_external">创建和下载番剧播放所需的必要文件</string>
+    <string name="title_permission_granted">同意</string>
+    <string name="text_permission_denied">哔哩番剧需要获得权限授权才能正常使用哦~</string>
+
+    <string name="text_bangumi_edit">输入番剧标题搜索</string>
+
+    <string name="title_setting_type">客户端类型</string>
+    <string name="text_setting_type">选择所使用的哔哩哔哩客户端</string>
+    <string name="text_setting_type_no_install">未安装</string>
+    <string name="text_setting_no_app_installed">您尚未安装任何哔哩哔哩客户端~</string>
+    <string name="title_setting_location">下载路径</string>
+    <string name="text_setting_location">选择的客户端中设置的路径</string>
+    <string name="title_setting_quality">默认清晰度</string>
+    <string name="text_setting_quality">下载时默认选中的清晰度</string>
+    <string name="title_setting_task">同时下载任务数</string>
+    <string name="text_setting_task">下载时最多同时下载的任务数量</string>
+    <string name="text_setting_task_show">%1$d 个下载</string>
+    <string name="title_setting_auto_start">自动开始下载</string>
+    <string name="text_setting_auto_start">启动时是否自动开始未完成的任务</string>
+
+    <string name="title_explore">选择下载路径</string>
+    <string name="text_explore_storage">内部储存</string>
+    <string name="text_explore_sdcard">SD卡储存</string>
+
+    <string name="title_mine_category_quick">快捷启动</string>
+    <string name="title_mine_other_bangumi">我的追番</string>
+    <string name="title_mine_more">更多</string>
+    <string name="title_mine_category_other">其他</string>
+    <string name="title_mine_logout">退出登录</string>
+    <string name="title_mine_setting">设置</string>
+    <string name="title_mine_about">关于</string>
+    <string name="text_mine_developing">没有更多功能了呢(°ー°〃)</string>
+    <string name="text_mine_logout_check">您确定要退出登录吗？</string>
+
+    <string name="title_search_history">历史记录</string>
+    <string name="title_search_hotWord">热搜</string>
+    <string name="title_search_history_delete">删除历史记录</string>
+    <string name="text_search_history_delete">您确定要删除历史记录吗？</string>
+    <string name="title_search_go">查看详情</string>
+    <string name="text_search_from">番剧：%1$s</string>
+
+    <string name="title_season_info">详情</string>
+    <string name="title_season_download">下载</string>
+    <string name="text_season_placeholder" translatable="false">\n\n\n</string>
+    <string name="title_season_desc">别名</string>
+    <string name="title_season_styles">风格</string>
+    <string name="title_season_actors">角色声优</string>
+    <string name="title_season_stuff">制作信息</string>
+    <string name="title_season_evaluate">简介</string>
+    <string name="title_season_series">系列</string>
+    <string name="title_season_rating_null">暂无评分</string>
+    <string name="text_episode_public_time">更新于%1$s</string>
+    <string name="text_episode_index">第 %1$s 话</string>
+    <string name="text_season_payment_vip_all">大会员专享观看特权哦~</string>
+    <string name="text_season_payment_vip_newest">大会员抢先观看最新剧集哦~</string>
+    <string name="text_season_payment_normal">无需会员！赶紧下载下来观看吧~</string>
+    <string name="text_season_payment_traveled">港澳台专属，您当前地区无法观看呢~</string>
+    <string name="title_season_episode_list">正片</string>
+    <string name="text_episode_vip_needed">该剧集需要大会员才能观看哦~</string>
+    <string name="text_episode_no_app_installed">您尚未安装任何哔哩哔哩客户端，请安装后下载哦~</string>
+
+    <string name="text_download_doing">正在获取链接</string>
+    <string name="text_download_success">任务创建成功</string>
+    <string name="title_download_alert_dir">您当前设置的目录无法访问</string>
+    <string name="text_download_alert_dir">您当前设置的目录无法访问，已为您重置为默认目录。\n%1$s</string>
+    <string name="title_download_alert_dir_p">读写权限受限</string>
+    <string name="text_download_alert_dir_p">在 Android 9 及以上的版本，由于系统限制，应用无法访问其他应用的私有目录，因此哔哩番剧将默认把番剧下载至"Download"目录，建议您将哔哩哔哩客户端中的缓存目录同样设置为此目录。</string>
+    <string name="text_download_alert_dir_positive">我知道了</string>
+    <string name="text_download_alert_dir_negative">不再提示</string>
+    <string name="text_download_task_status">%1$d 个任务正在下载，共 %2$d 个</string>
+    <string name="text_download_task_finished">已完成，共 %2$d 个任务</string>
+    <string name="text_download_goto">详情页 ></string>
+
+    <string name="title_about_update">检查更新</string>
+    <string name="title_about_developer">开发者</string>
+    <string name="title_about_pause">复制</string>
+    <string name="title_about_license">开源许可</string>
+
+    <string name="error_network">请检查网络连接</string>
+    <string name="error_login">登陆失败</string>
+    <string name="error_login_refresh">登录状态失效，请重新登陆</string>
+    <string name="error_login_verify">您的账号登录受限，请使用网页登陆</string>
+    <string name="error_bangumi_load">数据加载出错</string>
+    <string name="error_update">检查更新出错</string>
+    <string name="error_download_no_client">没有找到可用的哔哩哔哩客户端</string>
+    <string name="error_download_url">获取链接失败</string>
+    <string name="error_download_flv">不支持FLV格式任务下载</string>
+    <string name="error_download_task_exist">任务已存在</string>
+    <string name="error_download_start">创建任务失败</string>
+    <string name="error_download_retry">下载失败，点击重试</string>
+    <string name="error_download">下载失败</string>
+
+    <string name="title_update_get">有更新版本</string>
+    <string name="title_update_disable">哔哩番剧已停止使用</string>
+    <string name="title_update_already">已是最新版本</string>
+    <string name="text_update_content">有更新版本，APK大小 %1$s，是否更新？</string>
+    <string name="text_update_content_force">有更新版本，APK大小 %1$s，请更新。</string>
+    <string name="text_update_content_beta">哔哩番剧邀请您体验最新内测版，APK大小 %1$s，是否更新？</string>
+    <string name="text_update_content_disable">非常抱歉，我们遗憾的告诉您，由于%1$s，从 %2$s 开始，哔哩番剧正式停止使用，感谢您的支持，我们有缘再见~</string>
+    <string name="text_update_disable_unknown">不可抗因素</string>
+    <string name="text_update_version">最新版本：</string>
+    <string name="text_update_changelog">更新日志：</string>
+    <string name="title_update_download">哔哩番剧更新</string>
+
+    <string name="text_ok">确定</string>
+    <string name="text_cancel">取消</string>
+    <string name="text_download_start">下载已开始，请等待下载完成</string>
+</resources>
