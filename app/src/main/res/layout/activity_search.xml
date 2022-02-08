@@ -7,7 +7,6 @@
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:background="#FFFFFF">
-
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -19,7 +18,6 @@
         android:focusableInTouchMode="true"
         app:cardCornerRadius="25dp"
         android:elevation="4dp">
-
         <EditText
             android:id="@+id/search_edit"
             android:layout_width="match_parent"
@@ -33,7 +31,6 @@
             android:imeOptions="actionSearch"
             android:completionThreshold="1"
             tools:ignore="Autofill,TextFields" />
-
         <ImageView
             android:id="@+id/search_back"
             android:layout_width="30dp"
@@ -46,19 +43,16 @@
             android:background="?android:attr/selectableItemBackgroundBorderless"
             tools:ignore="ContentDescription" />
     </androidx.cardview.widget.CardView>
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginTop="5dp">
-
         <ScrollView
             android:id="@+id/search_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="visible">
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -67,7 +61,6 @@
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
                 android:orientation="vertical">
-
                 <LinearLayout
                     android:id="@+id/search_history"
                     android:layout_width="match_parent"
@@ -76,12 +69,11 @@
                     android:visibility="gone"
                     android:alpha="0"
                     android:orientation="vertical">
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
+                        android:orientation="horizontal"
+                        tools:ignore="UseCompoundDrawables">
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -91,7 +83,6 @@
                             android:textColor="@color/color_text_normal"
                             android:textStyle="bold"
                             android:textSize="16sp" />
-
                         <ImageView
                             android:id="@+id/search_history_delete"
                             android:layout_width="30dp"
@@ -102,14 +93,12 @@
                             android:background="?android:attr/selectableItemBackgroundBorderless"
                             tools:ignore="ContentDescription" />
                     </LinearLayout>
-
-                    <com.sgpublic.bilidownload.widget.FlowLayout
+                    <io.github.sgpublic.bilidownload.widget.FlowLayout
                         android:id="@+id/search_history_list"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp" />
                 </LinearLayout>
-
                 <LinearLayout
                     android:id="@+id/search_hot_word"
                     android:layout_width="match_parent"
@@ -117,7 +106,6 @@
                     android:visibility="invisible"
                     android:alpha="0"
                     android:orientation="vertical">
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -125,8 +113,7 @@
                         android:textColor="@color/color_text_normal"
                         android:textStyle="bold"
                         android:textSize="16sp" />
-
-                    <com.sgpublic.bilidownload.widget.FlowLayout
+                    <io.github.sgpublic.bilidownload.widget.FlowLayout
                         android:id="@+id/search_hot_word_list"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -134,7 +121,6 @@
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
-
         <ScrollView
             android:id="@+id/search_result"
             android:layout_width="match_parent"
@@ -142,17 +128,14 @@
             android:layout_marginTop="5dp"
             android:alpha="0"
             android:visibility="invisible">
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-
                 <GridLayout
                     android:id="@+id/search_result_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
@@ -161,7 +144,6 @@
                     tools:ignore="ContentDescription" />
             </LinearLayout>
         </ScrollView>
-
         <ImageView
             android:id="@+id/search_load_state"
             android:layout_width="match_parent"
@@ -172,7 +154,6 @@
             android:visibility="invisible"
             android:alpha="0"
             tools:ignore="ContentDescription" />
-
         <LinearLayout
             android:id="@+id/search_suggestion_cover"
             android:layout_width="match_parent"
@@ -181,7 +162,6 @@
             android:visibility="invisible"
             android:orientation="vertical"
             android:background="#AAFFFFFF">
-
             <LinearLayout
                 android:id="@+id/search_suggestion_base"
                 android:layout_width="match_parent"
@@ -190,7 +170,6 @@
                 android:visibility="invisible"
                 android:background="#00FFFFFF"
                 android:alpha="0">
-
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -200,7 +179,6 @@
                     android:layout_marginEnd="20dp"
                     app:cardCornerRadius="25dp"
                     app:cardElevation="2dp">
-
                     <GridLayout
                         android:id="@+id/search_suggestion_result"
                         android:layout_width="match_parent"

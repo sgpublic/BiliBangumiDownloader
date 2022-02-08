@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".activity.About">
-
+    tools:context="io.github.sgpublic.bilidownload.activity.About">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/about_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
         <ImageView
             android:id="@+id/about_logo"
             android:layout_width="130dp"
@@ -24,7 +20,6 @@
             android:layout_gravity="center"
             android:src="@mipmap/ic_launcher"
             tools:ignore="ContentDescription" />
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -34,7 +29,6 @@
             android:textSize="22sp"
             android:textColor="@color/color_text_normal"
             android:textStyle="bold" />
-
         <TextView
             android:id="@+id/about_version"
             android:layout_width="wrap_content"
@@ -43,7 +37,6 @@
             android:layout_gravity="center"
             android:textSize="16sp"
             android:textColor="@color/color_text_normal" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -52,16 +45,13 @@
             android:paddingTop="10dp"
             android:paddingStart="40dp"
             android:paddingEnd="40dp">
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:background="@color/color_mine_parting" />
-
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="55dp">
-
                 <ProgressBar
                     android:id="@+id/about_progress"
                     android:layout_width="24dp"
@@ -69,7 +59,6 @@
                     android:visibility="invisible"
                     android:layout_gravity="end|center"
                     android:layout_marginEnd="30dp" />
-
                 <TextView
                     android:id="@+id/about_update"
                     android:layout_width="match_parent"
@@ -82,29 +71,40 @@
                     android:textSize="16sp"
                     android:textColor="@color/color_text_normal" />
             </FrameLayout>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:background="@color/color_mine_parting" />
-
             <TextView
-                android:id="@+id/about_developer"
+                android:id="@+id/about_opensource"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:background="?android:attr/selectableItemBackground"
                 android:gravity="center_vertical"
                 android:paddingStart="30dp"
                 android:paddingEnd="30dp"
-                android:text="@string/title_about_developer"
+                android:text="@string/title_about_opensource"
                 android:textColor="@color/color_text_normal"
                 android:textSize="16sp" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:background="@color/color_mine_parting" />
-
+            <TextView
+                android:id="@+id/about_feedback"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:gravity="center_vertical"
+                android:paddingStart="30dp"
+                android:paddingEnd="30dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:text="@string/title_about_feedback"
+                android:textSize="16sp"
+                android:textColor="@color/color_text_normal" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/color_mine_parting" />
             <TextView
                 android:id="@+id/about_license"
                 android:layout_width="match_parent"
@@ -116,7 +116,6 @@
                 android:text="@string/title_about_license"
                 android:textSize="16sp"
                 android:textColor="@color/color_text_normal" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="1px"

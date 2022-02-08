@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhpan.bannerview.BannerViewPager
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bangumi_banner"
+    android:layout_width="match_parent"
+    android:layout_height="207dp"
+    android:layout_marginTop="75dp"
+    app:bvp_auto_play="true"
+    app:bvp_can_loop="true"
+    app:bvp_interval="5000"
+    app:bvp_page_style="multi_page_overlap"
+    app:bvp_reveal_width="55dp"
+    app:bvp_scroll_duration="1000" />
