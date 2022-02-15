@@ -2,8 +2,8 @@ package io.github.sgpublic.bilidownload.fragment.season
 
 import android.content.res.Configuration
 import android.graphics.drawable.Drawable
-import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.GridLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
@@ -15,7 +15,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
-import io.github.sgpublic.bilidownload.activity.OnlinePlayer
 import io.github.sgpublic.bilidownload.base.BaseFragment
 import io.github.sgpublic.bilidownload.data.parcelable.EpisodeData
 import io.github.sgpublic.bilidownload.databinding.FragmentSeasonDownloadBinding
@@ -24,15 +23,18 @@ import io.github.sgpublic.bilidownload.manager.ConfigManager
 
 class SeasonEpisode(private val contest: AppCompatActivity, private val episodeData: List<EpisodeData>)
     : BaseFragment<FragmentSeasonDownloadBinding>(contest) {
-    override fun onFragmentCreated(savedInstanceState: Bundle?) {
+    override fun onFragmentCreated(hasSavedInstanceState: Boolean) {
         if (episodeData.isNotEmpty()) {
-            binding.seasonEpisodeList.visibility = View.VISIBLE
-            binding.seasonNoEpisode.visibility = View.GONE
+            ViewBinding.seasonEpisodeList.visibility = View.VISIBLE
+            ViewBinding.seasonNoEpisode.visibility = View.GONE
         } else {
-            binding.seasonEpisodeList.visibility = View.GONE
-            binding.seasonNoEpisode.visibility = View.VISIBLE
+            ViewBinding.seasonEpisodeList.visibility = View.GONE
+            ViewBinding.seasonNoEpisode.visibility = View.VISIBLE
         }
     }
+
+    override fun onCreateViweBinding(container: ViewGroup?): FragmentSeasonDownloadBinding =
+        FragmentSeasonDownloadBinding.inflate(layoutInflater, container, false)
     
     override fun onViewSetup() {
         if (episodeData.isEmpty()) {
@@ -44,13 +46,13 @@ class SeasonEpisode(private val contest: AppCompatActivity, private val episodeD
         if (episodeData.size % 2 != 0) {
             rowCount += 1
         }
-        binding.seasonGrid.columnCount = 2
-        binding.seasonGrid.rowCount = rowCount
+        ViewBinding.seasonGrid.columnCount = 2
+        ViewBinding.seasonGrid.rowCount = rowCount
         val nightMode =
             resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
         for (index in episodeData.indices) {
             val data = episodeData[index]
-            val itemSeasonEpisode = ItemSeasonEpisodeBinding.inflate(layoutInflater, binding.seasonGrid, false)
+            val itemSeasonEpisode = ItemSeasonEpisodeBinding.inflate(layoutInflater, ViewBinding.seasonGrid, false)
             if (data.title == ""){
                 itemSeasonEpisode.episodeTitle.visibility = View.GONE
             } else {
@@ -83,7 +85,7 @@ class SeasonEpisode(private val contest: AppCompatActivity, private val episodeD
             itemSeasonEpisode.root.setOnClickListener {
                 if (data.payment == EpisodeData.PAYMENT_VIP
                     && ConfigManager.VIP_STATE == 0) {
-                    onToast(R.string.text_episode_vip_needed)
+                    Application.onToast(context, R.string.text_episode_vip_needed)
                 } else {
                     onSetupDownload(index)
                 }
@@ -101,7 +103,7 @@ class SeasonEpisode(private val contest: AppCompatActivity, private val episodeD
                     }
 
                     override fun onResourceReady(resource: Drawable, model: Any, target: Target<Drawable>, dataSource: DataSource, isFirstResource: Boolean): Boolean {
-                        setAnimateState(true, 400, itemSeasonEpisode.episodeImage)
+                        startAnimate(true, 400, itemSeasonEpisode.episodeImage)
                         return false
                     }
                 })
@@ -111,12 +113,11 @@ class SeasonEpisode(private val contest: AppCompatActivity, private val episodeD
             params.rowSpec = GridLayout.spec(index / 2)
             params.columnSpec = GridLayout.spec(index % 2)
             params.width = viewWidth
-            binding.seasonGrid.addView(itemSeasonEpisode.root, params)
+            ViewBinding.seasonGrid.addView(itemSeasonEpisode.root, params)
         }
     }
 
     private fun onSetupDownload(pos: Int) {
-        //TODO
-        OnlinePlayer.startActivity(contest, episodeData.toTypedArray(), pos)
+        // TODO 添加下载任务
     }
 }

@@ -2,23 +2,17 @@ package io.github.sgpublic.bilidownload.activity
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Drawable
-import android.os.Bundle
 import android.text.Spannable
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.GridLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import androidx.core.widget.addTextChangedListener
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.BaseActivity
@@ -27,110 +21,108 @@ import io.github.sgpublic.bilidownload.data.SearchData
 import io.github.sgpublic.bilidownload.databinding.*
 import io.github.sgpublic.bilidownload.module.SearchModule
 import io.github.sgpublic.bilidownload.module.SearchModule.*
+import io.github.sgpublic.bilidownload.ui.addOnReadyListener
+import io.github.sgpublic.bilidownload.util.MyLog
 import org.json.JSONArray
 import org.json.JSONException
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStreamReader
-import java.util.*
 import kotlin.math.roundToInt
 
 class Search: BaseActivity<ActivitySearchBinding>() {
-    private var isSuggesting = false
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
+    override fun onActivityCreated(hasSavedInstanceState: Boolean) {
         getHistory()
         getHotWords()
     }
 
-    private val timerSuggest = Timer()
-    private val timerTask = object : TimerTask(){
-        override fun run() {
-            getSuggestions()
-        }
-    }
+    override fun onCreateViweBinding(): ActivitySearchBinding =
+        ActivitySearchBinding.inflate(layoutInflater)
+
     override fun onViewSetup() {
-        binding.searchSuggestionCover.setOnClickListener {
-            binding.searchEdit.clearFocus()
+        ViewBinding.searchSuggestionCover.setOnClickListener {
+            ViewBinding.searchEdit.clearFocus()
         }
-        binding.searchEdit.addTextChangedListener {
-            if (!isSuggesting){
-                return@addTextChangedListener
+        ViewBinding.searchBack.setOnClickListener {
+            onBackPressed()
+        }
+        ViewBinding.searchEdit.addTextChangedListener(afterTextChanged = {
+            if (ViewBinding.searchEdit.hasFocus()){
+                getSuggestions()
             }
-            timerSuggest.cancel()
-            timerSuggest.schedule(timerTask, 300)
+        })
+        ViewBinding.searchEdit.setOnEditorActionListener listener@{ _, id, _ ->
+            MyLog.d("code: $id")
+            if (id == EditorInfo.IME_ACTION_SEARCH) {
+                ViewBinding.searchEdit.clearFocus()
+                onSearch()
+                return@listener true
+            }
+            return@listener false
         }
     }
 
     private fun getHotWords() {
         val helper = SearchModule(this@Search)
         helper.getHotWord(object : HotWordCallback {
-            override fun onFailure(code: Int, message: String?, e: Throwable?) {
-                if (e is JSONException) {
-                    CrashHandler.saveExplosion(e, code)
-                }
-            }
-
-            override fun onResult(hotWords: ArrayList<String>) {
+            override fun onResult(hotWords: List<String>) {
                 val paramsLinear = LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
                 for (array_index in hotWords.indices) {
                     val historyIndex = hotWords[array_index]
-                    val itemSearchWord = ItemSearchWordBinding.inflate(layoutInflater, binding.searchHotWordList, false)
+                    val itemSearchWord = ItemSearchWordBinding.inflate(layoutInflater, ViewBinding.searchHotWordList, false)
                     itemSearchWord.itemWordTitle.text = historyIndex
                     itemSearchWord.itemWordTitle.setOnClickListener {
                         onSearch(historyIndex)
                     }
                     runOnUiThread {
-                        binding.searchHotWordList.addView(itemSearchWord.root, paramsLinear)
+                        ViewBinding.searchHotWordList.addView(itemSearchWord.root, paramsLinear)
                     }
                 }
-                setAnimateState(true, 500, binding.searchHotWord)
+                setAnimateState(true, 500, ViewBinding.searchHotWord)
             }
         })
     }
 
     private fun getSuggestions() {
         val helper = SearchModule(this@Search)
-        helper.suggest(binding.searchEdit.text.toString(), object : SuggestCallback {
+        helper.suggest(ViewBinding.searchEdit.text.toString(), object : SuggestCallback {
             override fun onFailure(code: Int, message: String?, e: Throwable?) {
-                setAnimateState(false, 150, binding.searchSuggestionBase, null)
-                if (e is JSONException) {
-                    CrashHandler.saveExplosion(e, code)
-                }
+                setAnimateState(false, 150, ViewBinding.searchSuggestionBase, null)
             }
 
-            override fun onResult(suggestions: ArrayList<Spannable>) {
+            override fun onResult(suggestions: List<Spannable>) {
                 val rowCount = suggestions.size
-                setAnimateState(false, 150, binding.searchSuggestionBase) {
-                    if (rowCount != 0) {
-                        setAnimateState(true, 150, binding.searchSuggestionBase) {
-                            binding.searchSuggestionResult.removeAllViews()
-                            binding.searchSuggestionResult.columnCount = 1
-                            binding.searchSuggestionResult.rowCount = rowCount
-                            val viewHeight = Application.dip2px(50f)
-                            val viewWidth =
-                                resources.displayMetrics.widthPixels - Application.dip2px(40f)
-                            for (suggestion_index in 0 until rowCount) {
-                                val spannableIndex = suggestions[suggestion_index]
-                                val view = ItemSearchSuggestionBinding.inflate(layoutInflater, binding.searchSuggestionResult, false)
-                                view.itemSuggestionTitle.text = spannableIndex
-                                view.itemSuggestionTitle.setOnClickListener {
-                                    binding.searchEdit.clearFocus()
-                                    onSearch(spannableIndex.toString())
-                                }
-                                val params =
-                                    GridLayout.LayoutParams()
-                                params.rowSpec = GridLayout.spec(suggestion_index)
-                                params.columnSpec = GridLayout.spec(0)
-                                params.height = viewHeight
-                                params.width = viewWidth
-                                view.root.layoutParams = params
-                                binding.searchSuggestionResult.addView(view.root)
+                setAnimateState(false, 150, ViewBinding.searchSuggestionBase) {
+                    if (rowCount == 0) {
+                        return@setAnimateState
+                    }
+                    setAnimateState(true, 150, ViewBinding.searchSuggestionBase) {
+                        ViewBinding.searchSuggestionResult.removeAllViews()
+                        ViewBinding.searchSuggestionResult.columnCount = 1
+                        ViewBinding.searchSuggestionResult.rowCount = rowCount
+                        val viewHeight = Application.dip2px(50f)
+                        val viewWidth =
+                            resources.displayMetrics.widthPixels - Application.dip2px(40f)
+                        for (suggestion_index in 0 until rowCount) {
+                            val spannableIndex = suggestions[suggestion_index]
+                            val view = ItemSearchSuggestionBinding.inflate(layoutInflater, ViewBinding.searchSuggestionResult, false)
+                            view.itemSuggestionTitle.text = spannableIndex
+                            view.itemSuggestionTitle.setOnClickListener {
+                                ViewBinding.searchEdit.clearFocus()
+                                onSearch(spannableIndex.toString())
                             }
+                            val params =
+                                GridLayout.LayoutParams()
+                            params.rowSpec = GridLayout.spec(suggestion_index)
+                            params.columnSpec = GridLayout.spec(0)
+                            params.height = viewHeight
+                            params.width = viewWidth
+                            view.root.layoutParams = params
+                            ViewBinding.searchSuggestionResult.addView(view.root)
                         }
                     }
                 }
@@ -139,88 +131,86 @@ class Search: BaseActivity<ActivitySearchBinding>() {
     }
 
     private fun onSearch(keyword: String) {
-        binding.searchEdit.setText(keyword)
+        ViewBinding.searchEdit.setText(keyword)
         onSearch()
     }
 
     private fun onSearch() {
-        val viewVisible: ScrollView = if (binding.searchMain.visibility == View.VISIBLE) {
-            binding.searchMain
+        ViewBinding.searchEdit.clearFocus()
+        val viewVisible: ScrollView = if (ViewBinding.searchMain.visibility == View.VISIBLE) {
+            ViewBinding.searchMain
         } else {
-            binding.searchResult
+            ViewBinding.searchResult
         }
         setAnimateState(false, 300, viewVisible) {
-            startOnLoadingState(binding.searchLoadState)
-            setAnimateState(true, 300, binding.searchLoadState) {
-                val keyword: String = binding.searchEdit.text.toString()
-                onAddHistory(keyword)
-                val helper = SearchModule(this@Search)
-                helper.search(keyword, object : SearchCallback {
-                    override fun onFailure(code: Int, message: String?, e: Throwable?) {
-                        onToast(R.string.error_bangumi_load, message, code)
-                        runOnUiThread {
-                            stopOnLoadingState()
-                            binding.searchLoadState.setImageResource(R.drawable.pic_load_failed)
-                        }
-                        CrashHandler.saveExplosion(e, code)
+            ViewBinding.searchLoadState.startLoad()
+            setAnimateState(true, 300, ViewBinding.searchLoadState)
+            val keyword: String = ViewBinding.searchEdit.text.toString()
+            onAddHistory(keyword)
+            val helper = SearchModule(this@Search)
+            helper.search(keyword, object : SearchCallback {
+                override fun onFailure(code: Int, message: String?, e: Throwable?) {
+                    Application.onToast(this@Search, R.string.error_bangumi_load, message, code)
+                    runOnUiThread {
+                        ViewBinding.searchLoadState.stopLoad(true)
                     }
+                }
 
-                    override fun onResult(searchData: ArrayList<SearchData>) {
-                        setAnimateState(false, 300, binding.searchLoadState) {
-                            stopOnLoadingState()
-                            if (searchData.size > 0) {
-                                setAnimateState(true, 300, binding.searchResult) {
-                                    binding.searchResultList.removeAllViews()
-                                    for (data_index in searchData.indices) {
-                                        val data = searchData[data_index]
-                                        val searchItem: View? = when (data.selectionStyle) {
-                                            "grid" -> {
-                                                getGridSearchView(data)
-                                            }
-                                            "horizontal" -> {
-                                                getHorizontalSearchView(data)
-                                            }
-                                            else -> {
-                                                null
-                                            }
-                                        }
-                                        if (searchItem != null) {
-                                            val params =
-                                                GridLayout.LayoutParams()
-                                            params.width =
-                                                resources.displayMetrics.widthPixels
-                                            params.columnSpec = GridLayout.spec(0)
-                                            params.rowSpec = GridLayout.spec(data_index)
-                                            binding.searchResultList.addView(searchItem, params)
-                                        }
+                override fun onResult(searchData: List<SearchData>) {
+                    setAnimateState(false, 300, ViewBinding.searchLoadState) animate@{
+                        if (searchData.isEmpty()) {
+                            setAnimateState(true, 300, ViewBinding.searchLoadState) {
+                                ViewBinding.searchLoadState.stopLoad(true)
+                            }
+                            return@animate
+                        }
+                        setAnimateState(true, 300, ViewBinding.searchResult) {
+                            ViewBinding.searchLoadState.stopLoad()
+                            ViewBinding.searchResultList.removeAllViews()
+                            for (data_index in searchData.indices) {
+                                val data = searchData[data_index]
+                                val searchItem: View? = when (data.selectionStyle) {
+                                    "grid" -> {
+                                        getGridSearchView(data)
+                                    }
+                                    "horizontal" -> {
+                                        getHorizontalSearchView(data)
+                                    }
+                                    else -> {
+                                        null
                                     }
                                 }
-                            } else {
-                                setAnimateState(true, 300, binding.searchLoadState) {
-                                    binding.searchLoadState.setImageResource(R.drawable.pic_null)
+                                if (searchItem != null) {
+                                    val params =
+                                        GridLayout.LayoutParams()
+                                    params.width =
+                                        resources.displayMetrics.widthPixels
+                                    params.columnSpec = GridLayout.spec(0)
+                                    params.rowSpec = GridLayout.spec(data_index)
+                                    ViewBinding.searchResultList.addView(searchItem, params)
                                 }
                             }
                         }
                     }
-                })
-            }
+                }
+            })
         }
     }
 
     private fun getGridSearchView(data: SearchData): View {
         val searchItem = ItemSearchSeasonBinding.inflate(
             layoutInflater,
-            binding.searchResultList,
+            ViewBinding.searchResultList,
             false
         )
         searchItem.itemSearchSeasonTitle.text = data.seasonTitle
         searchItem.itemSearchSeasonContent.text = data.seasonContent
         searchItem.itemSearchRatingString.text = data.mediaScore.toString()
-        if (data.angleTitle == "") {
+        if (data.seasonBadge == "") {
             searchItem.itemSeasonBadges.visibility = View.GONE
         } else {
             searchItem.itemSeasonBadges.visibility = View.VISIBLE
-            searchItem.itemSeasonBadges.text = data.angleTitle
+            searchItem.itemSeasonBadges.text = data.seasonBadge
         }
         if (data.mediaScore == 0.0) {
             searchItem.itemSearchRatingNull.visibility = View.VISIBLE
@@ -230,10 +220,7 @@ class Search: BaseActivity<ActivitySearchBinding>() {
             searchItem.itemSearchRatingString.visibility = View.VISIBLE
         }
         searchItem.itemSearchRatingStart.progress = data.mediaScore.roundToInt()
-        searchItem.itemSearchBaseGo.setOnClickListener {
-            goToSeason(data)
-        }
-        searchItem.itemSearchGo.setOnClickListener {
+        searchItem.root.setOnClickListener {
             goToSeason(data)
         }
         val requestOptions = RequestOptions()
@@ -243,27 +230,11 @@ class Search: BaseActivity<ActivitySearchBinding>() {
         Glide.with(this@Search)
             .load(data.seasonCover)
             .apply(requestOptions)
-            .addListener(object : RequestListener<Drawable?> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any,
-                    target: Target<Drawable?>,
-                    isFirstResource: Boolean
-                ) = false
-
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any,
-                    target: Target<Drawable?>,
-                    dataSource: DataSource,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    setAnimateState(false, 400, searchItem.itemSearchSeasonPlaceholder) {
-                        setAnimateState(true, 400, searchItem.itemSearchSeasonCover)
-                    }
-                    return false
+            .addOnReadyListener {
+                setAnimateState(false, 400, searchItem.itemSearchSeasonPlaceholder) {
+                    setAnimateState(true, 400, searchItem.itemSearchSeasonCover)
                 }
-            })
+            }
             .into(searchItem.itemSearchSeasonCover)
         return searchItem.root
     }
@@ -271,7 +242,7 @@ class Search: BaseActivity<ActivitySearchBinding>() {
     private fun getHorizontalSearchView(data: SearchData): View {
         val searchItem = ItemSearchEpisodeBinding.inflate(
             layoutInflater,
-            binding.searchResultList,
+            ViewBinding.searchResultList,
             false
         )
         searchItem.itemSearchEpisodeTitle.text = data.episodeTitle
@@ -279,14 +250,14 @@ class Search: BaseActivity<ActivitySearchBinding>() {
             getString(R.string.text_search_from),
             data.seasonTitle.toString()
         )
-        if ("" == data.episodeBadges) {
+        if ("" == data.episodeBadge) {
             searchItem.itemEpisodeBadges.visibility = View.GONE
         } else {
             searchItem.itemEpisodeBadges.visibility =
                 View.VISIBLE
-            searchItem.itemEpisodeBadges.text = data.episodeBadges
+            searchItem.itemEpisodeBadges.text = data.episodeBadge
         }
-        searchItem.itemSearchEpisodeAction.setOnClickListener {
+        searchItem.root.setOnClickListener {
             goToSeason(data)
         }
         val requestOptions = RequestOptions()
@@ -296,38 +267,12 @@ class Search: BaseActivity<ActivitySearchBinding>() {
         Glide.with(this@Search)
             .load(data.episodeCover)
             .apply(requestOptions)
-            .addListener(object : RequestListener<Drawable?> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any,
-                    target: Target<Drawable?>,
-                    isFirstResource: Boolean
-                ) = false
-
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any,
-                    target: Target<Drawable?>,
-                    dataSource: DataSource,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    setAnimateState(false, 400, searchItem.itemSearchEpisodePlaceholder) {
-                        setAnimateState(true, 400, searchItem.itemSearchEpisodeCover)
-                    }
-                    return false
-                }
-            })
             .into(searchItem.itemSearchEpisodeCover)
         return searchItem.root
     }
 
     private fun goToSeason(data: SearchData) {
-        Season.startActivity(
-            this@Search,
-            data.seasonTitle.toString(),
-            data.seasonId,
-            data.seasonCover
-        )
+        SeasonPlayer.startActivity(this@Search, data.seasonId)
     }
 
     private fun getHistory() {
@@ -350,16 +295,16 @@ class Search: BaseActivity<ActivitySearchBinding>() {
                     val historyIndex = array.getString(array_index)
                     val itemSearchWord = ItemSearchWordBinding.inflate(
                         layoutInflater,
-                        binding.searchHistoryList,
+                        ViewBinding.searchHistoryList,
                         false
                     )
                     itemSearchWord.itemWordTitle.text = historyIndex
                     itemSearchWord.itemWordTitle.setOnClickListener {
                         onSearch(historyIndex)
                     }
-                    binding.searchHistoryList.addView(itemSearchWord.root, paramsLinear)
+                    ViewBinding.searchHistoryList.addView(itemSearchWord.root, paramsLinear)
                 }
-                setAnimateState(true, 500, binding.searchHistory)
+                setAnimateState(true, 500, ViewBinding.searchHistory)
             }
         } catch (e: IOException) {
             if (e !is FileNotFoundException) {
@@ -406,33 +351,10 @@ class Search: BaseActivity<ActivitySearchBinding>() {
         }
     }
 
-    private var timer: Timer? = null
-    private var imageIndex = 0
-    private fun startOnLoadingState(imageView: ImageView) {
-        imageView.visibility = View.VISIBLE
-        timer = Timer()
-        timer!!.schedule(object : TimerTask() {
-            override fun run() {
-                imageIndex =
-                    if (imageIndex == R.drawable.pic_search_doing_1) R.drawable.pic_search_doing_2 else R.drawable.pic_search_doing_1
-                runOnUiThread { imageView.setImageResource(imageIndex) }
-            }
-        }, 0, 500)
-    }
-
-    private fun stopOnLoadingState() {
-        timer?.let {
-            it.cancel()
-            timer = null
-        }
-    }
-
     override fun onBackPressed() {
-        if (isSuggesting) {
-            isSuggesting = false
-            binding.searchEdit.clearFocus()
+        if (ViewBinding.searchEdit.hasFocus()) {
+            ViewBinding.searchEdit.clearFocus()
         } else {
-            stopOnLoadingState()
             finish()
         }
     }

@@ -13,6 +13,7 @@
 
     <color name="color_login_transparent">#AAFFFFFF</color>
 
+    <color name="color_player">#000000</color>
     <color name="color_player_cover">#CF000000</color>
     <color name="color_player_controller">#EEFFFFFF</color>
     <color name="color_player_episode_list_border">#66FFFFFF</color>

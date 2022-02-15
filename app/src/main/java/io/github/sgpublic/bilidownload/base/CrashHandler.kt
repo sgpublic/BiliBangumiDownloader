@@ -1,15 +1,18 @@
 package io.github.sgpublic.bilidownload.base
 
 import io.github.sgpublic.bilidownload.Application
+import io.github.sgpublic.bilidownload.BuildConfig
 import io.github.sgpublic.bilidownload.manager.ConfigManager
+import io.github.sgpublic.bilidownload.util.MyLog
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
 
 object CrashHandler {
-    fun saveExplosion(e: Throwable?, code: Int): String? {
+    fun saveExplosion(e: Throwable?, code: Int, message: String? = "save exception"): String? {
         try {
             e ?: return null
+            MyLog.w(message ?: e.localizedMessage, e, 2)
             val exceptionLog: JSONObject
             var exceptionLogContent = JSONArray()
             val logPath: String = Application.APPLICATION_CONTEXT
@@ -40,16 +43,19 @@ object CrashHandler {
             val crashMsgArray = JSONArray()
             val crashMsgArrayIndex = JSONObject()
             val crashStackTrace = JSONArray()
-            for (element_index in elements) {
+            for (elementIndex in elements) {
+                if (!elementIndex.className.startsWith(BuildConfig.APPLICATION_ID)) {
+                    continue
+                }
                 val crashStackTraceIndex = JSONObject()
-                crashStackTraceIndex.put("class", element_index.className)
-                crashStackTraceIndex.put("line", element_index.lineNumber)
-                crashStackTraceIndex.put("method", element_index.methodName)
+                crashStackTraceIndex.put("class", elementIndex.className)
+                crashStackTraceIndex.put("line", elementIndex.lineNumber)
+                crashStackTraceIndex.put("method", elementIndex.methodName)
                 crashStackTrace.put(crashStackTraceIndex)
             }
             val configString = StringBuilder(e.toString())
-            for (config_index in 0..2) {
-                configString.append("\nat ").append(elements[config_index].toString())
+            for (configIndex in 0..2) {
+                configString.append("\nat ").append(elements[configIndex].toString())
             }
             ConfigManager.LAST_EXCEPTION = configString.toString()
             crashMsgArrayIndex.put("code", code)
@@ -66,11 +72,10 @@ object CrashHandler {
             }
             crashMsgJson.put("logs", crashMsgArray)
             val fileOutputStream = FileOutputStream(exception)
-            val logs = crashMsgJson.toString()
-            fileOutputStream.write(logs.toByteArray())
+            fileOutputStream.write(crashMsgJson.toString().toByteArray())
             fileOutputStream.close()
-            return logs
-        } catch (ignore: Exception) { }
+            return crashMsgArray.toString()
+        } catch (_: Exception) { }
         return null
     }
 }

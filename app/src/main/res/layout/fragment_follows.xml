@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="3dp"
         android:paddingTop="3dp">
-        <io.github.sgpublic.bilidownload.widget.ObservableRecyclerView
+        <io.github.sgpublic.bilidownload.widget.NestedRecyclerView
             android:id="@+id/follows_recycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -23,7 +23,7 @@
             app:spanCount="3"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <ImageView
+    <io.github.sgpublic.bilidownload.widget.LoadingImageView
         android:id="@+id/follows_load_state"
         android:layout_width="match_parent"
         android:layout_height="150dp"

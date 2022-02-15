@@ -1,14 +1,13 @@
 package io.github.sgpublic.bilidownload.fragment.home
 
 import android.content.res.Configuration
-import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.activity.Search
 import io.github.sgpublic.bilidownload.base.BaseFragment
-import io.github.sgpublic.bilidownload.base.CrashHandler
 import io.github.sgpublic.bilidownload.data.FollowData
 import io.github.sgpublic.bilidownload.databinding.FragmentHomeBangumiBinding
 import io.github.sgpublic.bilidownload.manager.ConfigManager
@@ -17,19 +16,22 @@ import io.github.sgpublic.bilidownload.ui.SeasonBannerAdapter
 import io.github.sgpublic.bilidownload.ui.recycler.HomeRecyclerAdapter
 import java.util.*
 
-class HomeBangumi(private val context: AppCompatActivity): BaseFragment<FragmentHomeBangumiBinding>(context) {
-    override fun onFragmentCreated(savedInstanceState: Bundle?) {
+class HomeBangumi(context: AppCompatActivity): BaseFragment<FragmentHomeBangumiBinding>(context) {
+    override fun onFragmentCreated(hasSavedInstanceState: Boolean) {
         getFollowData(1)
     }
 
+    override fun onCreateViweBinding(container: ViewGroup?): FragmentHomeBangumiBinding =
+        FragmentHomeBangumiBinding.inflate(layoutInflater, container, false)
+
     private lateinit var adapter: HomeRecyclerAdapter
     override fun onViewSetup() {
-        initViewAtTop(binding.bangumiSearchBase)
-        binding.bangumiSearch.setOnClickListener {
+        initViewAtTop(ViewBinding.bangumiSearchBase)
+        ViewBinding.bangumiSearch.setOnClickListener {
             Search.startActivity(context)
         }
-        binding.bangumiRefresh.setProgressViewOffset(false, Application.dip2px(40F), Application.dip2px(125F))
-        binding.bangumiRefresh.setOnRefreshListener {
+        ViewBinding.bangumiRefresh.setProgressViewOffset(false, Application.dip2px(40F), Application.dip2px(125F))
+        ViewBinding.bangumiRefresh.setOnRefreshListener {
             Timer().schedule(object : TimerTask(){
                 override fun run() {
                     getFollowData(1)
@@ -40,39 +42,40 @@ class HomeBangumi(private val context: AppCompatActivity): BaseFragment<Fragment
         adapter.setOnScrollToEndListener {
             getFollowData(it)
         }
-        binding.bangumiRecycler.adapter = adapter
+        ViewBinding.bangumiRecycler.adapter = adapter
     }
 
     private fun getFollowData(pageIndex: Int) {
         if (pageIndex == 1) {
-            adapter.removeAllFollows()
+            runOnUiThread {
+                adapter.removeAllFollows()
+            }
         }
         val accessKey = ConfigManager.ACCESS_TOKEN
         val mid = ConfigManager.MID
         val helper = FollowsModule(context, accessKey)
-        helper.getFollows(mid, pageIndex, object : FollowsModule.Callback {
+        helper.getFollows(mid, pageIndex, 2, object : FollowsModule.Callback {
             override fun onFailure(code: Int, message: String?, e: Throwable?) {
-                onToast(R.string.error_bangumi_load, message, code)
+                Application.onToast(context, R.string.error_bangumi_load, message, code)
                 runOnUiThread {
-                    binding.bangumiLoadState.setImageResource(R.drawable.pic_load_failed)
-                    binding.bangumiRefresh.isRefreshing = false
+                    ViewBinding.bangumiLoadState.setImageResource(R.drawable.pic_load_failed)
+                    ViewBinding.bangumiRefresh.isRefreshing = false
                 }
-                CrashHandler.saveExplosion(e, code)
             }
 
             override fun onResult(followData: ArrayList<FollowData>, hasNext: Boolean) {
                 runOnUiThread {
                     if (followData.isEmpty()) {
-                        binding.bangumiLoadState.setImageResource(R.drawable.pic_null)
-                        binding.bangumiRefresh.isRefreshing = false
+                        ViewBinding.bangumiLoadState.setImageResource(R.drawable.pic_null)
+                        ViewBinding.bangumiRefresh.isRefreshing = false
                     } else {
-                        binding.bangumiLoadState.visibility = View.INVISIBLE
-                        binding.bangumiRecycler.visibility = View.VISIBLE
+                        ViewBinding.bangumiLoadState.visibility = View.INVISIBLE
+                        ViewBinding.bangumiRecycler.visibility = View.VISIBLE
                         if (pageIndex == 1) {
                             adapter.setBannerData(getBannerData(followData))
                         }
                         adapter.insertFollowData(followData, hasNext)
-                        binding.bangumiRefresh.isRefreshing = false
+                        ViewBinding.bangumiRefresh.isRefreshing = false
                     }
                 }
             }
@@ -94,8 +97,8 @@ class HomeBangumi(private val context: AppCompatActivity): BaseFragment<Fragment
             }
             bannerInfoList.add(
                 SeasonBannerAdapter.BannerItem(
-                    context, data.newEpCover, data.cover, data.seasonId,
-                    data.title, data.newEpIndexShow, data.badge, badgeColor
+                    data.newEpCover, data.cover, data.seasonId, data.title,
+                    data.newEpIndexShow, data.badge, badgeColor
                 )
             )
             if (bannerInfoList.size > 7) {
@@ -110,11 +113,10 @@ class HomeBangumi(private val context: AppCompatActivity): BaseFragment<Fragment
             }
             var isEquals = false
             for (item_index in bannerInfoList) {
-                if (item_index.seasonId != data.seasonId) {
-                    continue
+                if (item_index.seasonId == data.seasonId) {
+                    isEquals = true
+                    break
                 }
-                isEquals = true
-                break
             }
             if (isEquals) {
                 continue
@@ -126,8 +128,8 @@ class HomeBangumi(private val context: AppCompatActivity): BaseFragment<Fragment
             }
             bannerInfoList.add(
                 SeasonBannerAdapter.BannerItem(
-                    context, data.newEpCover, data.cover, data.seasonId,
-                    data.title, data.newEpIndexShow, data.badge, badgeColor
+                    data.newEpCover, data.cover, data.seasonId, data.title,
+                    data.newEpIndexShow, data.badge, badgeColor
                 )
             )
         }

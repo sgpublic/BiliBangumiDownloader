@@ -1,6 +1,7 @@
 package io.github.sgpublic.bilidownload.module
 
 import io.github.sgpublic.bilidownload.BuildConfig
+import io.github.sgpublic.bilidownload.base.CrashHandler
 import io.github.sgpublic.bilidownload.manager.ConfigManager
 import io.github.sgpublic.bilidownload.util.MyLog
 import io.reactivex.annotations.Beta
@@ -105,6 +106,7 @@ class BaseAPI(private val accessToken: String) {
         return onReturn(url, args, null, METHOD_POST, true)
     }
 
+    @Deprecated("use qrcode instead.")
     fun getLoginConfirmRequest(
         url: String,
         cookie: String,
@@ -219,6 +221,14 @@ class BaseAPI(private val accessToken: String) {
         return onReturn(url, args, null, METHOD_GET, false)
     }
 
+    fun getSeasonRecommendRequest(sid: Long): Call {
+        val url = "https://api.bilibili.com/pgc/season/web/related/recommend"
+        val args: Map<String, Any> = mapOf(
+            "season_id" to sid
+        )
+        return onReturn(url, args, null, METHOD_GET, false)
+    }
+
     fun getEpisodeRequest(cid: Long, qn: Int = ConfigManager.DEFAULT_QUALITY, proxy: String = "api.bilibili.com"): Call {
         val url = "https://$proxy/pgc/player/api/playurl"
         val args: Map<String, Any> = mapOf(
@@ -248,9 +258,22 @@ class BaseAPI(private val accessToken: String) {
         return onReturn(url, args, null, METHOD_GET, false)
     }
 
+    fun getSubtitlesRequest(cid: Long, bvid: String): Call {
+        val url = "https://api.bilibili.com/x/player/v2"
+        val args: Map<String, Any> = mapOf(
+            "cid" to cid,
+            "bvid" to bvid,
+        )
+        return onReturn(url, args, null, METHOD_GET, false)
+    }
+
     fun getGithubReleaseRequest(): Call {
-        val url = "https://api.github.com/repos/${BuildConfig.GITHUB_REPO}/releases/latest"
-        return onReturn(url, null, null, METHOD_GET, false)
+        val url = "https://api.github.com/repos/${BuildConfig.GITHUB_REPO}/releases"
+        val args: Map<String, Any> = mapOf(
+            "per_page" to 1,
+            "page" to 1
+        )
+        return onReturn(url, args, null, METHOD_GET, false)
     }
 
     private fun onReturn(
@@ -266,27 +289,25 @@ class BaseAPI(private val accessToken: String) {
             followSslRedirects(false)
             build()
         }
-        val request: Request = Request.Builder().run {
-            val body = GetArgs(args)
-            val bodyString = body.getString(withSign)
-            if (method == METHOD_POST) {
-                MyLog.v("HTTP请求\nPOST $url\n[Body] $bodyString")
-                url(url)
-                post(body.getForm(withSign))
-            } else {
-                val urlFinal = "$url?$bodyString"
-                MyLog.v("HTTP请求\nGET $urlFinal")
-                url(urlFinal)
-            }
-            if (headerArray != null) {
-                for ((key, value) in headerArray) {
-                    addHeader(key, value.toString())
-                }
-            }
-            build()
+        val request: Request.Builder = Request.Builder()
+        val body = GetArgs(args)
+        val bodyString = body.getString(withSign)
+        if (method == METHOD_POST) {
+            MyLog.v("HTTP请求\nPOST $url\n[Body] $bodyString", 2)
+            request.url(url)
+            request.post(body.getForm(withSign))
+        } else {
+            val urlFinal = if (bodyString == "") url else
+                "$url?$bodyString"
+            MyLog.v("HTTP请求\nGET $urlFinal", 2)
+            request.url(urlFinal)
         }
-
-        return client.newCall(request)
+        if (headerArray != null) {
+            for ((key, value) in headerArray) {
+                request.addHeader(key, value.toString())
+            }
+        }
+        return client.newCall(request.build())
     }
 
     private class GetArgs(val args: Map<String, Any>?){
@@ -354,5 +375,13 @@ class BaseAPI(private val accessToken: String) {
                 return ""
             }
         }
+    }
+
+    interface BaseInterface {
+        fun postFailure(code: Int, message: String?, e: Throwable?) {
+            CrashHandler.saveExplosion(e, code, message)
+            onFailure(code, message, e)
+        }
+        fun onFailure(code: Int, message: String?, e: Throwable?)
     }
 }

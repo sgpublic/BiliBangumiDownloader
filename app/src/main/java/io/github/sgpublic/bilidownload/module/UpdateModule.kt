@@ -6,44 +6,74 @@ import io.github.sgpublic.bilidownload.BuildConfig
 import io.github.sgpublic.bilidownload.R
 import okhttp3.Call
 import okhttp3.Response
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.net.UnknownHostException
+import java.text.SimpleDateFormat
+import java.util.*
 
 class UpdateModule(private val context: Context) {
-    fun getUpdate(type: String = BuildConfig.TYPE_RELEASE, callback: Callback) {
-        // TODO
+    fun getUpdate(callback: Callback) {
         val helper = BaseAPI()
         val call = helper.getGithubReleaseRequest()
         call.enqueue(object : okhttp3.Callback {
             override fun onFailure(call: Call, e: IOException) {
                 if (e is UnknownHostException) {
-                    callback.onFailure(-711, context.getString(R.string.error_network), e)
+                    callback.postFailure(-711, context.getString(R.string.error_network), e)
                 } else {
-                    callback.onFailure(-712, null, e)
+                    callback.postFailure(-712, null, e)
                 }
             }
 
             @Throws(IOException::class)
             override fun onResponse(call: Call, response: Response) {
-                val result = response.body!!.string()
+                val result = response.body?.string().toString()
                 try {
-                    val verCodeNow = BuildConfig.VERSION_CODE
-                    val json = JSONObject(result)
-                    callback.onUpToDate()
+                    val json = JSONArray(result)
+                    if (json.length() == 0) {
+                        callback.onUpToDate()
+                        return
+                    }
+                    parse(json.getJSONObject(0), callback)
                 } catch (e: JSONException) {
-                    callback.onFailure(-703, null, e)
+                    callback.postFailure(-703, null, e)
                 } catch (e: PackageManager.NameNotFoundException) {
-                    callback.onFailure(-705, null, e)
+                    callback.postFailure(-705, null, e)
                 }
             }
         })
     }
 
-    interface Callback {
-        fun onFailure(code: Int, message: String?, e: Throwable) {}
+    private fun parse(json: JSONObject, callback: Callback) {
+        if (json.getBoolean("draft")) {
+            callback.onUpToDate()
+            return
+        }
+        val pre = json.getBoolean("prerelease")
+        val detail = json.getString("body")
+        val parse = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA)
+        val format = SimpleDateFormat("yyMMdd", Locale.CHINA)
+        val remoteVer = format.format(
+            parse.parse(json.getString("created_at")) ?: Date(0)
+        ).toIntOrNull() ?: 0
+        if (remoteVer <= BuildConfig.VERSION_CODE) {
+            callback.onUpToDate()
+            return
+        }
+        val assets = json.getJSONArray("assets")
+        if (assets.length() == 0) {
+            callback.onUpToDate()
+            return
+        }
+        val url = assets.getJSONObject(0).getString("browser_download_url")
+        callback.onUpdate(pre, remoteVer, detail, url)
+    }
+
+    interface Callback : BaseAPI.BaseInterface {
+        override fun onFailure(code: Int, message: String?, e: Throwable?) {}
         fun onUpToDate() {}
-        fun onUpdate(detailPage: String, isPreRelease: Boolean, dlUrl: String)
+        fun onUpdate(isPreRelease: Boolean, remoteVer: Int, detail: String, url: String)
     }
 }

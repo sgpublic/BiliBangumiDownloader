@@ -4,19 +4,12 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import androidx.core.content.ContextCompat
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.databinding.ItemEpisodeListBinding
 import java.util.*
 
-class EpisodeListAdapter(private val context: Context, private val origin: Int) : BaseAdapter()  {
-    private var onChange: (Int) -> Unit = { _ -> }
-    fun setOnEpisodeChangeListener(onChange: (Int) -> Unit) {
-        this.onChange = onChange
-        notifyDataSetChanged()
-    }
-
+class EpisodeListAdapter(private val context: Context) : SelectableBaseAdapter(){
     private val list: LinkedList<String> = LinkedList()
     override fun getCount(): Int = list.size
     override fun getItem(pos: Int): String = list[pos]
@@ -27,11 +20,6 @@ class EpisodeListAdapter(private val context: Context, private val origin: Int) 
         notifyDataSetChanged()
     }
 
-    private var position: Int = 0
-    fun next() {
-        onChange(++position)
-    }
-
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val binding: ItemEpisodeListBinding = if (convertView != null) {
             ItemEpisodeListBinding.bind(convertView)
@@ -40,8 +28,9 @@ class EpisodeListAdapter(private val context: Context, private val origin: Int) 
                 LayoutInflater.from(context), parent, false
             )
         }
+        binding.root.layoutParams.width = parent.width
         binding.itemEpisodeTitle.apply {
-            if (position == this@EpisodeListAdapter.position) {
+            if (position == this@EpisodeListAdapter.getSelection()) {
                 setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
                 setBackgroundResource(R.drawable.shape_episode_list_border_current)
             } else {
@@ -50,8 +39,9 @@ class EpisodeListAdapter(private val context: Context, private val origin: Int) 
             }
             text = getItem(position)
             setOnClickListener {
-                this@EpisodeListAdapter.position = position
-                onChange(position)
+                setSelection(position)
+
+                onItemClick(position, getItem(position))
             }
         }
         return binding.root

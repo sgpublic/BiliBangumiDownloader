@@ -3,10 +3,12 @@ package io.github.sgpublic.bilidownload.module
 import android.content.Context
 import android.graphics.Color
 import io.github.sgpublic.bilidownload.R
+import io.github.sgpublic.bilidownload.data.ComicData
 import io.github.sgpublic.bilidownload.data.SeasonData
 import io.github.sgpublic.bilidownload.data.SeriesData
 import io.github.sgpublic.bilidownload.data.parcelable.EpisodeData
 import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONException
@@ -16,23 +18,21 @@ import java.net.UnknownHostException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class SeasonModule(private val context: Context, protected val sid: Long, accessKey: String) {
+class SeasonModule(private val context: Context, private val sid: Long, accessKey: String = "") {
     private val helper: BaseAPI = BaseAPI(accessKey)
     private val episodeData: LinkedList<EpisodeData> = LinkedList()
     private val seasonData: SeasonData = SeasonData()
-    private lateinit var callback: Callback
-    
-    fun getInfoBySid(callback: Callback) {
-        this.callback = callback
+
+    fun getInfo(callback: SeasonCallback) {
         val call = helper.getSeasonInfoAppRequest(sid)
-        call.enqueue(object : okhttp3.Callback {
+        call.enqueue(object : Callback {
             private var biliplus = false
 
             override fun onFailure(call: Call, e: IOException) {
                 if (e is UnknownHostException) {
-                    this@SeasonModule.callback.onFailure(-401, context.getString(R.string.error_network), e)
+                    callback.postFailure(-401, context.getString(R.string.error_network), e)
                 } else {
-                    this@SeasonModule.callback.onFailure(-402, e.message, e)
+                    callback.postFailure(-402, e.message, e)
                 }
             }
 
@@ -44,33 +44,33 @@ class SeasonModule(private val context: Context, protected val sid: Long, access
                     if (json.getInt("code") == 0) {
                         val resultObj = json.getJSONObject("result")
                         if (resultObj.isNull("limit")) {
-                            doParseAppResult(resultObj)
+                            doParseAppResult(resultObj, callback)
                             return
                         }
                         seasonData.area = AREA_LIMITED
                     }
                     if (biliplus && json.getInt("code") != -404) {
-                        this@SeasonModule.callback.onFailure(-404, json.getString("message"), null)
+                        callback.postFailure(-404, json.getString("message"), null)
                         return
                     }
                     helper.getSeasonInfoBiliplusRequest(sid)
                         .enqueue(this)
                     biliplus = true
                 } catch (e: JSONException) {
-                    this@SeasonModule.callback.onFailure(-403, e.message, e)
+                    callback.postFailure(-403, e.message, e)
                 }
             }
         })
     }
 
-    private fun getInfoBySidWeb(){
+    private fun getInfoWeb(callback: SeasonCallback){
         val call = helper.getSeasonInfoWebRequest(sid)
-        call.enqueue(object : okhttp3.Callback {
+        call.enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 if (e is UnknownHostException) {
-                    callback.onFailure(-411, context.getString(R.string.error_network), e)
+                    callback.postFailure(-411, context.getString(R.string.error_network), e)
                 } else {
-                    callback.onFailure(-412, e.message, e)
+                    callback.postFailure(-412, e.message, e)
                 }
             }
 
@@ -80,21 +80,21 @@ class SeasonModule(private val context: Context, protected val sid: Long, access
                 try {
                     val json = JSONObject(result)
                     if (json.getInt("code") == 0) {
-                        doParseWebResult(json.getJSONObject("result"))
+                        doParseWebResult(json.getJSONObject("result"), callback)
                         return
                     }
                     if (json.getInt("code") != -404) {
-                        callback.onFailure(-414, json.getString("message"), null)
+                        callback.postFailure(-414, json.getString("message"), null)
                         return
                     }
                 } catch (e: JSONException) {
-                    callback.onFailure(-413, e.message, e)
+                    callback.postFailure(-413, e.message, e)
                 }
             }
         })
     }
 
-    private fun doParseAppResult(json: JSONObject) {
+    private fun doParseAppResult(json: JSONObject, callback: SeasonCallback) {
         seasonData.actors = try {
             json.getJSONObject("actor").getString("info")
         } catch (_: JSONException) {
@@ -114,7 +114,7 @@ class SeasonModule(private val context: Context, protected val sid: Long, access
         seasonData.seasonType = if (!json.isNull("type")) json.getInt("type") else
             json.getJSONObject("media").getInt("type_id")
         val array: JSONArray = json.getJSONArray("seasons")
-        val list: ArrayList<SeriesData> = ArrayList<SeriesData>()
+        seasonData.series.clear()
         for (arrayIndex in 0 until array.length()) {
             val index: JSONObject = array.getJSONObject(arrayIndex)
             val seriesData = SeriesData()
@@ -129,21 +129,31 @@ class SeasonModule(private val context: Context, protected val sid: Long, access
                 )
             }
             seriesData.cover = index.getString("cover")
-            seriesData.title = index.getString("title")
             seriesData.seasonId = index.getLong("season_id")
             if (seriesData.seasonId != sid) {
-                list.add(seriesData)
-            } else {
-                seriesData.seasonTypeName = if (!json.isNull("type_name"))
-                    json.getString("type_name") else
-                    json.getJSONObject("media").getString("type_name")
-                seasonData.baseInfo = seriesData
+                seriesData.title = index.getString("title")
+                seasonData.series.add(seriesData)
+                continue
             }
+            if (!json.isNull("producer")) {
+                json.getJSONObject("producer")
+                    .getJSONArray("list")
+                    .getJSONObject(0).let {
+                        seasonData.producerAvatar = it.getString("avatar")
+                        seasonData.producerName = it.getString("uname")
+                    }
+            }
+            seriesData.seasonTypeName = if (!json.isNull("type_name"))
+                json.getString("type_name") else
+                json.getJSONObject("media").getString("type_name")
+            seriesData.title = if (json.isNull("bangumi_title"))
+                index.getString("title") else json.getString("bangumi_title")
+            seasonData.info = seriesData
         }
-        seasonData.series = list
         if (!json.isNull("limit") && seasonData.area == AREA_LOCAL) {
             seasonData.area = AREA_LIMITED
         }
+        seasonData.newEp = json.getJSONObject("new_ep").getString("desc")
         val description = StringBuilder()
         val arrayAreas: JSONArray = if (!json.isNull("areas"))
             json.getJSONArray("areas") else
@@ -166,12 +176,12 @@ class SeasonModule(private val context: Context, protected val sid: Long, access
                     .getJSONObject("episode_index")
                     .getString("index_show"))
         } else {
+            val publish = json.getJSONObject("publish")
+            seasonData.timeLengthShow = publish.getString("time_length_show")
             description.append("\n")
-                .append(json.getJSONObject("publish")
-                    .getString("release_date_show"))
+                .append(publish.getString("release_date_show"))
                 .append("\n")
-                .append(json.getJSONObject("publish")
-                    .getString("time_length_show"))
+                .append(seasonData.timeLengthShow)
         }
         seasonData.description = description.toString()
         seasonData.evaluate = json.getString("evaluate")
@@ -196,14 +206,14 @@ class SeasonModule(private val context: Context, protected val sid: Long, access
         seasonData.rating = if (json.isNull("rating")) 0.0 else
             json.getJSONObject("rating").getDouble("score")
         try {
-            doParseWebResult(json)
+            doParseWebResult(json, callback)
         } catch (_: JSONException) {
-            this.getInfoBySidWeb()
+            this.getInfoWeb(callback)
         }
     }
 
     @Throws(JSONException::class)
-    private fun doParseWebResult(json: JSONObject) {
+    private fun doParseWebResult(json: JSONObject, callback: SeasonCallback) {
         val array: JSONArray = json.getJSONArray("episodes")
         episodeData.clear()
         for (episodesIndex in 0 until array.length()) {
@@ -251,12 +261,96 @@ class SeasonModule(private val context: Context, protected val sid: Long, access
                 index.getString("index") else index.getString("title")
             episodeData.add(episodeDataIndex)
         }
-        callback.onResult(episodeData, seasonData)
+        callback.onResolveSeasonData(episodeData, seasonData)
     }
 
-    interface Callback {
-        fun onFailure(code: Int, message: String?, e: Throwable?)
-        fun onResult(episodeData: List<EpisodeData>, seasonData: SeasonData)
+    fun getRecommend(callback: RecommendCallback) {
+        val call = helper.getSeasonRecommendRequest(sid)
+        call.enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                if (e is UnknownHostException) {
+                    callback.postFailure(-421, context.getString(R.string.error_network), e)
+                } else {
+                    callback.postFailure(-422, e.message, e)
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val result = response.body?.string().toString()
+                try {
+                    val json = JSONObject(result)
+                    if (json.getInt("code") == 0) {
+                        doParseRecommend(json.getJSONObject("data"), callback)
+                    } else {
+                        callback.postFailure(-424, json.getString("message"), null)
+                    }
+                } catch (e: JSONException) {
+                    callback.postFailure(-423, e.message, e)
+                }
+            }
+        })
+    }
+
+    @Throws(JSONException::class)
+    private fun doParseRecommend(data: JSONObject, callback: RecommendCallback) {
+        val relatesArray = data.getJSONArray("relates")
+        val relates = arrayListOf<ComicData>()
+        for (i in 0 until relatesArray.length()) {
+            val index = relatesArray.getJSONObject(i)
+            val relate = ComicData()
+            relate.desc2 = index.getString("desc2")
+            relate.item_id = index.getLong("item_id")
+            relate.title = index.getString("title")
+            relate.pic = index.getString("pic")
+            relates.add(relate)
+        }
+
+        val seasonArray = data.getJSONArray("season")
+        val seasons = arrayListOf<SeasonData>()
+        for (i in 0 until seasonArray.length()) {
+            val index = seasonArray.getJSONObject(i)
+            val season = SeasonData()
+            season.info.cover = index.getString("cover")
+            season.info.seasonId = index.getLong("season_id")
+            season.info.title = index.getString("title")
+            if (!index.isNull("badge_info")) {
+                val badge = index.getJSONObject("badge_info")
+                season.info.badge = badge.getString("text")
+                season.info.badgeColor = Color.parseColor(
+                    badge.getString("bg_color")
+                )
+                season.info.badgeColorNight = Color.parseColor(
+                    badge.getString("bg_color_night")
+                )
+            }
+            season.rating = index.getJSONObject("rating").getDouble("score")
+            season.description = "番剧"
+            if (!index.isNull("new_ep")) {
+                season.description += "\n"
+                season.description += index.getJSONObject("new_ep").getString("index_show")
+            }
+            val styles = index.getJSONArray("styles")
+            val stylesStr = StringBuilder()
+            for (j in 0 until styles.length()) {
+                if (j != 0) {
+                    stylesStr.append("、")
+                }
+                stylesStr.append(styles.getJSONObject(j).getString("name"))
+            }
+            season.styles = stylesStr.toString()
+            seasons.add(season)
+        }
+
+        callback.onResolveRecommendData(relates, seasons)
+    }
+
+    interface SeasonCallback: BaseAPI.BaseInterface {
+        fun onResolveSeasonData(episodeData: List<EpisodeData>, seasonData: SeasonData) { }
+    }
+
+    interface RecommendCallback: BaseAPI.BaseInterface {
+        override fun onFailure(code: Int, message: String?, e: Throwable?) { }
+        fun onResolveRecommendData(comic: List<ComicData>, season: List<SeasonData>) { }
     }
 
     companion object {

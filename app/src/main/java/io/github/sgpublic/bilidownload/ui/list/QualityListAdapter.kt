@@ -4,25 +4,13 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import androidx.core.content.ContextCompat
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.databinding.ItemQualityListBinding
 import io.github.sgpublic.bilidownload.manager.ConfigManager
 import java.util.*
 
-class QualityListAdapter(private val context: Context) : BaseAdapter() {
-    private var onItemClick: (Int) -> Unit = { _ -> }
-    fun setOnItemClickListener(onClick: (Int) -> Unit) {
-        onItemClick = onClick
-        notifyDataSetChanged()
-    }
-
-    private var onQualityChange: (String) -> Unit = { _ -> }
-    fun setOnQualityChangeListener(onChange: (String) -> Unit) {
-        onQualityChange = onChange
-    }
-
+class QualityListAdapter(private val context: Context) : SelectableBaseAdapter() {
     private val qnMap: MutableMap<Int, String> = linkedMapOf()
     private val qnList: LinkedList<Map.Entry<Int, String>> = LinkedList()
     override fun getCount(): Int = qnMap.size
@@ -36,12 +24,7 @@ class QualityListAdapter(private val context: Context) : BaseAdapter() {
         notifyDataSetChanged()
     }
 
-    private var qn = ConfigManager.QUALITY
-    fun setCurrentQuality(qn: Int) {
-        this.qn = qn
-        onQualityChange(qnMap[qn]!!)
-        notifyDataSetChanged()
-    }
+    override var position: Int = ConfigManager.QUALITY
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val item = getItem(position)
@@ -52,21 +35,18 @@ class QualityListAdapter(private val context: Context) : BaseAdapter() {
                 LayoutInflater.from(context), parent, false
             )
         }
+        binding.root.layoutParams.width = parent.width
         return binding.root.apply {
-            if (item.key == qn) {
+            if (item.key == getSelection()) {
                 setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
             } else {
                 setTextColor(ContextCompat.getColor(context, R.color.color_player_controller))
             }
             text = item.value
             setOnClickListener {
-                onItemClick(item.key)
+                setSelection(position)
+                onItemClick(item.key, item.value)
             }
         }
     }
-
-    data class QualityItem(
-        val qn: Int,
-        val name: String
-    )
 }

@@ -6,36 +6,40 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.annotation.IdRes
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
-import java.lang.reflect.ParameterizedType
-import java.util.*
+import io.github.sgpublic.bilidownload.ui.ViewState
+import io.github.sgpublic.bilidownload.util.Animate
 
-abstract class BaseFragment<T: ViewBinding>(private val contest: AppCompatActivity) : Fragment() {
-    private var _binding: T? = null
-    protected val binding: T get() = _binding!!
+abstract class BaseFragment<VB: ViewBinding>(private val contest: AppCompatActivity) : Fragment(), Animate {
+    private var _binding: VB? = null
+    @Suppress("PropertyName")
+    protected val ViewBinding: VB get() = _binding!!
 
     final override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = setupContentView(inflater, container)
-        return binding.root
+        _binding = onCreateViweBinding(container)
+        return ViewBinding.root
     }
 
-    final override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    override fun getContext(): AppCompatActivity {
+        return contest
     }
 
     final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         onViewSetup()
-        onFragmentCreated(savedInstanceState)
+        if (savedInstanceState != null) {
+            STATE.putAll(savedInstanceState)
+        }
+        beforeFragmentCreated()
+        super.onViewCreated(view, savedInstanceState)
+        onFragmentCreated(savedInstanceState != null)
     }
 
-    protected abstract fun onFragmentCreated(savedInstanceState: Bundle?)
+    protected open fun beforeFragmentCreated() { }
+
+    protected abstract fun onFragmentCreated(hasSavedInstanceState: Boolean)
 
     protected fun runOnUiThread(runnable: () -> Unit){
         contest.runOnUiThread(runnable)
@@ -65,56 +69,27 @@ abstract class BaseFragment<T: ViewBinding>(private val contest: AppCompatActivi
         params.topMargin = statusbarheight
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun setupContentView(inflater: LayoutInflater, container: ViewGroup?): T {
-        val parameterizedType: ParameterizedType = javaClass.genericSuperclass as ParameterizedType
-        val clazz = parameterizedType.actualTypeArguments[0] as Class<T>
-        val method = clazz.getMethod("inflate", LayoutInflater::class.java, ViewGroup::class.java, Boolean::class.java)
-        return method.invoke(null, inflater, container, false) as T
+    protected abstract fun onCreateViweBinding(container: ViewGroup?): VB
+
+    protected val STATE: Bundle = Bundle()
+    override fun onSaveInstanceState(outState: Bundle) {
+        STATE.takeIf { !STATE.isEmpty }?.let {
+            outState.putAll(STATE)
+        }
+        super.onSaveInstanceState(outState)
     }
 
-    abstract fun onViewSetup()
-
-    protected open fun setAnimateState(isVisible: Boolean, duration: Int, view: View, callback: Runnable? = null) {
-        runOnUiThread {
-            if (isVisible) {
-                view.visibility = View.VISIBLE
-                view.animate().alphaBy(0f).alpha(1f).setDuration(duration.toLong())
-                    .setListener(null)
-                callback?.run()
-            } else {
-                view.animate().alphaBy(1f).alpha(0f).setDuration(duration.toLong())
-                    .setListener(null)
-                Timer().schedule(object : TimerTask() {
-                    override fun run() {
-                        runOnUiThread {
-                            view.visibility = View.GONE
-                            callback?.run()
-                        }
-                    }
-                }, duration.toLong())
-            }
-        }
+    final override val animate: MutableMap<View, ViewState> = mutableMapOf()
+    override fun onDestroyView() {
+        _binding = null
+        STATE.clear()
+        clearAnimate()
+        super.onDestroyView()
     }
 
-    protected fun onToast(content: String?) {
-        runOnUiThread {
-            Toast.makeText(contest, content, Toast.LENGTH_SHORT).show()
-        }
-    }
-    protected fun onToast(@StringRes content: Int) {
-        onToast(resources.getText(content).toString())
-    }
-    protected fun onToast(@StringRes content: Int, code: Int) {
-        val contentShow = (resources.getText(content).toString() + "($code)")
-        onToast(contentShow)
-    }
-    protected fun onToast(@StringRes content: Int, message: String?, code: Int) {
-        if (message != null) {
-            val contentShow = resources.getText(content).toString() + "，$message($code)"
-            onToast(contentShow)
-        } else {
-            onToast(content, code)
-        }
+    open fun onViewSetup() { }
+
+    open fun onBackPressed(): Boolean {
+        return false
     }
 }

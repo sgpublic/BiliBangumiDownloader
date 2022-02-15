@@ -17,9 +17,9 @@ class UserInfoModule(private val context: Context, private val accessKey: String
         call.enqueue(object : okhttp3.Callback {
             override fun onFailure(call: Call, e: IOException) {
                 if (e is UnknownHostException) {
-                    callback.onFailure(-201, context.getString(R.string.error_network), e)
+                    callback.postFailure(-201, context.getString(R.string.error_network), e)
                 } else {
-                    callback.onFailure(-202, e.message, e)
+                    callback.postFailure(-202, e.message, e)
                 }
             }
 
@@ -47,18 +47,17 @@ class UserInfoModule(private val context: Context, private val accessKey: String
                         uData.vipState = vip.getInt("status")
                         callback.onResult(uData)
                     } else {
-                        callback.onFailure(-204, json.getString("message"), null)
+                        callback.postFailure(-204, json.getString("message"), null)
                     }
                 } catch (e: JSONException) {
                     e.printStackTrace()
-                    callback.onFailure(-203, null, e)
+                    callback.postFailure(-203, null, e)
                 }
             }
         })
     }
 
-    interface Callback {
-        fun onFailure(code: Int, message: String?, e: Throwable?)
+    interface Callback : BaseAPI.BaseInterface {
         fun onResult(data: UserData)
     }
 }

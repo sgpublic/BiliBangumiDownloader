@@ -1,6 +1,7 @@
 package io.github.sgpublic.bilidownload.data.parcelable
 
 import android.os.Parcelable
+import com.google.gson.Gson
 import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 
@@ -9,8 +10,8 @@ import java.io.Serializable
 data class DashIndexJson(
     var video: DASHData = DASHData(),
     var audio: DASHData = DASHData(),
+    val subtitles: ArrayList<SubtitleData> = arrayListOf()
 ) : Parcelable, Serializable {
-
     @Parcelize
     data class DASHData(
         var id: Int = 0,
@@ -24,6 +25,23 @@ data class DashIndexJson(
         var frame_rate: String = "",
         var width: Int = 0,
         var height: Int = 0
-    ): Parcelable, Serializable {
+    ): Parcelable, Serializable
+
+    @Parcelize
+    data class SubtitleData(
+        var id_str: String = "",
+        var lan: String = "",
+        var lan_doc: String = "",
+        var subtitle_url: String = "",
+    ): Parcelable
+
+    fun toJson(): String {
+        return Gson().toJson(this, DashIndexJson::class.java)
+    }
+
+    companion object {
+        fun fromStr(str: String): DashIndexJson {
+            return Gson().fromJson(str, DashIndexJson::class.java)
+        }
     }
 }

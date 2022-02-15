@@ -1,71 +1,48 @@
 package io.github.sgpublic.bilidownload.base
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.annotation.StringRes
+import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.viewbinding.ViewBinding
-import com.sgpublic.swipebacklayoutx.SwipeBackLayoutX
-import com.sgpublic.swipebacklayoutx.app.SwipeBackActivity
 import com.yanzhenjie.sofia.Sofia
+import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
+import io.github.sgpublic.bilidownload.ui.ViewState
 import io.github.sgpublic.bilidownload.util.ActivityCollector
-import java.lang.reflect.Method
-import java.lang.reflect.ParameterizedType
+import io.github.sgpublic.bilidownload.util.Animate
 import java.util.*
 
-abstract class BaseActivity<T : ViewBinding>: SwipeBackActivity() {
-    protected val binding: T get() = _binding!!
-    private var _binding: T? = null
+abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity(), Animate {
+    private var _binding: VB? = null
+    @Suppress("PropertyName")
+    protected val ViewBinding: VB get() = _binding!!
 
     private var rootViewBottom: Int = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    final override fun onCreate(savedInstanceState: Bundle?) {
+        beforeCreate()
         super.onCreate(savedInstanceState)
 
         ActivityCollector.addActivity(this)
 
         setupContentView()
+        if (savedInstanceState != null) {
+            STATE.putAll(savedInstanceState)
+        }
         onViewSetup()
-        onActivityCreated(savedInstanceState)
+        onActivityCreated(savedInstanceState != null)
     }
 
-    protected abstract fun onActivityCreated(savedInstanceState: Bundle?)
+    protected open fun beforeCreate() { }
 
-    @Suppress("UNCHECKED_CAST")
+    protected abstract fun onActivityCreated(hasSavedInstanceState: Boolean)
+
     private fun setupContentView() {
-        var type: Class<*>? = javaClass
-        var method: Method? = null
-        while (type != null) {
-            try {
-                val clazz: Class<T> = (type.genericSuperclass as ParameterizedType)
-                    .actualTypeArguments[0] as Class<T>
-                method = clazz.getMethod("inflate", LayoutInflater::class.java)
-                break
-            } catch (_: NoSuchMethodException) {
-            } catch (_:ClassCastException) {
-            } finally {
-                type = type.superclass
-            }
-        }
-        if (method == null) {
-            throw IllegalStateException("unable to create interface for ViewBinding")
-        }
-
-        _binding = method.invoke(null, layoutInflater) as T
-        setContentView(binding.root)
-
-        if (isActivityAtBottom()){
-            setSwipeBackEnable(false)
-        } else {
-            setSwipeBackEnable(true)
-            swipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayoutX.EDGE_LEFT)
-            swipeBackLayout.setEdgeSize(200)
-        }
+        _binding = onCreateViweBinding()
+        setContentView(ViewBinding.root)
 
         Sofia.with(this)
                 .statusBarBackgroundAlpha(0)
@@ -75,13 +52,15 @@ abstract class BaseActivity<T : ViewBinding>: SwipeBackActivity() {
                 .statusBarDarkFont()
     }
 
+    protected abstract fun onCreateViweBinding(): VB
+
     protected open fun initViewAtTop(view: View){
         var statusbarheight = 0
         val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
         if (resourceId > 0) {
             statusbarheight = resources.getDimensionPixelSize(resourceId)
         }
-        val params: LinearLayout.LayoutParams = view.layoutParams as LinearLayout.LayoutParams
+        val params = view.layoutParams as ViewGroup.MarginLayoutParams
         params.topMargin = statusbarheight
     }
 
@@ -99,31 +78,38 @@ abstract class BaseActivity<T : ViewBinding>: SwipeBackActivity() {
         }
     }
 
-    abstract fun onViewSetup()
+    protected open fun onViewSetup() { }
 
-    override fun onPause() {
-        super.onPause()
-        val fragments = supportFragmentManager.fragments
-        for (fragment in fragments) {
-            fragment?.onPause()
+    protected val STATE: Bundle = Bundle()
+    override fun onSaveInstanceState(outState: Bundle) {
+        STATE.takeIf { !STATE.isEmpty }?.let {
+            outState.putAll(STATE)
         }
+        super.onSaveInstanceState(outState)
     }
 
-    override fun onResume() {
-        super.onResume()
-        val fragments = supportFragmentManager.fragments
-        for (fragment in fragments) {
-            fragment?.onResume()
-        }
-    }
-
+    final override val animate: MutableMap<View, ViewState> = mutableMapOf()
     override fun onDestroy() {
-        super.onDestroy()
+        STATE.clear()
         _binding = null
+        clearAnimate()
         ActivityCollector.removeActivity(this)
+        super.onDestroy()
     }
 
-    protected open fun setAnimateState(isVisible: Boolean, duration: Int, view: View, callback: Runnable? = null) {
+    protected open fun setAnimateState(isVisible: Boolean, duration: Int, view: View?, callback: Runnable? = null) {
+        val onEnd = object : TimerTask() {
+            override fun run() {
+                runOnUiThread {
+                    view?.visibility = View.GONE
+                    callback?.run()
+                }
+            }
+        }
+        if (view == null) {
+            Timer().schedule(onEnd, duration.toLong())
+            return
+        }
         runOnUiThread {
             if (isVisible) {
                 view.visibility = View.VISIBLE
@@ -134,14 +120,7 @@ abstract class BaseActivity<T : ViewBinding>: SwipeBackActivity() {
             }
             view.animate().alphaBy(1f).alpha(0f).setDuration(duration.toLong())
                 .setListener(null)
-            Timer().schedule(object : TimerTask() {
-                override fun run() {
-                    runOnUiThread {
-                        view.visibility = View.GONE
-                        callback?.run()
-                    }
-                }
-            }, duration.toLong())
+            Timer().schedule(onEnd, duration.toLong())
         }
     }
 
@@ -149,42 +128,26 @@ abstract class BaseActivity<T : ViewBinding>: SwipeBackActivity() {
 
     private var last: Long = -1
     override fun onBackPressed() {
+        supportFragmentManager.fragments.forEach {
+            if (it is BaseFragment<*> && it.onBackPressed()) {
+                return
+            }
+        }
         if (!isActivityAtBottom()){
             super.onBackPressed()
             return
         }
         val now = System.currentTimeMillis()
         if (last == -1L) {
-            onToast(R.string.text_back_exit)
+            Application.onToast(this, R.string.text_back_exit)
             last = now
         } else {
             if (now - last < 2000) {
                 ActivityCollector.finishAll()
             } else {
                 last = now
-                onToast(R.string.text_back_exit_notice)
+                Application.onToast(this, R.string.text_back_exit_notice)
             }
-        }
-    }
-
-    protected fun onToast(content: String?) {
-        runOnUiThread {
-            Toast.makeText(this, content, Toast.LENGTH_SHORT).show()
-        }
-    }
-    protected fun onToast(@StringRes content: Int) {
-        onToast(resources.getText(content).toString())
-    }
-    protected fun onToast(@StringRes content: Int, code: Int) {
-        val contentShow = (resources.getText(content).toString() + "($code)")
-        onToast(contentShow)
-    }
-    protected fun onToast(@StringRes content: Int, message: String?, code: Int) {
-        if (message != null) {
-            val contentShow = resources.getText(content).toString() + "，$message($code)"
-            onToast(contentShow)
-        } else {
-            onToast(content, code)
         }
     }
 }

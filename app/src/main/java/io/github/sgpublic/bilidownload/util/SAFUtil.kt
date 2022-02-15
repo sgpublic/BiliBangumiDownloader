@@ -9,7 +9,7 @@ import androidx.documentfile.provider.DocumentFile
 import java.io.FileNotFoundException
 
 object SAFUtil {
-    const val REQUEST_CODE_FOR_DIR = 233
+    const val REQUEST_CODE_FOR_DIR = 1
 
     @JvmStatic
     fun getDocumentFile(context: Activity, path: String): DocumentFile? {

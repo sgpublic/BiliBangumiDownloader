@@ -18,9 +18,9 @@ class LoginModule(private val context: Context) {
         call.enqueue(object : okhttp3.Callback {
             override fun onFailure(call: Call, e: IOException) {
                 if (e is UnknownHostException) {
-                    callback.onFailure(-151, context.getString(R.string.error_network), e)
+                    callback.postFailure(-151, context.getString(R.string.error_network), e)
                 } else {
-                    callback.onFailure(-152, e.message, e)
+                    callback.postFailure(-152, e.message, e)
                 }
             }
 
@@ -37,17 +37,16 @@ class LoginModule(private val context: Context) {
                             json.getLong("expires_in") * 1000L + BaseAPI.TS
                         )
                     } else {
-                        callback.onFailure(-154, json.getString("message"), null)
+                        callback.postFailure(-154, json.getString("message"), null)
                     }
                 } catch (e: JSONException) {
-                    callback.onFailure(-153, null, e)
+                    callback.postFailure(-153, null, e)
                 }
             }
         })
     }
 
-    interface Callback {
-        fun onFailure(code: Int, message: String?, e: Throwable?)
+    interface Callback : BaseAPI.BaseInterface {
         fun onLimited()
         fun onSuccess(mid: Long, accessKey: String, refreshKey: String, expiresIn: Long)
     }

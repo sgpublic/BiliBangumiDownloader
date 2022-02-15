@@ -1,7 +1,10 @@
 package io.github.sgpublic.bilidownload.data
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.util.*
 
+@Parcelize
 data class SeriesData(
     var seasonType: Int = 0,
     var seasonTypeName: String = "",
@@ -11,7 +14,7 @@ data class SeriesData(
     var cover: String = "",
     var title: String = "",
     var seasonId: Long = 0L
-) {
+) : Parcelable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false

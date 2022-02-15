@@ -6,5 +6,6 @@
         <domain includeSubdomains="true">i2.hdslb.com</domain>
         <domain includeSubdomains="true">upos-hz-mirrorakam.akamaized.net</domain>
         <domain includeSubdomains="true">link.acg.tv</domain>
+        <domain includeSubdomains="true">oi.sgpublic.xyz</domain>
     </domain-config>
 </network-security-config>

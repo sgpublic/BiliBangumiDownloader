@@ -6,6 +6,9 @@ import android.content.pm.PackageManager
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.BuildConfig
 import io.github.sgpublic.bilidownload.data.UserData
+import okhttp3.internal.http.toHttpDateString
+import java.text.SimpleDateFormat
+import java.util.*
 
 object ConfigManager {
     private const val IS_LOGIN_KEY = "is_login"
@@ -31,7 +34,9 @@ object ConfigManager {
     private const val TASK_PARALLEL_COUNT_KEY = "task_parallel_count"
     private const val QUALITY_KEY = "quality"
 
+    private const val UPDATE_DATE_KEY = "update_date"
     private const val UPDATE_CHANNEL_KEY = "update_check_channel"
+    private const val UPDATE_NOTICE_VERSION_KEY = "update_notice_version"
 
     private const val LAST_EXCEPTION_KEY = "last_exception"
 
@@ -126,6 +131,11 @@ object ConfigManager {
     }
     val QUALITY_NAME: String get() = QUALITIES[QUALITY]!!
 
+    private val UPDATE_DATE: String get() = getString(UPDATE_DATE_KEY, Date(0).toHttpDateString())
+    private val CURRENT_DATE: String get() = SimpleDateFormat("yyMMdd", Locale.CHINA).format(Date())
+    fun onUpdate() { putString(UPDATE_DATE_KEY, CURRENT_DATE) }
+    fun needAutoCheckUpdate() = CURRENT_DATE != UPDATE_DATE
+
     var LAST_EXCEPTION: String get() = getString(LAST_EXCEPTION_KEY)
     set(value) { putString(LAST_EXCEPTION_KEY, value) }
 
@@ -186,6 +196,10 @@ object ConfigManager {
             }
         }
     val DEFAULT_UPDATE_CHANNELS = BuildConfig.TYPE_RELEASE
+
+    @Deprecated("")
+    var UPDATE_NOTICE_VERSION: Int get() = getInt(UPDATE_NOTICE_VERSION_KEY)
+        set(value) { putInt(UPDATE_NOTICE_VERSION_KEY, value) }
 
     fun saveUserData(data: UserData) {
         NAME = data.name

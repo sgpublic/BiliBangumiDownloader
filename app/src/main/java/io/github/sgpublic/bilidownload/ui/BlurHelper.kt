@@ -10,7 +10,7 @@ import java.security.MessageDigest
 
 //BlurHelper
 class BlurHelper : BitmapTransformation() {
-    private val radius = 21
+    private val radius = 52
     private val sampling = 1
     override fun transform(pool: BitmapPool, toTransform: Bitmap, outWidth: Int, outHeight: Int): Bitmap {
         val width = toTransform.width

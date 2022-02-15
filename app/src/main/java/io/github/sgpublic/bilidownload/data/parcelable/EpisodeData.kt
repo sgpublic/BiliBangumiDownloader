@@ -30,6 +30,25 @@ data class EpisodeData(
         return Objects.hash(epId)
     }
 
+    fun toEntryJson(): EntryJson {
+        return EntryJson().also {
+            it.title = title
+            it.cover = cover
+            it.source.av_id = aid
+            it.source.cid = cid
+            it.ep.index = index
+            it.ep.av_id = aid
+            it.ep.cover = cover
+            it.ep.danmaku = cid
+            it.ep.episode_id = epId
+            it.ep.bvid = bvid
+            it.ep.index_title = title
+            it.ep.sort_index = index.toIntOrNull() ?: 0
+        }
+    }
+
+    override fun toString(): String = "$index $title"
+
     companion object {
         const val PAYMENT_NORMAL = 2
         const val PAYMENT_VIP = 13

@@ -2,7 +2,6 @@ package io.github.sgpublic.bilidownload.activity
 
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import android.view.MenuItem
 import android.widget.SeekBar
 import androidx.appcompat.app.AlertDialog
@@ -13,28 +12,31 @@ import io.github.sgpublic.bilidownload.databinding.DialogSettingTaskCountBinding
 import io.github.sgpublic.bilidownload.manager.ConfigManager
 
 class Setting: BaseActivity<ActivitySettingBinding>() {
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
+    override fun onActivityCreated(hasSavedInstanceState: Boolean) {
 
     }
 
+    override fun onCreateViweBinding(): ActivitySettingBinding =
+        ActivitySettingBinding.inflate(layoutInflater)
+
     override fun onViewSetup() {
-        setSupportActionBar(binding.settingToolbar)
+        setSupportActionBar(ViewBinding.settingToolbar)
         supportActionBar?.run {
             setDisplayHomeAsUpEnabled(true)
             setTitle(R.string.title_mine_setting)
         }
 
-        binding.settingTaskCount.alpha = 0.3F
-        binding.settingTaskCount.isClickable = false
-        binding.settingTaskCount.setOnClickListener {
+        ViewBinding.settingTaskCount.alpha = 0.3F
+        ViewBinding.settingTaskCount.isClickable = false
+        ViewBinding.settingTaskCount.setOnClickListener {
             taskCountSetting(1, 3)
         }
-        binding.settingAutoStartBase.alpha = 0.3F
-        binding.settingAutoStartBase.isClickable = false
-        binding.settingAutoStartBase.setOnClickListener {
-            binding.settingAutoStart.isChecked = !binding.settingAutoStart.isChecked
+        ViewBinding.settingAutoStartBase.alpha = 0.3F
+        ViewBinding.settingAutoStartBase.isClickable = false
+        ViewBinding.settingAutoStartBase.setOnClickListener {
+            ViewBinding.settingAutoStart.isChecked = !ViewBinding.settingAutoStart.isChecked
         }
-        binding.settingAutoStart.setOnCheckedChangeListener { _, isChecked ->
+        ViewBinding.settingAutoStart.setOnCheckedChangeListener { _, isChecked ->
             ConfigManager.TASK_AUTO_START = isChecked
         }
     }
@@ -72,7 +74,7 @@ class Setting: BaseActivity<ActivitySettingBinding>() {
     }
 
     private fun taskCountLoad() {
-        binding.settingTaskCountString.text = String.format(
+        ViewBinding.settingTaskCountString.text = String.format(
             getString(R.string.text_setting_task_show),
             ConfigManager.TASK_PARALLEL_COUNT
         )

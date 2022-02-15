@@ -1,7 +1,6 @@
 package io.github.sgpublic.bilidownload.ui.recycler
 
 import android.content.res.Configuration
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,17 +8,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
 import io.github.sgpublic.bilidownload.R
-import io.github.sgpublic.bilidownload.activity.Season
+import io.github.sgpublic.bilidownload.activity.SeasonPlayer
 import io.github.sgpublic.bilidownload.data.FollowData
 import io.github.sgpublic.bilidownload.databinding.ItemBangumiFollowBinding
 import io.github.sgpublic.bilidownload.databinding.RecyclerFooterBinding
+import io.github.sgpublic.bilidownload.ui.addOnReadyListener
 import java.util.*
 
 open class FollowsRecyclerAdapter(private val context: AppCompatActivity)
@@ -29,19 +25,16 @@ open class FollowsRecyclerAdapter(private val context: AppCompatActivity)
     protected val follows: ArrayList<FollowData> = arrayListOf()
     private var hasNext: Boolean = true
 
-    val TYPE_SEASON = 2
-    val TYPE_FOTTER = 3
-
     override fun getItemViewType(position: Int): Int {
         return when(position + 1) {
-            itemCount -> TYPE_FOTTER
+            itemCount -> TYPE_FOOTER
             else -> TYPE_SEASON
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when(viewType) {
-            TYPE_FOTTER -> {
+            TYPE_FOOTER -> {
                 FooterViewHolder(RecyclerFooterBinding.inflate(
                     LayoutInflater.from(context), parent, false
                 ))
@@ -69,9 +62,13 @@ open class FollowsRecyclerAdapter(private val context: AppCompatActivity)
 
     private fun onBindFooterViewHolder(holder: FooterViewHolder) {
         if (!hasNext) {
+            if(pages <= 1) {
+                holder.binding.recyclerEnd.visibility = View.INVISIBLE
+            }
             holder.binding.recyclerEnd.setImageResource(R.drawable.pic_nomore)
             return
         }
+        holder.binding.recyclerEnd.visibility = View.VISIBLE
         if (!isGettingMore) {
             holder.binding.recyclerEnd.setImageResource(R.drawable.pic_search_doing_1)
             return
@@ -106,10 +103,9 @@ open class FollowsRecyclerAdapter(private val context: AppCompatActivity)
             holder.binding.itemFollowBadges.text = data.badge
         }
         holder.binding.root.setOnClickListener {
-            Season.startActivity(context, data.title, data.seasonId, data.cover)
+            SeasonPlayer.startActivity(context, data.seasonId)
         }
         if (holder.hasLoad) {
-            holder.binding.followImagePlaceholder.visibility = View.GONE
             holder.binding.followImage.visibility = View.VISIBLE
             return
         }
@@ -120,34 +116,11 @@ open class FollowsRecyclerAdapter(private val context: AppCompatActivity)
         Glide.with(context)
             .load(data.cover)
             .apply(requestOptions)
-            .addListener(object : RequestListener<Drawable?> {
-                override fun onLoadFailed(
-                    e: GlideException?, model: Any, target: Target<Drawable?>,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    return false
-                }
-
-                override fun onResourceReady(
-                    resource: Drawable?, model: Any, target: Target<Drawable?>,
-                    dataSource: DataSource, isFirstResource: Boolean
-                ): Boolean {
-                    holder.binding.followImagePlaceholder.animate().alpha(0f)
-                        .setDuration(400)
-                        .setListener(null)
-                    Timer().schedule(object : TimerTask() {
-                        override fun run() {
-                            context.runOnUiThread {
-                                holder.binding.followImagePlaceholder.visibility = View.GONE
-                                holder.binding.followImage.visibility = View.VISIBLE
-                                holder.binding.followImage.animate().alpha(1f)
-                                    .setDuration(400).setListener(null)
-                            }
-                        }
-                    }, 400)
-                    return false
-                }
-            }) //.transition(DrawableTransitionOptions.withCrossFade())
+            .addOnReadyListener {
+                holder.binding.followImage.visibility = View.VISIBLE
+                holder.binding.followImage.animate().alpha(1f)
+                    .setDuration(400).setListener(null)
+            }
             .into(holder.binding.followImage)
     }
 
@@ -172,6 +145,7 @@ open class FollowsRecyclerAdapter(private val context: AppCompatActivity)
 
                 if (lastItemPosition == itemCount - 1 &&
                     isSlidingUpward && hasNext) {
+                    isGettingMore = true
                     onScrollToEndCallback(pages + 1)
                 }
             }
@@ -192,7 +166,6 @@ open class FollowsRecyclerAdapter(private val context: AppCompatActivity)
 
     private var onScrollToEndCallback: (Int) -> Unit? = { }
     fun setOnScrollToEndListener(callback: (Int) -> Unit) {
-        isGettingMore = true
         this.onScrollToEndCallback = callback
     }
 
@@ -205,9 +178,7 @@ open class FollowsRecyclerAdapter(private val context: AppCompatActivity)
         isGettingMore = false
         timer?.cancel()
         timer = null
-        context.runOnUiThread {
-            notifyItemRangeChanged(preSize, newData.size + 1)
-        }
+        notifyItemRangeChanged(preSize, newData.size + 1)
     }
 
     open fun removeAllFollows() {
@@ -225,5 +196,8 @@ open class FollowsRecyclerAdapter(private val context: AppCompatActivity)
     class FooterViewHolder(val binding: RecyclerFooterBinding)
         : RecyclerView.ViewHolder(binding.root)
 
-    class FollowItem(val cover: String, val title: String, val sid: Long)
+    companion object {
+        const val TYPE_SEASON = 2
+        const val TYPE_FOOTER = 3
+    }
 }

@@ -144,7 +144,7 @@
                     tools:ignore="ContentDescription" />
             </LinearLayout>
         </ScrollView>
-        <ImageView
+        <io.github.sgpublic.bilidownload.widget.LoadingImageView
             android:id="@+id/search_load_state"
             android:layout_width="match_parent"
             android:layout_height="150dp"

@@ -68,6 +68,7 @@
     <string name="title_search_go">查看详情</string>
     <string name="text_search_from">番剧：%1$s</string>
 
+    <string name="title_season_unknown">未知番剧</string>
     <string name="title_season_info">详情</string>
     <string name="title_season_episode">剧集</string>
     <string name="text_season_placeholder" translatable="false">\n\n\n</string>
@@ -77,6 +78,7 @@
     <string name="title_season_stuff">制作信息</string>
     <string name="title_season_evaluate">简介</string>
     <string name="title_season_series">系列</string>
+    <string name="title_season_recommend">相关推荐</string>
     <string name="title_season_rating_null">暂无评分</string>
     <string name="text_episode_public_time">更新于%1$s</string>
     <string name="text_episode_index">第 %1$s 话</string>
@@ -87,8 +89,11 @@
     <string name="title_season_episode_list">正片</string>
     <string name="text_episode_vip_needed">该剧集需要大会员才能观看哦~</string>
     <string name="text_episode_no_app_installed">您尚未安装任何哔哩哔哩客户端，请安装后下载哦~</string>
+    <string name="title_season_recommend_comic">浏览漫画</string>
+    <string name="text_season_recommend_comic">您正在前往哔哩哔哩漫画客户端，是否继续？</string>
 
     <string name="text_player_episode">选集</string>
+    <string name="text_player_dialog_episode">选集（%1$d）</string>
     <string name="text_player_current">正在播放</string>
 
     <string name="text_download_doing">正在获取链接</string>
@@ -137,6 +142,9 @@
     <string name="text_update_content">新的 release 可用！</string>
     <string name="text_update_content_dev">新的 pre-release 可用！</string>
     <string name="title_update_download">哔哩番剧更新</string>
+    <string name="title_update_goto_download">立即下载</string>
+    <string name="title_update_not_now">暂不更新</string>
+    <string name="title_update_do_not_notice">此版本不再提示</string>
 
     <string name="text_ok">确定</string>
     <string name="text_cancel">取消</string>

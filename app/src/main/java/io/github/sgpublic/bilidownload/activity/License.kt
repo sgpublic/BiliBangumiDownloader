@@ -2,7 +2,6 @@ package io.github.sgpublic.bilidownload.activity
 
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import android.view.MenuItem
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.BaseActivity
@@ -10,12 +9,15 @@ import io.github.sgpublic.bilidownload.databinding.ActivityLicenseBinding
 import io.github.sgpublic.bilidownload.ui.list.LicenseListAdapter
 
 class License: BaseActivity<ActivityLicenseBinding>() {
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
+    override fun onActivityCreated(hasSavedInstanceState: Boolean) {
 
     }
 
+    override fun onCreateViweBinding(): ActivityLicenseBinding =
+        ActivityLicenseBinding.inflate(layoutInflater)
+
     override fun onViewSetup() {
-        setSupportActionBar(binding.licenseToolbar)
+        setSupportActionBar(ViewBinding.licenseToolbar)
         supportActionBar?.run {
             setTitle(R.string.title_about_license)
             setDisplayHomeAsUpEnabled(true)
@@ -94,7 +96,7 @@ class License: BaseActivity<ActivityLicenseBinding>() {
                 "https://github.com/SGPublic/SwipeBackLayoutX"
             )
         )
-        binding.licenseList.adapter = LicenseListAdapter(this@License, arrayList)
+        ViewBinding.licenseList.adapter = LicenseListAdapter(this@License, arrayList)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

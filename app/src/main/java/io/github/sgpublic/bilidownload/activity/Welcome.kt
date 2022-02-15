@@ -1,23 +1,25 @@
 package io.github.sgpublic.bilidownload.activity
 
-import android.app.AlertDialog
 import android.content.Intent
-import android.os.Bundle
+import android.net.Uri
+import com.lxj.xpopup.XPopup
+import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.BaseActivity
-import io.github.sgpublic.bilidownload.base.CrashHandler
 import io.github.sgpublic.bilidownload.data.UserData
 import io.github.sgpublic.bilidownload.databinding.ActivityWelcomeBinding
 import io.github.sgpublic.bilidownload.manager.ConfigManager
 import io.github.sgpublic.bilidownload.module.LoginModule
 import io.github.sgpublic.bilidownload.module.UpdateModule
 import io.github.sgpublic.bilidownload.module.UserInfoModule
+import io.github.sgpublic.bilidownload.ui.asConfirm
 import java.util.*
 
 class Welcome: BaseActivity<ActivityWelcomeBinding>(), UpdateModule.Callback {
-    private lateinit var activityIntent: Intent
+    override fun onCreateViweBinding(): ActivityWelcomeBinding =
+        ActivityWelcomeBinding.inflate(layoutInflater)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
+    override fun onActivityCreated(hasSavedInstanceState: Boolean) {
         if (!ConfigManager.IS_LOGIN) {
             Timer().schedule(object : TimerTask() {
                 override fun run() {
@@ -34,7 +36,7 @@ class Welcome: BaseActivity<ActivityWelcomeBinding>(), UpdateModule.Callback {
         val refreshKey: String = ConfigManager.REFRESH_TOKEN
         val expired = object : TimerTask() {
             override fun run() {
-                onToast(R.string.error_login_refresh)
+                Application.onToast(this@Welcome, R.string.error_login_refresh)
                 ConfigManager.IS_LOGIN = false
                 onSetupFinished()
             }
@@ -64,19 +66,14 @@ class Welcome: BaseActivity<ActivityWelcomeBinding>(), UpdateModule.Callback {
         })
     }
 
-    override fun onViewSetup() {
-
-    }
-
     private fun refreshUserInfo(){
         val userInfoModule = UserInfoModule(this@Welcome,
             ConfigManager.ACCESS_TOKEN, ConfigManager.MID)
         userInfoModule.getInfo(object : UserInfoModule.Callback {
             override fun onFailure(code: Int, message: String?, e: Throwable?) {
-                onToast(R.string.error_login)
+                Application.onToast(this@Welcome, R.string.error_login)
                 ConfigManager.IS_LOGIN = false
                 onSetupFinished()
-                CrashHandler.saveExplosion(e, code)
             }
 
             override fun onResult(data: UserData) {
@@ -95,26 +92,38 @@ class Welcome: BaseActivity<ActivityWelcomeBinding>(), UpdateModule.Callback {
     }
 
     private fun onSetupFinished() {
-        val helper = UpdateModule(this@Welcome)
-        helper.getUpdate(callback = this)
-
-        if (ConfigManager.IS_LOGIN) {
-            Home.startActivity(this@Welcome)
-        } else {
-            Login.startActivity(this@Welcome)
+        if (ConfigManager.needAutoCheckUpdate()) {
+            ConfigManager.onUpdate()
+            val helper = UpdateModule(this@Welcome)
+            helper.getUpdate(callback = this)
         }
+
+        if (!ConfigManager.IS_LOGIN) {
+            Login.startActivity(this@Welcome)
+            return
+        }
+        if (intent.data == null) {
+            Home.startActivity(this@Welcome)
+            return
+        }
+        val sid = intent.data?.path?.substring(1)?.toLongOrNull() ?: return
+        val index = intent.data?.getQueryParameter("index")?.toIntOrNull() ?: 0
+        SeasonPlayer.startActivity(this@Welcome, sid, index)
     }
 
-    override fun onUpdate(detailPage: String, isPreRelease: Boolean, dlUrl: String) {
-        val builder = AlertDialog.Builder(applicationContext)
-        builder.setTitle(R.string.title_update_get)
-        builder.setMessage(if (isPreRelease) R.string.text_update_content_dev else
-            R.string.text_update_content)
-        builder.setPositiveButton(R.string.text_ok) { _, _ ->
-
+    override fun onUpdate(isPreRelease: Boolean, remoteVer: Int, detail: String, url: String) {
+        val dialog = XPopup.Builder(this@Welcome).asConfirm(
+            R.string.title_update_get,
+            "${if (isPreRelease) R.string.text_update_content_dev else
+                R.string.text_update_content}：\n$detail"
+        ) {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(url)
+            startActivity(intent)
         }
-        builder.setNegativeButton(R.string.text_cancel) { _, _ ->  }
-        runOnUiThread { builder.show() }
+        runOnUiThread {
+            dialog.show()
+        }
     }
 
     override fun isActivityAtBottom(): Boolean = true

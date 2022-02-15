@@ -28,15 +28,15 @@ class LoginQrcodeModule(private val context: Context) {
 
     fun getQrcode() {
         onLoad ?: return
-        onLoad!!.onGetStart()
+        onLoad?.onGetStart()
         val call: Call = BaseAPI().getTvQrcodeRequest()
         call.enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Thread.sleep(500)
                 if (e is UnknownHostException) {
-                    onLoad!!.onFailure(-101, context.getString(R.string.error_network), e)
+                    onLoad?.postFailure(-101, context.getString(R.string.error_network), e)
                 } else {
-                    onLoad!!.onFailure(-102, e.message, e)
+                    onLoad?.postFailure(-102, e.message, e)
                 }
             }
 
@@ -47,15 +47,15 @@ class LoginQrcodeModule(private val context: Context) {
                     val json = JSONObject(result)
                     if (json.getInt("code") == 0) {
                         val data = json.getJSONObject("data")
-                        onLoad!!.onResolve(QRCodeUtil.createQRCodeBitmap(
+                        onLoad?.onResolve(QRCodeUtil.createQRCodeBitmap(
                             data.getString("url"), 500, 500
                         ))
                         startConfirmScanResult(data.getString("auth_code"))
                     } else {
-                        onLoad!!.onFailure(-104, json.getString("message"), null)
+                        onLoad?.postFailure(-104, json.getString("message"), null)
                     }
                 } catch (e: JSONException) {
-                    onLoad!!.onFailure(-103, null, e)
+                    onLoad?.postFailure(-103, null, e)
                 }
             }
         })
@@ -73,14 +73,14 @@ class LoginQrcodeModule(private val context: Context) {
                     val result = call.execute().body?.string().toString()
                     try {
                         val json = JSONObject(result)
-                        MyLog.d("确认扫描结果，code: ${json.getInt("code")}，message：${json.getString("message")}")
+                        MyLog.i("确认扫描结果，code: ${json.getInt("code")}，message：${json.getString("message")}")
                         when(json.getInt("code")) {
                             0 -> {
                                 cancel()
                                 timer?.cancel()
                                 timer = null
                                 val data = json.getJSONObject("data")
-                                onConfirm!!.onSuccess(
+                                onConfirm?.onSuccess(
                                     data.getLong("mid"),
                                     data.getString("access_token"),
                                     data.getString("refresh_token"),
@@ -91,22 +91,22 @@ class LoginQrcodeModule(private val context: Context) {
                                 cancel()
                                 timer?.cancel()
                                 timer = null
-                                onConfirm!!.onExpired()
+                                onConfirm?.onExpired()
                             }
                             86039 -> { }
-                            else -> onConfirm!!.onFailure(-114, json.getString("message"), null)
+                            else -> onConfirm?.postFailure(-114, json.getString("message"), null)
                         }
                     } catch (e: JSONException) {
                         cancel()
                         timer?.cancel()
                         timer = null
-                        onConfirm!!.onFailure(-113, null, e)
+                        onConfirm?.postFailure(-113, null, e)
                     }
                 } catch (e: IOException) {
                     if (e is UnknownHostException) {
-                        onConfirm!!.onFailure(-111, context.getString(R.string.error_network), e)
+                        onConfirm?.postFailure(-111, context.getString(R.string.error_network), e)
                     } else {
-                        onConfirm!!.onFailure(-112, e.message, e)
+                        onConfirm?.postFailure(-112, e.message, e)
                     }
                     cancel()
                     timer?.cancel()
@@ -116,14 +116,12 @@ class LoginQrcodeModule(private val context: Context) {
         }, 3000, 2000)
     }
 
-    interface QrcodeLoadCallback {
+    interface QrcodeLoadCallback : BaseAPI.BaseInterface {
         fun onGetStart()
-        fun onFailure(code: Int, message: String?, e: Throwable?)
         fun onResolve(qrcode: Bitmap)
     }
 
-    interface QrcodeConfirmCallback {
-        fun onFailure(code: Int, message: String?, e: Throwable?)
+    interface QrcodeConfirmCallback : BaseAPI.BaseInterface {
         fun onScanned()
         fun onExpired()
         fun onSuccess(mid: Long, accessKey: String, refreshKey: String, expiresIn: Long)

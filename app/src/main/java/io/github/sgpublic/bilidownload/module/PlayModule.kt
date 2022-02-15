@@ -2,10 +2,12 @@ package io.github.sgpublic.bilidownload.module
 
 import android.content.Context
 import io.github.sgpublic.bilidownload.R
-import io.github.sgpublic.bilidownload.data.parcelable.EpisodeData
+import io.github.sgpublic.bilidownload.data.parcelable.DashIndexJson
+import io.github.sgpublic.bilidownload.data.parcelable.EntryJson
 import io.github.sgpublic.bilidownload.manager.ConfigManager
 import io.github.sgpublic.bilidownload.util.MyLog
 import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONException
@@ -13,23 +15,23 @@ import org.json.JSONObject
 import java.io.IOException
 import java.net.UnknownHostException
 
-class PlayModule(private val context: Context, accessKey: String) {
-    private val helper = BaseAPI(accessKey)
-
-    fun getPlayUrl(cid: Long, payment: Int, qn: Int , callback: Callback) {
-        val indicator = ConfigManager.API_SERVERS.iterator()
-        val call = helper.getEpisodeRequest(cid)
+class PlayModule(private val context: Context, private val accessKey: String,
+                 private val entry: EntryJson) {
+    fun getPlayUrl(callback: Callback) {
+        val iterator = ConfigManager.API_SERVERS.iterator()
+        val helper = BaseAPI(accessKey)
+        val call = helper.getEpisodeRequest(entry.source.cid)
         call.enqueue(object : okhttp3.Callback {
             override fun onFailure(call: Call, e: IOException) {
-                if (indicator.hasNext()) {
-                    helper.getEpisodeRequest(cid, proxy = indicator.next())
+                if (iterator.hasNext()) {
+                    helper.getEpisodeRequest(entry.source.cid, proxy = iterator.next())
                         .enqueue(this)
                     return
                 }
                 if (e is UnknownHostException) {
-                    callback.onFailure(-501, context.getString(R.string.error_network), e)
+                    callback.postFailure(-501, context.getString(R.string.error_network), e)
                 } else {
-                    callback.onFailure(-502, e.message, e)
+                    callback.postFailure(-502, e.message, e)
                 }
             }
 
@@ -39,92 +41,103 @@ class PlayModule(private val context: Context, accessKey: String) {
                 try {
                     val json = JSONObject(result)
                     if (json.getInt("code") == 0) {
-                        callback.onResolveAvailableQuality(getEpisodeQuality(json))
-                        val urls = getPlayUrl(json, qn)
-                        if (urls == null) {
-                            callback.onFailure(-505, null, null)
+                        callback.onResolveAvailableQuality(parseEpisodeQuality(json))
+                        val index = parsePlayUrl(json)
+                        if (index != null) {
+                            getSubtitles(index, callback)
                         } else {
-                            callback.onResolvePlayUrl(urls.first, urls.second)
+                            callback.postFailure(-505, null, null)
                         }
                         return
                     }
                     if (json.getInt("code") == -10403
-                        && payment == EpisodeData.PAYMENT_NORMAL
-                        && indicator.hasNext()) {
-                        helper.getEpisodeRequest(cid, proxy = indicator.next())
+                        && iterator.hasNext()) {
+                        helper.getEpisodeRequest(entry.source.cid, proxy = iterator.next())
                             .enqueue(this)
                         return
                     }
-                    callback.onFailure(-504, json.getString("message"), null)
+                    callback.postFailure(-504, json.getString("message"), null)
                 } catch (e: JSONException) {
                     MyLog.d(e.message.toString(), e)
-                    if (indicator.hasNext()) {
-                        helper.getEpisodeRequest(cid, proxy = indicator.next())
+                    if (iterator.hasNext()) {
+                        helper.getEpisodeRequest(entry.source.cid, proxy = iterator.next())
                             .enqueue(this)
                         return
                     }
-                    callback.onFailure(-503, null, e)
+                    callback.postFailure(-503, null, e)
                 }
             }
         })
     }
 
-    private fun getPlayUrl(json: JSONObject, qn: Int): Pair<PlayUrl, Int>? {
+    private fun parsePlayUrl(json: JSONObject): DashIndexJson? {
         if (json.isNull("dash")) {
             return null
         }
+        val index = DashIndexJson()
         val dash = json.getJSONObject("dash")
-        var video: String? = null
-        val videoBackup: ArrayList<String> = arrayListOf()
-        var vId = 0
         val videoObj = dash.getJSONArray("video")
+        var video: JSONObject? = null
         for (i in 0 until videoObj.length()) {
-            val index = videoObj.getJSONObject(i)
-            val id = index.getInt("id")
-            if (id > qn || vId >= id) {
+            val data = videoObj.getJSONObject(i)
+            val id = data.getInt("id")
+            if (id > entry.video_quality || (video != null && video.getInt("id") >= id)) {
                 continue
             }
-            vId = id
-            video = index.getString("base_url")
-            videoBackup.clear()
-            val backup = index.getJSONArray("backup_url")
-            for (j in 0 until backup.length()) {
-                videoBackup.add(backup.getString(j))
-            }
+            video = data
         }
         if (video == null) {
             return null
         }
-        var audio: String? = null
-        var aId = 0
-        val audioBackup: ArrayList<String> = arrayListOf()
+        index.video.apply {
+            base_url = video.getString("base_url")
+            backup_url.clear()
+            val backup = video.getJSONArray("backup_url")
+            for (j in 0 until backup.length()) {
+                backup_url.add(backup.getString(j))
+            }
+            bandwidth = video.getLong("bandwidth")
+            codecid = video.getInt("codecid")
+            size = video.getLong("size")
+            md5 = video.getString("md5")
+            frame_rate = video.getString("frame_rate")
+            width = video.getInt("width")
+            height = video.getInt("height")
+        }
+
         val audioObj = dash.getJSONArray("audio")
+        var audio: JSONObject? = null
         for (i in 0 until audioObj.length()) {
-            val index = audioObj.getJSONObject(i)
-            val id = index.getInt("id") % 100
-            if (id > qn || aId >= id) {
+            val data = audioObj.getJSONObject(i)
+            val id = data.getInt("id") % 100
+            if (id > entry.video_quality || (audio != null && audio.getInt("id") % 100 >= id)) {
                 continue
             }
-            aId = id
-            audio = index.getString("base_url")
-            audioBackup.clear()
-            val backup = index.getJSONArray("backup_url")
-            for (j in 0 until backup.length()) {
-                audioBackup.add(backup.getString(j))
-            }
+            audio = data
         }
         if (audio == null) {
             return null
         }
-        return Pair(PlayUrl(video, videoBackup, audio, audioBackup), vId)
+        index.audio.apply {
+            id = audio.getInt("id")
+            base_url = audio.getString("base_url")
+            backup_url.clear()
+            val backup = audio.getJSONArray("backup_url")
+            for (j in 0 until backup.length()) {
+                backup_url.add(backup.getString(j))
+            }
+            bandwidth = audio.getLong("bandwidth")
+            codecid = audio.getInt("codecid")
+            size = audio.getLong("size")
+            md5 = audio.getString("md5")
+            frame_rate = audio.getString("frame_rate")
+            width = audio.getInt("width")
+            height = audio.getInt("height")
+        }
+        return index
     }
 
-    fun getAvailableQuality(list: List<EpisodeData>, callback: Callback){
-        getPlayUrl(list[0].cid, list[0].payment, ConfigManager.DEFAULT_QUALITY, callback)
-    }
-
-    @Throws(JSONException::class)
-    private fun getEpisodeQuality(json: JSONObject): Map<Int, String> {
+    private fun parseEpisodeQuality(json: JSONObject): Map<Int, String> {
         val map = mutableMapOf<Int, String>()
         if (json.isNull("support_formats")) {
             val acceptDescription: JSONArray = json.getJSONArray("accept_description")
@@ -144,16 +157,53 @@ class PlayModule(private val context: Context, accessKey: String) {
         return map
     }
 
-    interface Callback {
-        fun onFailure(code: Int, message: String?, e: Throwable?)
-        fun onResolveAvailableQuality(qualities: Map<Int, String>) { }
-        fun onResolvePlayUrl(url: PlayUrl, qn: Int) { }
+    private fun getSubtitles(index: DashIndexJson, callback: Callback) {
+        val call = BaseAPI().getSubtitlesRequest(entry.source.cid, entry.ep.bvid)
+        call.enqueue(object : okhttp3.Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                MyLog.d("fail to get subtitles", e)
+                callback.onResolvePlayData(entry, index)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val result = response.body?.string().toString()
+                try {
+                    val json = JSONObject(result)
+                    if (json.getInt("code") != 0) {
+                        MyLog.d("fail to get subtitles: ${json.getString("message")}")
+                    } else {
+                        index.subtitles.addAll(getSubtitles(json.getJSONObject("data")))
+                    }
+                } catch (e: JSONException) {
+                    MyLog.d("fail to parse subtitles", e)
+                }
+                callback.onResolvePlayData(entry, index)
+            }
+        })
     }
 
-    data class PlayUrl(
-        val video: String,
-        val videoBackup: List<String>,
-        val audio: String,
-        val audioBackup: List<String>
-    )
+    private fun getSubtitles(json: JSONObject): ArrayList<DashIndexJson.SubtitleData> {
+        val data = arrayListOf<DashIndexJson.SubtitleData>()
+        if (!json.isNull("subtitle")) {
+            val subtitles = json.getJSONObject("subtitle")
+                .getJSONArray("subtitles")
+            for (i in 0 until subtitles.length()) {
+                val index = subtitles.getJSONObject(i)
+                val subtitle = DashIndexJson.SubtitleData()
+                subtitle.id_str = index.getString("id_str")
+                subtitle.lan = index.getString("lan")
+                subtitle.lan_doc = index.getString("lan_doc")
+                subtitle.subtitle_url = index.getString("subtitle_url").let {
+                    return@let if (it.startsWith("//")) "http:${it}" else it
+                }
+                data.add(subtitle)
+            }
+        }
+        return data
+    }
+
+    interface Callback : BaseAPI.BaseInterface {
+        fun onResolveAvailableQuality(qualities: Map<Int, String>) { }
+        fun onResolvePlayData(entry: EntryJson, index: DashIndexJson) { }
+    }
 }

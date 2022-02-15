@@ -13,19 +13,14 @@ import java.net.UnknownHostException
 
 class FollowsModule(private val context: Context, access_key: String) {
     private val helper: BaseAPI = BaseAPI(access_key)
-
-    fun getFollows(mid: Long, page_index: Int, callback: Callback) {
-        getFollows(mid, page_index, 2, callback)
-    }
-
     fun getFollows(mid: Long, page_index: Int, status: Int, callback: Callback) {
         val call = helper.getFollowsRequest(mid, page_index, status)
         call.enqueue(object : okhttp3.Callback {
             override fun onFailure(call: Call, e: IOException) {
                 if (e is UnknownHostException) {
-                    callback.onFailure(-301, context.getString(R.string.error_network), e)
+                    callback.postFailure(-301, context.getString(R.string.error_network), e)
                 } else {
-                    callback.onFailure(-302, e.message, e)
+                    callback.postFailure(-302, e.message, e)
                 }
             }
 
@@ -68,17 +63,16 @@ class FollowsModule(private val context: Context, access_key: String) {
                         }
                         callback.onResult(followDataArray, hasNext == 1)
                     } else {
-                        callback.onFailure(-304, json.getString("message"), null)
+                        callback.postFailure(-304, json.getString("message"), null)
                     }
                 } catch (e: JSONException) {
-                    callback.onFailure(-303, null, e)
+                    callback.postFailure(-303, null, e)
                 }
             }
         })
     }
 
-    interface Callback {
-        fun onFailure(code: Int, message: String?, e: Throwable?)
+    interface Callback : BaseAPI.BaseInterface {
         fun onResult(followData: ArrayList<FollowData>, hasNext: Boolean)
     }
 

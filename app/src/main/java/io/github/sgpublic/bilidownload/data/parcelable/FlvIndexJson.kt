@@ -30,7 +30,6 @@ data class FlvIndexJson(
     var need_login: Boolean = false,
     var intact: Boolean = false
 ) : Parcelable, Serializable {
-
     @Parcelize
     data class Segment(
         var url: String = "",
@@ -40,14 +39,12 @@ data class FlvIndexJson(
         var md5: String = "",
         var order: Int = 0,
         var backup_urls: ArrayList<String> = arrayListOf()
-    ) : Parcelable, Serializable {
-    }
+    ) : Parcelable, Serializable
 
     @Parcelize
     data class StreamLimit(
         var title: String = "",
         var uri: String = "",
         var msg: String = ""
-    ) : Parcelable, Serializable {
-    }
+    ) : Parcelable, Serializable
 }

@@ -1,0 +1,56 @@
+package io.github.sgpublic.bilidownload.dialog
+
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.lxj.xpopup.core.DrawerPopupView
+import io.github.sgpublic.bilidownload.Application
+import io.github.sgpublic.bilidownload.databinding.DialogPlayerPanelBinding
+import io.github.sgpublic.bilidownload.ui.list.EpisodeListAdapter
+import io.github.sgpublic.bilidownload.ui.list.QualityListAdapter
+
+class PlayerPanel(context: Context) : DrawerPopupView(context) {
+    private var panelWidth: Int = 0
+    override fun getPopupWidth(): Int {
+        return panelWidth
+    }
+    private var binding: DialogPlayerPanelBinding? = null
+    init {
+        binding = DialogPlayerPanelBinding.inflate(
+            LayoutInflater.from(context), drawerContentContainer, false
+        )
+    }
+
+
+    fun setQualityAdapter(adapter: QualityListAdapter) {
+        binding?.let {
+            (it.dialogPanelList.layoutParams as ConstraintLayout.LayoutParams).bottomToBottom =
+                ConstraintLayout.LayoutParams.PARENT_ID
+            panelWidth = Application.dip2px(180f)
+            it.dialogPanelList.layoutParams.width = panelWidth
+            it.dialogEpisodeListTitle.visibility = View.GONE
+            it.dialogPanelList.adapter = adapter
+        }
+    }
+
+    fun setEpisodeAdapter(adapter: EpisodeListAdapter) {
+        binding?.let {
+            (it.dialogPanelList.layoutParams as ConstraintLayout.LayoutParams).bottomToBottom =
+                ConstraintLayout.LayoutParams.UNSET
+            panelWidth = Application.dip2px(320f)
+            it.dialogPanelList.layoutParams.width = panelWidth
+            it.dialogEpisodeListTitle.visibility = View.VISIBLE
+            it.dialogPanelList.adapter = adapter
+        }
+    }
+
+    override fun addInnerContent() {
+        drawerContentContainer.addView(binding?.root)
+    }
+
+    override fun onDestroy() {
+        binding = null
+        super.onDestroy()
+    }
+}

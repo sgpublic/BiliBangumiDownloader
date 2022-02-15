@@ -5,9 +5,8 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager
 import io.github.sgpublic.bilidownload.Application
-import io.github.sgpublic.bilidownload.activity.Season
+import io.github.sgpublic.bilidownload.activity.SeasonPlayer
 import io.github.sgpublic.bilidownload.databinding.RecyclerHomeBannerBinding
 import io.github.sgpublic.bilidownload.ui.SeasonBannerAdapter
 
@@ -42,36 +41,25 @@ class HomeRecyclerAdapter(private val context: AppCompatActivity) : FollowsRecyc
         super.onBindViewHolder(holder, position - 1)
     }
 
-    private var bannerCurrent = 0
     private fun onBindBannerViewHolder(holder: BannerViewHolder) {
         if (bannerData.isEmpty() || holder.hasLoad) {
             return
         }
-        holder.binding.bangumiBanner.run {
-            val lp = layoutParams as GridLayoutManager.LayoutParams
-            lp.topMargin = Application.dip2px(110f)
-            setHolderCreator { SeasonBannerAdapter() }
-            create(bannerData)
-            if (canLoop) {
-                startLoop()
-            } else {
-                stopLoop()
+        (holder.binding.bangumiBanner.layoutParams as GridLayoutManager.LayoutParams)
+            .topMargin = Application.dip2px(110f)
+        val viewHolder = holder.binding.bangumiBanner
+            .setHolderCreator {
+                SeasonBannerAdapter(this@HomeRecyclerAdapter.context)
             }
-            setCurrentItem(bannerCurrent, false)
-            setOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-                override fun onPageSelected(position: Int) {
-                    bannerCurrent = position
-                }
-
-                override fun onPageScrollStateChanged(state: Int) { }
-                override fun onPageScrolled(
-                    position: Int, positionOffset: Float, positionOffsetPixels: Int
-                ) { }
-            })
-            setOnPageClickListener {
+            .setOnPageClickListener {
                 val data = bannerData[it]
-                Season.startActivity(context, data.title, data.seasonId, data.seasonCover)
+                SeasonPlayer.startActivity(context, data.seasonId)
             }
+        viewHolder.create(bannerData)
+        if (canLoop) {
+            viewHolder.startLoop()
+        } else {
+            viewHolder.stopLoop()
         }
     }
 
@@ -79,9 +67,7 @@ class HomeRecyclerAdapter(private val context: AppCompatActivity) : FollowsRecyc
         val size = follows.size
         follows.clear()
         pages = 0
-        context.runOnUiThread {
-            notifyItemRangeRemoved(1, size)
-        }
+        notifyItemRangeRemoved(1, size)
     }
 
     override fun getItemCount(): Int = follows.size + 2
@@ -97,17 +83,13 @@ class HomeRecyclerAdapter(private val context: AppCompatActivity) : FollowsRecyc
     fun setBannerData(list: ArrayList<SeasonBannerAdapter.BannerItem>) {
         bannerData.clear()
         bannerData.addAll(list)
-        context.runOnUiThread {
-            notifyItemChanged(0)
-        }
+        notifyItemChanged(0)
     }
 
     private var canLoop = true
     fun setBannerLoop(canLoop: Boolean) {
         this.canLoop = canLoop
-        context.runOnUiThread {
-            notifyItemChanged(0)
-        }
+        notifyItemChanged(0)
     }
 
     class BannerViewHolder(val binding: RecyclerHomeBannerBinding, var hasLoad: Boolean = false)

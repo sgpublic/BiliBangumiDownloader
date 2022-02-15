@@ -12,6 +12,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-parcelize")
+    id("kotlin-kapt")
 }
 
 val GIT_HEAD: String get() = Runtime.getRuntime()
@@ -35,6 +36,13 @@ val DATED_VERSION: Int get() = Integer.parseInt(
     SimpleDateFormat("yyMMdd").format(Date())
 )
 
+val COMMIT_VERSION: Int get() {
+    return Runtime.getRuntime()
+        .exec("git log -n 1 --pretty=format:%cd --date=format:%y%m%d")
+        .inputStream.reader().readLines()[0]
+        .toInt()
+}
+
 val TIME_MD5: String get() {
     val md5 = MessageDigest.getInstance("MD5")
     val digest = md5.digest(System.currentTimeMillis().toByteArray())
@@ -56,8 +64,8 @@ val VERSION_PROPERTIES get() =
     }
 
 android {
-    compileSdk = 32
-    buildToolsVersion = "32.0.0"
+    compileSdk = 31
+    buildToolsVersion = "31.0.0"
 
     val signInfoExit: Boolean = file("./gradle.properties").exists()
 
@@ -84,8 +92,8 @@ android {
     defaultConfig {
         applicationId = "io.github.sgpublic.bilidownload"
         minSdk = 26
-        targetSdk = 32
-        versionCode = DATED_VERSION
+        targetSdk = 31
+        versionCode = COMMIT_VERSION
         versionName = "3.4.0"
 
         renderscriptTargetApi = 26
@@ -96,12 +104,19 @@ android {
             signingConfig = signingConfigs.getByName("sign")
         }
 
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$rootDir/schemas")
+            }
+        }
+
         GITHUB_REPO.let {
             buildConfigField("String", "GITHUB_REPO", "\"$it\"")
             val repo = it.split("/")
             buildConfigField("String", "GITHUB_AUTHOR", "\"${repo[0]}\"")
             buildConfigField("String", "GITHUB_REPO_NAME", "\"${repo[1]}\"")
         }
+        buildConfigField("String", "PROJECT_NAME", "\"${rootProject.name}\"")
         buildConfigField("String", "TYPE_RELEASE", "\"$TYPE_RELEASE\"")
         buildConfigField("String", "TYPE_DEV", "\"$TYPE_DEV\"")
         buildConfigField("String", "TYPE_SNAPSHOT", "\"$TYPE_SNAPSHOT\"")
@@ -122,22 +137,26 @@ android {
             }(${defaultConfig.versionCode})"
         }
         named("debug") {
+            defaultConfig.versionCode = DATED_VERSION
+            isDebuggable = true
             versionNameSuffix = "-$TIME_MD5-$name"
         }
         register(TYPE_DEV) {
             versionNameSuffix = "-$GIT_HEAD-$name"
             isDebuggable = true
+            isTestCoverageEnabled = true
             versionProps[TYPE_DEV] = "BiliBangumiDownloader_${
                 defaultConfig.versionName
             }_$GIT_HEAD"
         }
         register(TYPE_SNAPSHOT) {
+            defaultConfig.versionCode = DATED_VERSION
+            isDebuggable = true
             val suffix = TIME_MD5
             versionNameSuffix = "-$suffix-$name"
             versionProps[TYPE_SNAPSHOT] = "BiliBangumiDownloader_${
                 defaultConfig.versionName
             }_$suffix"
-            isDebuggable = true
         }
 
         versionProps.store(VERSION_PROPERTIES.writer(), null)
@@ -152,35 +171,50 @@ android {
 }
 
 dependencies {
+    testImplementation("junit:junit:4.13.2")
+    implementation("androidx.test.ext:junit-ktx:1.1.3")
+    androidTestImplementation("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+    androidTestImplementation("androidx.test:runner:1.4.0")
+    androidTestImplementation("androidx.test:rules:1.4.0")
+
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.appcompat:appcompat:1.4.1")
     implementation("com.google.android.material:material:1.5.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.3")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.4.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.4.1")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
     implementation("com.github.zhpanvip.BannerViewPager:bannerview:2.6.6")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.4")
+    implementation("com.yanzhenjie:sofia:1.0.5")
+    implementation("com.github.SGPublic:Blur-Fix-AndroidX:1.1.2")
+    implementation("com.github.SGPublic:MultiWaveHeaderX:1.0.0")
+    implementation("com.github.li-xiaojun:XPopup:2.7.5")
+    implementation("com.google.zxing:core:3.4.1") // 二维码
+    implementation("com.google.code.gson:gson:2.8.9")
+
     val glideVer = "4.12.0"
     implementation("com.github.bumptech.glide:glide:$glideVer")
     annotationProcessor("com.github.bumptech.glide:compiler:$glideVer")
     implementation("jp.wasabeef:glide-transformations:4.3.0")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.4")
-    implementation("com.yanzhenjie:sofia:1.0.5")
-    implementation("com.github.SGPublic:Blur-Fix-AndroidX:1.1.2")
-    implementation("com.github.SGPublic:SwipeBackLayoutX:1.2.1")
-    implementation("com.github.SGPublic:MultiWaveHeaderX:1.0.0")
-    implementation("com.github.li-xiaojun:XPopup:2.7.5")
-    implementation("com.github.ssseasonnn:RxDownload:1.0.9")
-    implementation("com.google.zxing:core:3.4.1")
-    implementation("com.kongzue.dialog_v3x:dialog:3.2.4")
-    implementation("com.google.code.gson:gson:2.8.9")
+    implementation("jp.co.cyberagent.android:gpuimage:2.1.0")
+
     val exoVer = "2.16.1"
     implementation("com.google.android.exoplayer:exoplayer-core:$exoVer")
     implementation("com.google.android.exoplayer:exoplayer-dash:$exoVer")
     implementation("com.google.android.exoplayer:exoplayer-ui:$exoVer")
+
+    val rxDlVer = "1.1.4"
+    implementation("com.github.ssseasonnn.RxDownload:rxdownload4:$rxDlVer")
+    implementation("com.github.ssseasonnn.RxDownload:rxdownload4-manager:$rxDlVer")
+
+    val roomVer = "2.4.1"
+    implementation("androidx.room:room-runtime:$roomVer")
+    implementation("androidx.room:room-ktx:$roomVer")
+    annotationProcessor("androidx.room:room-compiler:$roomVer")
+    kapt("androidx.room:room-compiler:$roomVer")
+    testImplementation("androidx.room:room-testing:$roomVer")
 }
 
 android.applicationVariants.all {
