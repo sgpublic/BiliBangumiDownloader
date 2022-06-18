@@ -30,11 +30,16 @@
     <color name="color_mine_parting">#CCCCCC</color>
     <color name="color_mine_category">#999999</color>
 
+    <color name="color_err">#FF2828</color>
+
     <color name="color_season_cover">#FFFFFF</color>
     <color name="color_season_title_collapsed">#000000</color>
     <color name="color_season_title_expanded">#EE222222</color>
     <color name="color_season_tab_indicator">#666666</color>
     <color name="color_season_score">#FF8D00</color>
+
+    <color name="color_episode_selected_ic">#AA0099ff</color>
+    <color name="color_episode_selected_background">#400099ff</color>
 
     <color name="color_random_1">#4CAF50</color>
     <color name="color_random_2">#FF5722</color>

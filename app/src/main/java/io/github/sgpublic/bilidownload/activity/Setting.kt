@@ -9,14 +9,14 @@ import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.BaseActivity
 import io.github.sgpublic.bilidownload.databinding.ActivitySettingBinding
 import io.github.sgpublic.bilidownload.databinding.DialogSettingTaskCountBinding
-import io.github.sgpublic.bilidownload.manager.ConfigManager
+import io.github.sgpublic.bilidownload.core.manager.ConfigManager
 
 class Setting: BaseActivity<ActivitySettingBinding>() {
     override fun onActivityCreated(hasSavedInstanceState: Boolean) {
 
     }
 
-    override fun onCreateViweBinding(): ActivitySettingBinding =
+    override fun onCreateViewBinding(): ActivitySettingBinding =
         ActivitySettingBinding.inflate(layoutInflater)
 
     override fun onViewSetup() {

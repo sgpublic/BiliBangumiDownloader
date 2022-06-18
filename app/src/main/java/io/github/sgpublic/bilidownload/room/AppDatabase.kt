@@ -10,7 +10,7 @@ import io.github.sgpublic.bilidownload.room.dao.WatchHistoryDao
 import io.github.sgpublic.bilidownload.room.entity.TaskEntity
 import io.github.sgpublic.bilidownload.room.entity.WatchHistoryEntity
 
-@Database(entities = [TaskEntity::class, WatchHistoryEntity::class], version = 1)
+@Database(entities = [TaskEntity::class, WatchHistoryEntity::class], version = 3)
 @TypeConverters(DashIndexJsonConverter::class, EntryJsonConverter::class)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun TasksDao(): TasksDao

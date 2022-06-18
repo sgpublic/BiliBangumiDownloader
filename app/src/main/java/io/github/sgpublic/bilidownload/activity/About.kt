@@ -10,16 +10,16 @@ import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.BuildConfig
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.BaseActivity
+import io.github.sgpublic.bilidownload.core.module.UpdateModule
+import io.github.sgpublic.bilidownload.core.util.IntentUtil
 import io.github.sgpublic.bilidownload.databinding.ActivityAboutBinding
-import io.github.sgpublic.bilidownload.module.UpdateModule
-import io.github.sgpublic.bilidownload.util.IntentUtil
 
 class About: BaseActivity<ActivityAboutBinding>() {
     override fun onActivityCreated(hasSavedInstanceState: Boolean) {
 
     }
 
-    override fun onCreateViweBinding(): ActivityAboutBinding =
+    override fun onCreateViewBinding(): ActivityAboutBinding =
         ActivityAboutBinding.inflate(layoutInflater)
 
     override fun onViewSetup() {
@@ -49,7 +49,7 @@ class About: BaseActivity<ActivityAboutBinding>() {
 
     private fun onUpdate() {
         ViewBinding.aboutProgress.visibility = View.VISIBLE
-        val helper = UpdateModule(this@About)
+        val helper = UpdateModule()
         helper.getUpdate(object : UpdateModule.Callback {
             override fun onFailure(code: Int, message: String?, e: Throwable?) {
                 Application.onToast(this@About, R.string.error_update, code)

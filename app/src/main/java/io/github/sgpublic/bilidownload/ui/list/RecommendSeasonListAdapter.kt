@@ -1,23 +1,21 @@
 package io.github.sgpublic.bilidownload.ui.list
 
-import android.content.res.Configuration
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 import io.github.sgpublic.bilidownload.R
-import io.github.sgpublic.bilidownload.data.SeasonData
+import io.github.sgpublic.bilidownload.core.data.SeasonData
 import io.github.sgpublic.bilidownload.databinding.ItemSearchSeasonBinding
+import io.github.sgpublic.bilidownload.ui.customLoad
+import io.github.sgpublic.bilidownload.ui.withCrossFade
+import io.github.sgpublic.bilidownload.ui.withVerticalPlaceholder
 import kotlin.math.roundToInt
 
 class RecommendSeasonListAdapter(private val context: AppCompatActivity, list: List<SeasonData>)
     : ArrayAdapter<SeasonData>(context, R.layout.item_search_season, list) {
-    private val nightMode: Boolean = context.resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
     private var onClick: (Long) -> Unit = { }
     fun setOnItemClickListener(onClick: (Long) -> Unit) {
@@ -51,13 +49,10 @@ class RecommendSeasonListAdapter(private val context: AppCompatActivity, list: L
         binding.root.setOnClickListener {
             onClick(data.info.seasonId)
         }
-        val requestOptions = RequestOptions()
-            .placeholder(R.drawable.pic_doing_v)
-            .error(R.drawable.pic_load_failed)
-            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
         Glide.with(context)
-            .load(data.info.cover)
-            .apply(requestOptions)
+            .customLoad(data.info.cover)
+            .withVerticalPlaceholder()
+            .withCrossFade()
             .into(binding.itemSearchSeasonCover)
         return binding.root
     }

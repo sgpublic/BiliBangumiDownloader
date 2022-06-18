@@ -7,16 +7,16 @@ import androidx.annotation.StringRes
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.BaseActivity
-import io.github.sgpublic.bilidownload.data.UserData
+import io.github.sgpublic.bilidownload.core.data.UserData
+import io.github.sgpublic.bilidownload.core.manager.ConfigManager
+import io.github.sgpublic.bilidownload.core.module.LoginQrcodeModule
+import io.github.sgpublic.bilidownload.core.module.UserInfoModule
 import io.github.sgpublic.bilidownload.databinding.ActivityLoginBinding
-import io.github.sgpublic.bilidownload.manager.ConfigManager
-import io.github.sgpublic.bilidownload.module.LoginQrcodeModule
-import io.github.sgpublic.bilidownload.module.UserInfoModule
 
 class Login: BaseActivity<ActivityLoginBinding>() {
     private val module = LoginQrcodeModule(this@Login)
 
-    override fun onCreateViweBinding(): ActivityLoginBinding =
+    override fun onCreateViewBinding(): ActivityLoginBinding =
         ActivityLoginBinding.inflate(layoutInflater)
 
     override fun onActivityCreated(hasSavedInstanceState: Boolean) {
@@ -90,10 +90,12 @@ class Login: BaseActivity<ActivityLoginBinding>() {
 
     private val waitingForResume = Object()
     private fun getUserInfo() {
-        synchronized(waitingForResume) {
-            waitingForResume.wait()
+        if (!isRunning) {
+            synchronized(waitingForResume) {
+                waitingForResume.wait()
+            }
         }
-        val module = UserInfoModule(this@Login, ConfigManager.ACCESS_TOKEN, ConfigManager.MID)
+        val module = UserInfoModule(ConfigManager.ACCESS_TOKEN, ConfigManager.MID)
         module.getInfo(object : UserInfoModule.Callback {
             override fun onFailure(code: Int, message: String?, e: Throwable?) {
                 runOnUiThread {
@@ -120,7 +122,14 @@ class Login: BaseActivity<ActivityLoginBinding>() {
         })
     }
 
+    private var isRunning = false
+    override fun onPause() {
+        isRunning = false
+        super.onPause()
+    }
+
     override fun onResume() {
+        isRunning = true
         super.onResume()
         synchronized(waitingForResume) {
             waitingForResume.notify()
@@ -146,7 +155,10 @@ class Login: BaseActivity<ActivityLoginBinding>() {
 
     companion object {
         fun startActivity(context: Context){
-            val intent = Intent(context, Login::class.java)
+            val intent = Intent().run {
+                setClass(context, Login::class.java)
+                setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
             context.startActivity(intent)
         }
     }

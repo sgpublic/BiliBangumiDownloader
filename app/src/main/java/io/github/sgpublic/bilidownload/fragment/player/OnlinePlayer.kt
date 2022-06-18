@@ -13,13 +13,13 @@ import com.lxj.xpopup.enums.PopupPosition
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.BaseViewModelActivity
-import io.github.sgpublic.bilidownload.data.parcelable.EpisodeData
+import io.github.sgpublic.bilidownload.core.data.parcelable.EpisodeData
+import io.github.sgpublic.bilidownload.core.manager.ConfigManager
+import io.github.sgpublic.bilidownload.core.util.LogCat
+import io.github.sgpublic.bilidownload.core.util.newObserve
 import io.github.sgpublic.bilidownload.databinding.ActivityPlayerBinding
 import io.github.sgpublic.bilidownload.dialog.PlayerPanel
-import io.github.sgpublic.bilidownload.manager.ConfigManager
 import io.github.sgpublic.bilidownload.ui.list.QualityListAdapter
-import io.github.sgpublic.bilidownload.util.MyLog
-import io.github.sgpublic.bilidownload.util.newObserve
 import io.github.sgpublic.bilidownload.viewmodel.OnlinePlayerViewModel
 
 
@@ -63,8 +63,8 @@ class OnlinePlayer(contest: BaseViewModelActivity<ActivityPlayerBinding, *>)
 //                        .setMimeType(MimeTypes.TEXT_VTT).build()
 //                ))
             }
-            val media = MergingMediaSource(true, *mediaSource.toArray(arrayOf()))
-            MyLog.d("onResolvePlayData: " +
+            val media = MergingMediaSource(true, *mediaSource.toTypedArray())
+            LogCat.d("onResolvePlayData: " +
                     "\n  - video: ${index.video.base_url}" +
                     "\n  - audio: ${index.audio.base_url}" +
                     if (index.subtitles.isEmpty()) "" else
@@ -116,10 +116,12 @@ class OnlinePlayer(contest: BaseViewModelActivity<ActivityPlayerBinding, *>)
             .asCustom(popup)
         popup.setQualityAdapter(adapter)
         adapter.setSelection(ViewModel.getCurrentQuality())
-        adapter.setQualityList(ViewModel.getQualityList())
+        adapter.setQualityMap(ViewModel.getQualityMap())
         panel.show()
         adapter.setOnItemClickListener { pos, title ->
-            panel.dismiss()
+            panel.dismissWith {
+                panel.destroy()
+            }
             if (ConfigManager.QUALITY != pos) {
                 ConfigManager.QUALITY = pos
                 ViewBinding.playerControllerQuality?.text = title

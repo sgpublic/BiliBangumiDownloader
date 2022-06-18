@@ -10,9 +10,11 @@ import androidx.viewbinding.ViewBinding
 import com.yanzhenjie.sofia.Sofia
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
+import io.github.sgpublic.bilidownload.core.util.Animate
+import io.github.sgpublic.bilidownload.core.util.finishAll
+import io.github.sgpublic.bilidownload.core.util.register
+import io.github.sgpublic.bilidownload.core.util.unregister
 import io.github.sgpublic.bilidownload.ui.ViewState
-import io.github.sgpublic.bilidownload.util.ActivityCollector
-import io.github.sgpublic.bilidownload.util.Animate
 import java.util.*
 
 abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity(), Animate {
@@ -26,7 +28,7 @@ abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity(), Animate {
         beforeCreate()
         super.onCreate(savedInstanceState)
 
-        ActivityCollector.addActivity(this)
+        register()
 
         setupContentView()
         if (savedInstanceState != null) {
@@ -41,18 +43,18 @@ abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity(), Animate {
     protected abstract fun onActivityCreated(hasSavedInstanceState: Boolean)
 
     private fun setupContentView() {
-        _binding = onCreateViweBinding()
+        _binding = onCreateViewBinding()
         setContentView(ViewBinding.root)
 
         Sofia.with(this)
-                .statusBarBackgroundAlpha(0)
-                .navigationBarBackgroundAlpha(0)
-                .invasionNavigationBar()
-                .invasionStatusBar()
-                .statusBarDarkFont()
+            .statusBarBackgroundAlpha(0)
+            .navigationBarBackgroundAlpha(0)
+            .invasionNavigationBar()
+            .invasionStatusBar()
+            .statusBarDarkFont()
     }
 
-    protected abstract fun onCreateViweBinding(): VB
+    protected abstract fun onCreateViewBinding(): VB
 
     protected open fun initViewAtTop(view: View){
         var statusbarheight = 0
@@ -66,20 +68,20 @@ abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity(), Animate {
 
     protected open fun initViewAtBottom(view: View) {
         rootViewBottom = view.layoutParams.height
-        ViewCompat.setOnApplyWindowInsetsListener(this.window.decorView) { v: View?, insets: WindowInsetsCompat? ->
-            if (insets != null) {
-                val b = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
-                val params = view.layoutParams
-                params.height = rootViewBottom + b
-                view.layoutParams = params
-                ViewCompat.onApplyWindowInsets(v!!, insets)
-            }
-            insets
+        ViewCompat.setOnApplyWindowInsetsListener(this.window.decorView) {
+                v: View, insets: WindowInsetsCompat ->
+            val b = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+            val params = view.layoutParams
+            params.height = rootViewBottom + b
+            view.layoutParams = params
+            ViewCompat.onApplyWindowInsets(v, insets)
+            return@setOnApplyWindowInsetsListener insets
         }
     }
 
     protected open fun onViewSetup() { }
 
+    @Suppress("PropertyName")
     protected val STATE: Bundle = Bundle()
     override fun onSaveInstanceState(outState: Bundle) {
         STATE.takeIf { !STATE.isEmpty }?.let {
@@ -93,7 +95,7 @@ abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity(), Animate {
         STATE.clear()
         _binding = null
         clearAnimate()
-        ActivityCollector.removeActivity(this)
+        unregister()
         super.onDestroy()
     }
 
@@ -143,7 +145,7 @@ abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity(), Animate {
             last = now
         } else {
             if (now - last < 2000) {
-                ActivityCollector.finishAll()
+                finishAll()
             } else {
                 last = now
                 Application.onToast(this, R.string.text_back_exit_notice)

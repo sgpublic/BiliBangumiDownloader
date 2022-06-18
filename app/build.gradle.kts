@@ -2,6 +2,7 @@
 
 import android.databinding.tool.util.StringUtils
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.ir.backend.js.toByteArray
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
@@ -10,9 +11,9 @@ import java.util.regex.Pattern
 
 plugins {
     id("com.android.application")
-    id("kotlin-android")
-    id("kotlin-parcelize")
-    id("kotlin-kapt")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.parcelize")
+    id("org.jetbrains.kotlin.kapt")
 }
 
 val GIT_HEAD: String get() = Runtime.getRuntime()
@@ -53,8 +54,10 @@ val TIME_MD5: String get() {
 }
 
 val TYPE_RELEASE: String = "release"
+val TYPE_DEBUG: String = "debug"
 val TYPE_DEV: String = "dev"
 val TYPE_SNAPSHOT: String = "snapshot"
+val SIGN_CONFIG: String = "sign"
 
 val VERSION_PROPERTIES get() =
     File(rootDir, "version.properties").apply {
@@ -64,15 +67,15 @@ val VERSION_PROPERTIES get() =
     }
 
 android {
-    compileSdk = 31
-    buildToolsVersion = "31.0.0"
+    compileSdk = 32
+    buildToolsVersion = "32.1.0-rc1"
 
     val signInfoExit: Boolean = file("./gradle.properties").exists()
 
     if (signInfoExit){
         signingConfigs {
             @Suppress("LocalVariableName")
-            create("sign") {
+            create(SIGN_CONFIG) {
                 val SIGN_DIR: String by project
                 val SIGN_PASSWORD_STORE: String by project
                 val SIGN_ALIAS: String by project
@@ -110,16 +113,19 @@ android {
             }
         }
 
-        GITHUB_REPO.let {
-            buildConfigField("String", "GITHUB_REPO", "\"$it\"")
-            val repo = it.split("/")
-            buildConfigField("String", "GITHUB_AUTHOR", "\"${repo[0]}\"")
-            buildConfigField("String", "GITHUB_REPO_NAME", "\"${repo[1]}\"")
+        fun buildConfigStringField(name: String, value: String) {
+            buildConfigField("String", name, "\"$value\"")
         }
-        buildConfigField("String", "PROJECT_NAME", "\"${rootProject.name}\"")
-        buildConfigField("String", "TYPE_RELEASE", "\"$TYPE_RELEASE\"")
-        buildConfigField("String", "TYPE_DEV", "\"$TYPE_DEV\"")
-        buildConfigField("String", "TYPE_SNAPSHOT", "\"$TYPE_SNAPSHOT\"")
+        GITHUB_REPO.let {
+            buildConfigStringField("GITHUB_REPO", it)
+            val repo = it.split("/")
+            buildConfigStringField("GITHUB_AUTHOR", repo[0])
+            buildConfigStringField("GITHUB_REPO_NAME", repo[1])
+        }
+        buildConfigStringField("PROJECT_NAME", rootProject.name)
+        buildConfigStringField("TYPE_RELEASE", TYPE_RELEASE)
+        buildConfigStringField("TYPE_DEV", TYPE_DEV)
+        buildConfigStringField("TYPE_SNAPSHOT", TYPE_SNAPSHOT)
     }
 
     buildTypes {
@@ -129,14 +135,17 @@ android {
 
         all {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName(SIGN_CONFIG)
         }
+
+        /** 自动化版本命名 */
         named(TYPE_RELEASE) {
             versionNameSuffix = "-$name"
-            versionProps[TYPE_RELEASE] = "BiliBangumiDownloader V${
+            versionProps[TYPE_RELEASE] = "${rootProject.name} V${
                 defaultConfig.versionName
             }(${defaultConfig.versionCode})"
         }
-        named("debug") {
+        named(TYPE_DEBUG) {
             defaultConfig.versionCode = DATED_VERSION
             isDebuggable = true
             versionNameSuffix = "-$TIME_MD5-$name"
@@ -145,7 +154,7 @@ android {
             versionNameSuffix = "-$GIT_HEAD-$name"
             isDebuggable = true
             isTestCoverageEnabled = true
-            versionProps[TYPE_DEV] = "BiliBangumiDownloader_${
+            versionProps[TYPE_DEV] = "${rootProject.name}_${
                 defaultConfig.versionName
             }_$GIT_HEAD"
         }
@@ -154,7 +163,7 @@ android {
             isDebuggable = true
             val suffix = TIME_MD5
             versionNameSuffix = "-$suffix-$name"
-            versionProps[TYPE_SNAPSHOT] = "BiliBangumiDownloader_${
+            versionProps[TYPE_SNAPSHOT] = "${rootProject.name}_${
                 defaultConfig.versionName
             }_$suffix"
         }
@@ -171,52 +180,71 @@ android {
 }
 
 dependencies {
-    testImplementation("junit:junit:4.13.2")
     implementation("androidx.test.ext:junit-ktx:1.1.3")
+    testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     androidTestImplementation("androidx.test:runner:1.4.0")
     androidTestImplementation("androidx.test:rules:1.4.0")
 
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.appcompat:appcompat:1.4.1")
-    implementation("com.google.android.material:material:1.5.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.3")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.4.1")
+    implementation("androidx.core:core-ktx:1.8.0")
+    implementation("androidx.appcompat:appcompat:1.4.2")
+    implementation("com.google.android.material:material:1.6.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.4.2")
 
-    implementation("com.github.zhpanvip.BannerViewPager:bannerview:2.6.6")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.4")
-    implementation("com.yanzhenjie:sofia:1.0.5")
-    implementation("com.github.SGPublic:Blur-Fix-AndroidX:1.1.2")
-    implementation("com.github.SGPublic:MultiWaveHeaderX:1.0.0")
-    implementation("com.github.li-xiaojun:XPopup:2.7.5")
-    implementation("com.google.zxing:core:3.4.1") // 二维码
-    implementation("com.google.code.gson:gson:2.8.9")
-
-    val glideVer = "4.12.0"
-    implementation("com.github.bumptech.glide:glide:$glideVer")
-    annotationProcessor("com.github.bumptech.glide:compiler:$glideVer")
-    implementation("jp.wasabeef:glide-transformations:4.3.0")
-    implementation("jp.co.cyberagent.android:gpuimage:2.1.0")
-
-    val exoVer = "2.16.1"
-    implementation("com.google.android.exoplayer:exoplayer-core:$exoVer")
-    implementation("com.google.android.exoplayer:exoplayer-dash:$exoVer")
-    implementation("com.google.android.exoplayer:exoplayer-ui:$exoVer")
-
-    val rxDlVer = "1.1.4"
-    implementation("com.github.ssseasonnn.RxDownload:rxdownload4:$rxDlVer")
-    implementation("com.github.ssseasonnn.RxDownload:rxdownload4-manager:$rxDlVer")
-
-    val roomVer = "2.4.1"
+    val roomVer = "2.4.2"
     implementation("androidx.room:room-runtime:$roomVer")
     implementation("androidx.room:room-ktx:$roomVer")
     annotationProcessor("androidx.room:room-compiler:$roomVer")
     kapt("androidx.room:room-compiler:$roomVer")
     testImplementation("androidx.room:room-testing:$roomVer")
+
+    /* https://github.com/zhpanvip/BannerViewPager */
+    implementation("com.github.zhpanvip:BannerViewPager:3.5.5")
+    /* https://github.com/square/okhttp */
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.7")
+    /* https://github.com/yanzhenjie/Sofia */
+    implementation("com.yanzhenjie:sofia:1.0.5")
+    /* https://github.com/sgpublic/Blur-Fix-AndroidX */
+    implementation("com.github.SGPublic:Blur-Fix-AndroidX:1.1.2")
+    /* https://github.com/scwang90/MultiWaveHeader */
+    implementation("com.scwang.wave:MultiWaveHeader:1.0.0")
+    /* https://github.com/li-xiaojun/XPopup */
+    implementation("com.github.li-xiaojun:XPopup:2.7.7")
+    /* https://github.com/zxing/zxing qrcode */
+    implementation("com.google.zxing:core:3.5.0")
+    /* https://github.com/google/gson */
+    implementation("com.google.code.gson:gson:2.9.0")
+    /* https://github.com/KwaiAppTeam/AkDanmaku */
+    implementation("com.kuaishou:akdanmaku:1.0.3")
+    /* https://github.com/AnJiaoDe/TabLayoutNiubility */
+    implementation("com.github.AnJiaoDe:TabLayoutNiubility:V1.3.0")
+    /* https://github.com/lihangleo2/ShadowLayout */
+    implementation("com.github.lihangleo2:ShadowLayout:3.2.4")
+
+    /* https://github.com/bumptech/glide */
+    val glideVer = "4.13.2"
+    implementation("com.github.bumptech.glide:glide:$glideVer")
+    annotationProcessor("com.github.bumptech.glide:compiler:$glideVer")
+    kapt("com.github.bumptech.glide:compiler:$glideVer")
+    implementation("jp.wasabeef:glide-transformations:4.3.0")
+
+    /* https://github.com/google/ExoPlayer */
+    val exoVer = "2.17.1"
+    implementation("com.google.android.exoplayer:exoplayer-core:$exoVer")
+    implementation("com.google.android.exoplayer:exoplayer-dash:$exoVer")
+    implementation("com.google.android.exoplayer:exoplayer-ui:$exoVer")
+
+    /* https://github.com/AriaLyy/Aria */
+    val ariaVer = "3.8.16"
+    implementation("me.laoyuyu.aria:core:$ariaVer")
+    annotationProcessor("me.laoyuyu.aria:compiler:$ariaVer")
+    kapt("me.laoyuyu.aria:compiler:$ariaVer")
 }
 
+/** 自动修改输出文件名并定位文件 */
 android.applicationVariants.all {
     outputs.forEach {
         if (it.name == "debug") {
@@ -233,7 +261,10 @@ android.applicationVariants.all {
                 if (!File(path).exists()) {
                     return@doLast
                 }
-                Runtime.getRuntime().exec("explorer.exe /select, $path")
+                when (true) {
+                    OperatingSystem.current().isWindows ->
+                        Runtime.getRuntime().exec("explorer.exe /select, $path")
+                }
             }
         }
     }

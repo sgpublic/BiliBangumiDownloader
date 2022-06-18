@@ -6,27 +6,27 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.lxj.xpopup.XPopup
 import io.github.sgpublic.bilidownload.R
-import io.github.sgpublic.bilidownload.activity.About
-import io.github.sgpublic.bilidownload.activity.Login
-import io.github.sgpublic.bilidownload.activity.MyFollows
-import io.github.sgpublic.bilidownload.activity.Setting
+import io.github.sgpublic.bilidownload.activity.*
 import io.github.sgpublic.bilidownload.base.BaseFragment
+import io.github.sgpublic.bilidownload.core.manager.ConfigManager
 import io.github.sgpublic.bilidownload.databinding.FragmentHomeMineBinding
-import io.github.sgpublic.bilidownload.manager.ConfigManager
 import io.github.sgpublic.bilidownload.ui.asConfirm
+import io.github.sgpublic.bilidownload.ui.customLoad
+import io.github.sgpublic.bilidownload.ui.withCrossFade
 
 class HomeMine(context: AppCompatActivity): BaseFragment<FragmentHomeMineBinding>(context) {
     override fun onFragmentCreated(hasSavedInstanceState: Boolean) {
 
     }
 
-    override fun onCreateViweBinding(container: ViewGroup?): FragmentHomeMineBinding =
+    override fun onCreateViewBinding(container: ViewGroup?): FragmentHomeMineBinding =
         FragmentHomeMineBinding.inflate(layoutInflater, container, false)
 
     override fun onViewSetup() {
         initViewAtTop(ViewBinding.mineToolbar)
         Glide.with(context)
-            .load(ConfigManager.FACE)
+            .customLoad(ConfigManager.FACE)
+            .withCrossFade()
             .into(ViewBinding.mineAvatar)
         val vipType = ConfigManager.VIP_TYPE
         if (vipType == 0){
@@ -71,6 +71,9 @@ class HomeMine(context: AppCompatActivity): BaseFragment<FragmentHomeMineBinding
         }
         ViewBinding.mineOtherBangumi.setOnClickListener {
             MyFollows.startActivity(context)
+        }
+        ViewBinding.mineDownload.setOnClickListener {
+            TaskList.startActivity(context)
         }
     }
 }

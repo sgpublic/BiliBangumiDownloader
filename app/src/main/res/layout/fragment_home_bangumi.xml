@@ -56,13 +56,12 @@
                 android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="3"/>
-            <ImageView
+            <io.github.sgpublic.bilidownload.widget.LoadingImageView
                 android:id="@+id/bangumi_load_state"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:layout_marginTop="130dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/pic_load_failed"
                 tools:ignore="ContentDescription" />
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

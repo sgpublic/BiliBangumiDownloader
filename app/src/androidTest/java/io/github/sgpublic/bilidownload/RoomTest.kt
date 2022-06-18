@@ -2,9 +2,9 @@ package io.github.sgpublic.bilidownload
 
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import io.github.sgpublic.bilidownload.core.util.LogCat
 import io.github.sgpublic.bilidownload.room.AppDatabase
 import io.github.sgpublic.bilidownload.room.entity.TaskEntity
-import io.github.sgpublic.bilidownload.util.MyLog
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -29,6 +29,6 @@ class RoomTest: ApplicationText() {
     @Test
     fun readDatabase() {
         val task = database.TasksDao()
-        MyLog.d(task.getByTaskStatus(TaskEntity.STATUS_WAITING))
+        LogCat.d(task.getByTaskStatus(TaskEntity.STATUS_WAITING))
     }
 }

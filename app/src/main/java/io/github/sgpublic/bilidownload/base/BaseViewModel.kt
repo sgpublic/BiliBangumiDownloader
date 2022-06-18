@@ -7,6 +7,8 @@ abstract class BaseViewModel: ViewModel() {
     val EXCEPTION: MutableLiveData<ExceptionData> = MutableLiveData()
     fun getExceptionData() = EXCEPTION.value
     data class ExceptionData(var code: Int, var message: String?)
+
+    open val LOADING: MutableLiveData<Boolean> = MutableLiveData()
 }
 
 fun MutableLiveData<BaseViewModel.ExceptionData>.postValue(

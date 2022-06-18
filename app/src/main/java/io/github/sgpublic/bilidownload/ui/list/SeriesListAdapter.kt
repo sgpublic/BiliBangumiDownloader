@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 import io.github.sgpublic.bilidownload.R
-import io.github.sgpublic.bilidownload.data.SeriesData
+import io.github.sgpublic.bilidownload.core.data.SeriesData
 import io.github.sgpublic.bilidownload.databinding.ItemBangumiFollowBinding
-import io.github.sgpublic.bilidownload.ui.addOnReadyListener
+import io.github.sgpublic.bilidownload.ui.customLoad
+import io.github.sgpublic.bilidownload.ui.withCrossFade
+import io.github.sgpublic.bilidownload.ui.withVerticalPlaceholder
 
 class SeriesListAdapter(private val context: AppCompatActivity, list: List<SeriesData>)
     : ArrayAdapter<SeriesData>(context, R.layout.item_bangumi_follow, list) {
@@ -52,18 +52,10 @@ class SeriesListAdapter(private val context: AppCompatActivity, list: List<Serie
             binding.followImage.visibility = View.VISIBLE
             return binding.root
         }
-        val requestOptions = RequestOptions()
-            .placeholder(R.drawable.pic_doing_v)
-            .error(R.drawable.pic_load_failed)
-            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
         Glide.with(context)
-            .load(data.cover)
-            .apply(requestOptions)
-            .addOnReadyListener {
-                binding.followImage.visibility = View.VISIBLE
-                binding.followImage.animate().alpha(1f)
-                    .setDuration(400).setListener(null)
-            }
+            .customLoad(data.cover)
+            .withVerticalPlaceholder()
+            .withCrossFade()
             .into(binding.followImage)
         return binding.root
     }

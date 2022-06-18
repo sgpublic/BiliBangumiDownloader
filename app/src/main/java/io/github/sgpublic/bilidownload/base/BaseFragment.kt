@@ -10,16 +10,17 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
+import io.github.sgpublic.bilidownload.core.util.Animate
 import io.github.sgpublic.bilidownload.ui.ViewState
-import io.github.sgpublic.bilidownload.util.Animate
 
-abstract class BaseFragment<VB: ViewBinding>(private val contest: AppCompatActivity) : Fragment(), Animate {
+abstract class BaseFragment<VB: ViewBinding>(private val contest: AppCompatActivity)
+    : Fragment(), Animate {
     private var _binding: VB? = null
     @Suppress("PropertyName")
     protected val ViewBinding: VB get() = _binding!!
 
     final override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = onCreateViweBinding(container)
+        _binding = onCreateViewBinding(container)
         return ViewBinding.root
     }
 
@@ -69,7 +70,7 @@ abstract class BaseFragment<VB: ViewBinding>(private val contest: AppCompatActiv
         params.topMargin = statusbarheight
     }
 
-    protected abstract fun onCreateViweBinding(container: ViewGroup?): VB
+    protected abstract fun onCreateViewBinding(container: ViewGroup?): VB
 
     protected val STATE: Bundle = Bundle()
     override fun onSaveInstanceState(outState: Bundle) {

@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <com.google.android.exoplayer2.ui.PlayerView
+    android:layout_height="match_parent">
+    <com.google.android.exoplayer2.ui.StyledPlayerView
         android:id="@+id/player_exoplayer"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -15,6 +15,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="16:9" />
     <ProgressBar
         android:id="@+id/player_controller_loading"

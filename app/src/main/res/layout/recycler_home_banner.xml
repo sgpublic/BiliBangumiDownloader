@@ -10,5 +10,5 @@
     app:bvp_can_loop="true"
     app:bvp_interval="5000"
     app:bvp_page_style="multi_page_overlap"
-    app:bvp_reveal_width="55dp"
+    app:bvp_reveal_width="45dp"
     app:bvp_scroll_duration="1000" />

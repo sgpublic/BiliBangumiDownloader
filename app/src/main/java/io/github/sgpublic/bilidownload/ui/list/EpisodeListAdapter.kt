@@ -31,10 +31,10 @@ class EpisodeListAdapter(private val context: Context) : SelectableBaseAdapter()
         binding.root.layoutParams.width = parent.width
         binding.itemEpisodeTitle.apply {
             if (position == this@EpisodeListAdapter.getSelection()) {
-                setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
+                setTextColor(ContextCompat.getColor(context, selectedColor))
                 setBackgroundResource(R.drawable.shape_episode_list_border_current)
             } else {
-                setTextColor(ContextCompat.getColor(context, R.color.color_player_controller))
+                setTextColor(ContextCompat.getColor(context, normalColor))
                 setBackgroundResource(R.drawable.shape_episode_list_border_list)
             }
             text = getItem(position)

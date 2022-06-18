@@ -2,6 +2,7 @@ package io.github.sgpublic.bilidownload.activity
 
 import android.content.Context
 import android.content.Intent
+import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.BaseActivity
 import io.github.sgpublic.bilidownload.databinding.ActivityHomeBinding
@@ -12,7 +13,7 @@ class Home: BaseActivity<ActivityHomeBinding>() {
         ViewBinding.navBangumi.callOnClick()
     }
 
-    override fun onCreateViweBinding(): ActivityHomeBinding =
+    override fun onCreateViewBinding(): ActivityHomeBinding =
         ActivityHomeBinding.inflate(layoutInflater)
 
     override fun onViewSetup() {

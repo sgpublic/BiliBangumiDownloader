@@ -7,6 +7,5 @@
         android:id="@+id/player_origin"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/color_player"
-        android:name="io.github.sgpublic.bilidownload.fragment.player.OnlinePlayer" />
+        android:background="@color/color_player"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

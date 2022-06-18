@@ -12,11 +12,11 @@ import com.lxj.xpopup.enums.PopupPosition
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.BaseViewModelActivity
 import io.github.sgpublic.bilidownload.base.BaseViewModelFragment
+import io.github.sgpublic.bilidownload.core.util.newObserve
 import io.github.sgpublic.bilidownload.databinding.FragmentPlayerBinding
 import io.github.sgpublic.bilidownload.dialog.PlayerPanel
 import io.github.sgpublic.bilidownload.ui.PlayerGestureDetector
 import io.github.sgpublic.bilidownload.ui.list.EpisodeListAdapter
-import io.github.sgpublic.bilidownload.util.newObserve
 import io.github.sgpublic.bilidownload.viewmodel.BasePlayerViewModel
 import java.util.*
 
@@ -89,7 +89,7 @@ abstract class BasePlayer<T: Parcelable, VM: BasePlayerViewModel<T>>(contest: Ba
         }
     }
 
-    final override fun onCreateViweBinding(container: ViewGroup?): FragmentPlayerBinding =
+    final override fun onCreateViewBinding(container: ViewGroup?): FragmentPlayerBinding =
         FragmentPlayerBinding.inflate(layoutInflater, container, false)
 
     protected var CONTROLLER_SEEK_TRACKING: Boolean = false
@@ -165,7 +165,9 @@ abstract class BasePlayer<T: Parcelable, VM: BasePlayerViewModel<T>>(contest: Ba
         adapter.setEpisodeList(ViewModel.getPlayerTitleList())
         panel.show()
         adapter.setOnItemClickListener { pos, title ->
-            panel.dismiss()
+            panel.dismissWith {
+                panel.destroy()
+            }
             if (ViewModel.getPlayerCurrentEpisodeIndex() != pos) {
                 ViewBinding.playerControllerTitle?.text = title
                 ViewModel.requestPlayEpisode(pos)

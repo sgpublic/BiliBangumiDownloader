@@ -7,7 +7,7 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import io.github.sgpublic.bilidownload.util.MyLog
+import io.github.sgpublic.bilidownload.core.util.LogCat
 import io.github.sgpublic.bilidownload.viewmodel.OnlinePlayerViewModel
 import org.junit.Before
 import org.junit.Test
@@ -20,12 +20,12 @@ class PlayerTest: ApplicationText() {
 
     @Before
     fun createPlayer() {
-        MyLog.i("onCreatePlayer")
+        LogCat.i("onCreatePlayer")
         player = ExoPlayer.Builder(applicationContext)
             .build()
         val sp = applicationContext.getSharedPreferences("user", Context.MODE_PRIVATE)
         accessKey = sp.getString("access_token", null) ?: throw IllegalStateException("empty access_token!")
-        MyLog.d("accessKey: $accessKey")
+        LogCat.d("accessKey: $accessKey")
     }
 
 //    @After
@@ -40,14 +40,14 @@ class PlayerTest: ApplicationText() {
     fun startPlay() {
         val obj = Object()
         runOnUiThread {
-            MyLog.w("startPlay")
+            LogCat.w("startPlay")
             @Suppress("LocalVariableName")
             val ViewModel = OnlinePlayerViewModel(40165)
             ViewModel.EXCEPTION.observeForever {
                 throw IllegalStateException("code: ${it.code}, message: ${it.message}")
             }
             ViewModel.EPISODE_LIST.observeForever {
-                MyLog.d("EPISODE_LIST: ${it.size}")
+                LogCat.d("EPISODE_LIST: ${it.size}")
                 ViewModel.requestPlayEpisode(0)
             }
             ViewModel.setOnPlayIndexChangeListener {

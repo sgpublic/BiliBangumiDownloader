@@ -4,7 +4,7 @@ import android.view.View
 import androidx.fragment.app.activityViewModels
 import com.google.android.exoplayer2.Player
 import io.github.sgpublic.bilidownload.base.BaseViewModelActivity
-import io.github.sgpublic.bilidownload.data.parcelable.EntryJson
+import io.github.sgpublic.bilidownload.core.data.parcelable.EntryJson
 import io.github.sgpublic.bilidownload.databinding.ActivityPlayerBinding
 import io.github.sgpublic.bilidownload.viewmodel.BasePlayerViewModel
 

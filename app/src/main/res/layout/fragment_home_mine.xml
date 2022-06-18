@@ -12,7 +12,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <com.sgpublic.multiwaveheaderx.MultiWaveHeader
+            <com.scwang.wave.MultiWaveHeader
                 android:id="@+id/mine_toolbar_base"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
@@ -140,6 +140,18 @@
                     android:foreground="?android:attr/selectableItemBackground"
                     android:background="@color/colorWindowBackground"
                     android:text="@string/title_mine_my_follows"
+                    android:textSize="16sp"
+                    android:textColor="@color/color_text_normal"/>
+                <TextView
+                    android:id="@+id/mine_download"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="30dp"
+                    android:paddingEnd="30dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:background="@color/colorWindowBackground"
+                    android:text="@string/title_mine_download"
                     android:textSize="16sp"
                     android:textColor="@color/color_text_normal"/>
                 <TextView

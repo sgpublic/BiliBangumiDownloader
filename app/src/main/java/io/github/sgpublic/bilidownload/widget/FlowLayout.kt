@@ -10,7 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.IntDef
-import io.github.sgpublic.bilidownload.Application
+import io.github.sgpublic.bilidownload.core.util.dp
 
 /**
  * desc:
@@ -50,7 +50,7 @@ class FlowLayout @JvmOverloads constructor(context: Context?, attrs: AttributeSe
             return
         }
         removeAllViews()
-        val layoutPadding = Application.dip2px(8f)
+        val layoutPadding = 8.dp
         setHorizontalSpacing(layoutPadding)
         setVerticalSpacing(layoutPadding)
         val size = list.size

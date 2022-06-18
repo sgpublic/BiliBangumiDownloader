@@ -6,17 +6,17 @@ import com.lxj.xpopup.XPopup
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.BaseActivity
-import io.github.sgpublic.bilidownload.data.UserData
+import io.github.sgpublic.bilidownload.core.data.UserData
+import io.github.sgpublic.bilidownload.core.manager.ConfigManager
+import io.github.sgpublic.bilidownload.core.module.LoginModule
+import io.github.sgpublic.bilidownload.core.module.UpdateModule
+import io.github.sgpublic.bilidownload.core.module.UserInfoModule
 import io.github.sgpublic.bilidownload.databinding.ActivityWelcomeBinding
-import io.github.sgpublic.bilidownload.manager.ConfigManager
-import io.github.sgpublic.bilidownload.module.LoginModule
-import io.github.sgpublic.bilidownload.module.UpdateModule
-import io.github.sgpublic.bilidownload.module.UserInfoModule
 import io.github.sgpublic.bilidownload.ui.asConfirm
 import java.util.*
 
 class Welcome: BaseActivity<ActivityWelcomeBinding>(), UpdateModule.Callback {
-    override fun onCreateViweBinding(): ActivityWelcomeBinding =
+    override fun onCreateViewBinding(): ActivityWelcomeBinding =
         ActivityWelcomeBinding.inflate(layoutInflater)
 
     override fun onActivityCreated(hasSavedInstanceState: Boolean) {
@@ -46,7 +46,7 @@ class Welcome: BaseActivity<ActivityWelcomeBinding>(), UpdateModule.Callback {
             return
         }
         val accessToken = ConfigManager.ACCESS_TOKEN
-        val helper = LoginModule(this@Welcome)
+        val helper = LoginModule()
         helper.refreshToken(accessToken, refreshKey, object : LoginModule.Callback {
             override fun onFailure(code: Int, message: String?, e: Throwable?) {
                 Timer().schedule(expired, 200)
@@ -67,8 +67,10 @@ class Welcome: BaseActivity<ActivityWelcomeBinding>(), UpdateModule.Callback {
     }
 
     private fun refreshUserInfo(){
-        val userInfoModule = UserInfoModule(this@Welcome,
-            ConfigManager.ACCESS_TOKEN, ConfigManager.MID)
+        val userInfoModule = UserInfoModule(
+            ConfigManager.ACCESS_TOKEN,
+            ConfigManager.MID
+        )
         userInfoModule.getInfo(object : UserInfoModule.Callback {
             override fun onFailure(code: Int, message: String?, e: Throwable?) {
                 Application.onToast(this@Welcome, R.string.error_login)
@@ -94,7 +96,7 @@ class Welcome: BaseActivity<ActivityWelcomeBinding>(), UpdateModule.Callback {
     private fun onSetupFinished() {
         if (ConfigManager.needAutoCheckUpdate()) {
             ConfigManager.onUpdate()
-            val helper = UpdateModule(this@Welcome)
+            val helper = UpdateModule()
             helper.getUpdate(callback = this)
         }
 

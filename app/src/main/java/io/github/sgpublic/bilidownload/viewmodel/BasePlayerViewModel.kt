@@ -3,9 +3,12 @@ package io.github.sgpublic.bilidownload.viewmodel
 import android.os.Parcelable
 import androidx.lifecycle.MutableLiveData
 import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.base.BaseViewModel
+import io.github.sgpublic.bilidownload.base.postValue
+import io.github.sgpublic.bilidownload.core.util.LogCat
 import java.util.*
 
 @Suppress("PropertyName")
@@ -14,12 +17,17 @@ open class BasePlayerViewModel<T: Parcelable> : BaseViewModel(), Player.Listener
     val PLAYER: MutableLiveData<ExoPlayer> by lazy {
         MutableLiveData<ExoPlayer>().also {
             val player: ExoPlayer =
-                ExoPlayer.Builder(Application.APPLICATION)
+                ExoPlayer.Builder(Application.APPLICATION_CONTEXT)
                     .build()
             player.addListener(this)
             player.playWhenReady = true
             it.postValue(player)
         }
+    }
+
+    override fun onPlayerError(error: PlaybackException) {
+        LogCat.e("On player error.", error)
+        EXCEPTION.postValue(-2000, error.message)
     }
 
     fun getEpisodeList(): List<T> = EPISODE_LIST.value ?: listOf()

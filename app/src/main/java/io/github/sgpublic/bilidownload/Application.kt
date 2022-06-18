@@ -1,35 +1,43 @@
 package io.github.sgpublic.bilidownload
 
 import android.app.Application
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.ContentResolver
-import android.content.Context
+import android.content.*
+import android.content.res.Configuration
 import android.os.Handler
 import android.os.Looper
-import android.util.TypedValue
 import android.widget.Toast
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.room.Room
+import com.arialyy.aria.core.Aria
 import com.lxj.xpopup.XPopup
 import io.github.sgpublic.bilidownload.base.CrashHandler
+import io.github.sgpublic.bilidownload.core.manager.ConfigManager
+import io.github.sgpublic.bilidownload.core.util.LogCat
+import io.github.sgpublic.bilidownload.core.util.finishAll
 import io.github.sgpublic.bilidownload.room.AppDatabase
-import io.github.sgpublic.bilidownload.util.ActivityCollector
-import io.github.sgpublic.bilidownload.util.MyLog
-import java.lang.ref.WeakReference
+import io.github.sgpublic.bilidownload.room.entity.TaskEntity
+import io.github.sgpublic.bilidownload.service.DownloadService
 
 @Suppress("unused")
 class Application : Application() {
+    private var onBoot = true
     override fun onCreate() {
         super.onCreate()
-        MyLog.i("APP启动")
-        application = WeakReference(this)
-        room = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "bilidl.db")
+        LogCat.i("APP启动")
+        application = this
+        room = Room.databaseBuilder(applicationContext, AppDatabase::class.java, BuildConfig.PROJECT_NAME)
+            .fallbackToDestructiveMigration()
             .allowMainThreadQueries()
             .build()
-
-        startListenException()
+        room.TasksDao().let {
+            it.resetPreparingTasks()
+            it.resetProcessingTasks()
+        }
+        Aria.init(applicationContext)
     }
 
     private fun startListenException() {
@@ -40,7 +48,7 @@ class Application : Application() {
                 } catch (e: Throwable){
                     CrashHandler.saveExplosion(e, -100, "应用意外停止")
                     if (!BuildConfig.DEBUG) {
-                        ActivityCollector.finishAll()
+                        finishAll()
                         break
                     }
                 }
@@ -51,7 +59,7 @@ class Application : Application() {
     private fun showExceptionDialog(exc: String?) {
         // TODO 应用意外退出弹窗
         if (exc == null) {
-            ActivityCollector.finishAll()
+            finishAll()
             return
         }
         XPopup.Builder(APPLICATION_CONTEXT).asConfirm(
@@ -61,42 +69,64 @@ class Application : Application() {
             getString(R.string.text_function_crash_copy), {
                 val cs = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 cs.setPrimaryClip(ClipData.newPlainText("exception", exc))
-                ActivityCollector.finishAll()
+                finishAll()
             }, {
-                ActivityCollector.finishAll()
+                finishAll()
             }, false
         ).show()
     }
 
     override fun onTerminate() {
-        MyLog.i("APP结束")
-        application?.clear()
-        application = null
+        LogCat.i("APP结束")
         if (DATABASE.isOpen) {
             DATABASE.close()
         }
-        room = null
+        tasksObserver?.let {
+            processingTasks?.removeObserver(it)
+            waitingTasks?.removeObserver(it)
+        }
         super.onTerminate()
     }
 
+
     companion object {
-        private var application: WeakReference<Application>? = null
-        @Volatile
-        private var room: AppDatabase? = null
+        private lateinit var application: Application
+        private lateinit var room: AppDatabase
 
-        val APPLICATION: Application get() = application?.get() ?: throw NullPointerException()
-        val APPLICATION_CONTEXT: Context get() = APPLICATION.applicationContext
+        val APPLICATION_CONTEXT: Context get() = application.applicationContext
         val CONTENT_RESOLVER: ContentResolver get() = APPLICATION_CONTEXT.contentResolver
-        val DATABASE: AppDatabase get() = room ?: throw NullPointerException()
+        val DATABASE: AppDatabase get() = room
 
-        fun dip2px(dip: Float): Int {
-            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip,
-                APPLICATION_CONTEXT.resources.displayMetrics).toInt()
-        }
+        val IS_NIGHT_MODE: Boolean get() = APPLICATION_CONTEXT.resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
-        fun sp2px(sp: Float): Int {
-            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp,
-                APPLICATION_CONTEXT.resources.displayMetrics).toInt()
+        private var tasksObserver: Observer<List<TaskEntity>>? = null
+        private var processingTasks: LiveData<List<TaskEntity>>? = null
+        private var waitingTasks: LiveData<List<TaskEntity>>? = null
+        fun startListenTask() {
+            synchronized(this) {
+                if (tasksObserver != null) {
+                    return
+                }
+                tasksObserver = Observer<List<TaskEntity>> { tasks ->
+                    if (!ConfigManager.TASK_AUTO_START) {
+                        return@Observer
+                    }
+                    if (tasks.isNotEmpty()) {
+                        val intent = Intent(APPLICATION_CONTEXT, DownloadService::class.java)
+                        APPLICATION_CONTEXT.startForegroundService(intent)
+                    }
+                }.also { observer ->
+                    DATABASE.TasksDao().run {
+                        processingTasks = listenByTaskStatus(TaskEntity.STATUS_PROCESSING).also {
+                            it.observeForever(observer)
+                        }
+                        waitingTasks = listenByTaskStatus(TaskEntity.STATUS_WAITING).also {
+                            it.observeForever(observer)
+                        }
+                    }
+                }
+            }
         }
 
         fun onToast(context: AppCompatActivity, content: String?) {
@@ -122,6 +152,10 @@ class Application : Application() {
 
         fun getString(@StringRes textId: Int, vararg arg: Any): String {
             return APPLICATION_CONTEXT.resources.getString(textId, *arg)
+        }
+
+        fun getColor(@ColorRes colorId: Int): Int {
+            return APPLICATION_CONTEXT.getColor(colorId)
         }
     }
 }

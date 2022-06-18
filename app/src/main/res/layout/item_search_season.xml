@@ -18,17 +18,10 @@
         app:cardCornerRadius="8dp"
         app:cardElevation="0dp">
         <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/item_search_season_placeholder"
-            android:scaleType="fitCenter"
-            android:src="@drawable/pic_doing_h"
-            tools:ignore="ContentDescription" />
-        <ImageView
             android:id="@+id/item_search_season_cover"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="fitStart"
+            android:scaleType="centerCrop"
             tools:ignore="ContentDescription" />
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"

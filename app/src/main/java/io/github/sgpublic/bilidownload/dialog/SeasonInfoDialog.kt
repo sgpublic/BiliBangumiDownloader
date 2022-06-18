@@ -6,8 +6,11 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.lxj.xpopup.core.BottomPopupView
 import io.github.sgpublic.bilidownload.R
-import io.github.sgpublic.bilidownload.data.SeasonData
+import io.github.sgpublic.bilidownload.core.data.SeasonData
 import io.github.sgpublic.bilidownload.databinding.DialogSeasonInfoBinding
+import io.github.sgpublic.bilidownload.ui.customLoad
+import io.github.sgpublic.bilidownload.ui.withCrossFade
+import io.github.sgpublic.bilidownload.ui.withVerticalPlaceholder
 import kotlin.math.roundToInt
 
 @SuppressLint("ViewConstructor")
@@ -16,7 +19,10 @@ class SeasonInfoDialog(context: Context, private val data: SeasonData)
     override fun onCreate() {
         val binding: DialogSeasonInfoBinding = DialogSeasonInfoBinding.bind(popupImplView)
         binding.seasonTitle.text = data.info.title
-        Glide.with(context).load(data.info.cover)
+        Glide.with(context)
+            .customLoad(data.info.cover)
+            .withVerticalPlaceholder()
+            .withCrossFade()
             .into(binding.seasonCover)
         if (data.rating == 0.0) {
             binding.seasonRatingString.visibility = View.INVISIBLE

@@ -7,10 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.BaseFragment
-import io.github.sgpublic.bilidownload.data.FollowData
+import io.github.sgpublic.bilidownload.core.data.FollowData
+import io.github.sgpublic.bilidownload.core.manager.ConfigManager
+import io.github.sgpublic.bilidownload.core.module.FollowsModule
 import io.github.sgpublic.bilidownload.databinding.FragmentFollowsBinding
-import io.github.sgpublic.bilidownload.manager.ConfigManager
-import io.github.sgpublic.bilidownload.module.FollowsModule
 import io.github.sgpublic.bilidownload.ui.recycler.FollowsRecyclerAdapter
 import java.util.*
 
@@ -22,7 +22,7 @@ class Follows(context: AppCompatActivity, @StringRes private val title: Int,
         getFollowData()
     }
 
-    override fun onCreateViweBinding(container: ViewGroup?): FragmentFollowsBinding =
+    override fun onCreateViewBinding(container: ViewGroup?): FragmentFollowsBinding =
         FragmentFollowsBinding.inflate(layoutInflater, container, false)
 
     private lateinit var adapter: FollowsRecyclerAdapter
@@ -50,7 +50,7 @@ class Follows(context: AppCompatActivity, @StringRes private val title: Int,
         }
         val accessKey = ConfigManager.ACCESS_TOKEN
         val mid = ConfigManager.MID
-        val helper = FollowsModule(context, accessKey)
+        val helper = FollowsModule(accessKey)
         helper.getFollows(mid, pageIndex, status, object : FollowsModule.Callback {
             override fun onFailure(code: Int, message: String?, e: Throwable?) {
                 Application.onToast(context, R.string.error_bangumi_load, message, code)

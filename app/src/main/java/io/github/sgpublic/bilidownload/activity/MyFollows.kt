@@ -5,9 +5,9 @@ import android.content.Intent
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.BaseActivity
+import io.github.sgpublic.bilidownload.core.module.FollowsModule
 import io.github.sgpublic.bilidownload.databinding.ActivityMyFollowsBinding
 import io.github.sgpublic.bilidownload.fragment.follows.Follows
-import io.github.sgpublic.bilidownload.module.FollowsModule
 import io.github.sgpublic.bilidownload.ui.fragment.FollowsFragmentAdapter
 
 class MyFollows: BaseActivity<ActivityMyFollowsBinding>() {
@@ -15,7 +15,7 @@ class MyFollows: BaseActivity<ActivityMyFollowsBinding>() {
 
     }
 
-    override fun onCreateViweBinding(): ActivityMyFollowsBinding =
+    override fun onCreateViewBinding(): ActivityMyFollowsBinding =
         ActivityMyFollowsBinding.inflate(layoutInflater)
 
     override fun onViewSetup() {

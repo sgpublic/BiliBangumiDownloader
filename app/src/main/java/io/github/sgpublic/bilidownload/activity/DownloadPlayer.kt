@@ -5,7 +5,7 @@ import io.github.sgpublic.bilidownload.base.BaseViewModelActivity
 import io.github.sgpublic.bilidownload.databinding.ActivityPlayerBinding
 import io.github.sgpublic.bilidownload.fragment.factory.PlayerFragmentFactory
 import io.github.sgpublic.bilidownload.fragment.player.LocalPlayer
-import io.github.sgpublic.bilidownload.fragment.season.DownloadList
+import io.github.sgpublic.bilidownload.fragment.season.TaskList
 import io.github.sgpublic.bilidownload.viewmodel.LocalPlayerViewModel
 
 class DownloadPlayer: BaseViewModelActivity<ActivityPlayerBinding, LocalPlayerViewModel>() {
@@ -25,11 +25,11 @@ class DownloadPlayer: BaseViewModelActivity<ActivityPlayerBinding, LocalPlayerVi
         supportFragmentManager.beginTransaction().apply {
             replace(ViewBinding.playerOrigin.id, LocalPlayer::class.java, null, "OnlinePlayer")
             ViewBinding.playerContent?.let {
-                replace(it.id, DownloadList::class.java, null, "DownloadList")
+                replace(it.id, TaskList::class.java, null, "DownloadList")
             }
         }.commit()
     }
 
-    override fun onCreateViweBinding(): ActivityPlayerBinding =
+    override fun onCreateViewBinding(): ActivityPlayerBinding =
         ActivityPlayerBinding.inflate(layoutInflater)
 }

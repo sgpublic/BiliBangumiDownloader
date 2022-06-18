@@ -1,95 +1,46 @@
 package io.github.sgpublic.bilidownload.ui
 
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
-import com.zhpan.bannerview.holder.ViewHolder
+import com.zhpan.bannerview.BaseBannerAdapter
+import com.zhpan.bannerview.BaseViewHolder
 import io.github.sgpublic.bilidownload.R
-import java.util.*
+import io.github.sgpublic.bilidownload.databinding.ItemBangumiBannerBinding
 
-class SeasonBannerAdapter(private val context: AppCompatActivity) : ViewHolder<SeasonBannerAdapter.BannerItem> {
-    override fun getLayoutId(): Int {
-        return R.layout.item_bangumi_banner
-    }
+class SeasonBannerAdapter(private val context: AppCompatActivity) :
+    BaseBannerAdapter<SeasonBannerAdapter.BannerItem>() {
+    override fun getLayoutId(viewType: Int): Int =
+        R.layout.item_bangumi_banner
 
-    override fun onBind(itemView: View, data: BannerItem, position: Int, size: Int) {
-        val bannerImagePlaceholder = itemView.findViewById<ImageView>(R.id.banner_image_placeholder)
-        val bannerImage = itemView.findViewById<ImageView>(R.id.banner_image)
-        val bannerImageForeground = itemView.findViewById<ImageView>(R.id.banner_image_foreground)
-        val itemBannerBadgeBackground: CardView = itemView.findViewById(R.id.item_banner_badge_background)
+    override fun bindData(holder: BaseViewHolder<BannerItem>, data: BannerItem, position: Int, pageSize: Int) {
+        val binding = ItemBangumiBannerBinding.bind(holder.itemView)
         if (data.badge == "") {
-            itemBannerBadgeBackground.visibility = View.GONE
+            binding.itemBannerBadgeBackground.visibility = View.GONE
         } else {
-            itemBannerBadgeBackground.visibility = View.VISIBLE
-            itemBannerBadgeBackground.setCardBackgroundColor(data.badgeColor)
-            itemView.findViewById<TextView>(R.id.item_banner_badge).text = data.badge
+            binding.itemBannerBadgeBackground.visibility = View.VISIBLE
+            binding.itemBannerBadgeBackground.setCardBackgroundColor(data.badgeColor)
+            binding.itemBannerBadge.text = data.badge
         }
         if (data.bannerPath == "") {
-            val requestOptions = RequestOptions()
-                .placeholder(R.drawable.pic_doing_v)
-                .error(R.drawable.pic_load_failed)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
             Glide.with(context)
-                .load(data.seasonCover)
-                .apply(requestOptions)
-                .addOnReadyListener {
-                    bannerImagePlaceholder.animate().alpha(0f).setDuration(400).setListener(null)
-                    Timer().schedule(object : TimerTask(){
-                        override fun run() {
-                            context.runOnUiThread {
-                                bannerImagePlaceholder.visibility = View.GONE
-                                bannerImageForeground.visibility = View.VISIBLE
-                                bannerImageForeground.animate().alpha(1f).setDuration(400).setListener(null)
-                            }
-                        }
-                    }, 400)
-                }
-                .into(bannerImageForeground)
+                .customLoad(data.seasonCover)
+                .withVerticalPlaceholder()
+                .withCrossFade()
+                .into(binding.bannerImageForeground)
             Glide.with(context)
-                .load(data.seasonCover)
-                .apply(requestOptions)
-                .apply(RequestOptions
-                    .bitmapTransform(BlurHelper())
-                )
-                .addOnReadyListener {
-                    bannerImagePlaceholder.animate().alpha(0f).setDuration(400).setListener(null)
-                    Timer().schedule(object : TimerTask(){
-                        override fun run() {
-                            context.runOnUiThread {
-                                bannerImage.visibility = View.VISIBLE
-                                bannerImage.animate().alpha(1f).setDuration(400).setListener(null)
-                            }
-                        }
-                    }, 400)
-                }
-                .into(bannerImage)
+                .customLoad(data.seasonCover)
+                .withCrossFade()
+                .withBlur()
+                .into(binding.bannerImage)
         } else {
-            val requestOptions = RequestOptions()
-                .placeholder(R.drawable.pic_doing_h)
-                .error(R.drawable.pic_load_failed)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
             Glide.with(context)
-                .load(data.bannerPath)
-                .apply(requestOptions)
-                .addOnReadyListener {
-                    bannerImagePlaceholder.animate().alpha(0f).setDuration(400).setListener(null)
-                    Timer().schedule(object : TimerTask(){
-                        override fun run() {
-                            context.runOnUiThread {
-                                bannerImage.visibility = View.VISIBLE
-                                bannerImage.animate().alpha(1f).setDuration(400).setListener(null)
-                            }
-                        }
-                    }, 400)
-                }
-                .into(bannerImage)
+                .customLoad(data.bannerPath)
+                .withHorizontalPlaceholder()
+                .withCrossFade()
+                .into(binding.bannerImage)
         }
-        itemView.findViewById<TextView>(R.id.banner_content).text = data.indicatorText
+        binding.bannerContent.text = data.indicatorText
     }
 
     class BannerItem(

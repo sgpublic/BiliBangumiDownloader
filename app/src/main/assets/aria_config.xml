@@ -1,0 +1,6 @@
+<app>
+    <!--是否使用AriaCrashHandler来捕获异常，异常日志保存在：/mnt/sdcard/Android/data/{package_name}/files/log/-->
+    <useAriaCrashHandler value="true"/>
+    <!--设置Aria的日志级别，{@link ALog#LOG_LEVEL_VERBOSE}-->
+    <logLevel value="2"/>
+</app>

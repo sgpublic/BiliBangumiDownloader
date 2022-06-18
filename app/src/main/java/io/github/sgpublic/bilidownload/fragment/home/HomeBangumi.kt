@@ -8,10 +8,11 @@ import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.activity.Search
 import io.github.sgpublic.bilidownload.base.BaseFragment
-import io.github.sgpublic.bilidownload.data.FollowData
+import io.github.sgpublic.bilidownload.core.data.FollowData
+import io.github.sgpublic.bilidownload.core.manager.ConfigManager
+import io.github.sgpublic.bilidownload.core.module.FollowsModule
+import io.github.sgpublic.bilidownload.core.util.dp
 import io.github.sgpublic.bilidownload.databinding.FragmentHomeBangumiBinding
-import io.github.sgpublic.bilidownload.manager.ConfigManager
-import io.github.sgpublic.bilidownload.module.FollowsModule
 import io.github.sgpublic.bilidownload.ui.SeasonBannerAdapter
 import io.github.sgpublic.bilidownload.ui.recycler.HomeRecyclerAdapter
 import java.util.*
@@ -21,7 +22,7 @@ class HomeBangumi(context: AppCompatActivity): BaseFragment<FragmentHomeBangumiB
         getFollowData(1)
     }
 
-    override fun onCreateViweBinding(container: ViewGroup?): FragmentHomeBangumiBinding =
+    override fun onCreateViewBinding(container: ViewGroup?): FragmentHomeBangumiBinding =
         FragmentHomeBangumiBinding.inflate(layoutInflater, container, false)
 
     private lateinit var adapter: HomeRecyclerAdapter
@@ -30,7 +31,7 @@ class HomeBangumi(context: AppCompatActivity): BaseFragment<FragmentHomeBangumiB
         ViewBinding.bangumiSearch.setOnClickListener {
             Search.startActivity(context)
         }
-        ViewBinding.bangumiRefresh.setProgressViewOffset(false, Application.dip2px(40F), Application.dip2px(125F))
+        ViewBinding.bangumiRefresh.setProgressViewOffset(false, 40.dp, 125.dp)
         ViewBinding.bangumiRefresh.setOnRefreshListener {
             Timer().schedule(object : TimerTask(){
                 override fun run() {
@@ -53,12 +54,12 @@ class HomeBangumi(context: AppCompatActivity): BaseFragment<FragmentHomeBangumiB
         }
         val accessKey = ConfigManager.ACCESS_TOKEN
         val mid = ConfigManager.MID
-        val helper = FollowsModule(context, accessKey)
+        val helper = FollowsModule(accessKey)
         helper.getFollows(mid, pageIndex, 2, object : FollowsModule.Callback {
             override fun onFailure(code: Int, message: String?, e: Throwable?) {
                 Application.onToast(context, R.string.error_bangumi_load, message, code)
                 runOnUiThread {
-                    ViewBinding.bangumiLoadState.setImageResource(R.drawable.pic_load_failed)
+                    ViewBinding.bangumiLoadState.stopLoad(true)
                     ViewBinding.bangumiRefresh.isRefreshing = false
                 }
             }
@@ -66,10 +67,10 @@ class HomeBangumi(context: AppCompatActivity): BaseFragment<FragmentHomeBangumiB
             override fun onResult(followData: ArrayList<FollowData>, hasNext: Boolean) {
                 runOnUiThread {
                     if (followData.isEmpty()) {
-                        ViewBinding.bangumiLoadState.setImageResource(R.drawable.pic_null)
+                        ViewBinding.bangumiLoadState.loadEmpty()
                         ViewBinding.bangumiRefresh.isRefreshing = false
                     } else {
-                        ViewBinding.bangumiLoadState.visibility = View.INVISIBLE
+                        ViewBinding.bangumiLoadState.stopLoad()
                         ViewBinding.bangumiRecycler.visibility = View.VISIBLE
                         if (pageIndex == 1) {
                             adapter.setBannerData(getBannerData(followData))

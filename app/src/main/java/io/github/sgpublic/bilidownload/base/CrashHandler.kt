@@ -1,9 +1,9 @@
 package io.github.sgpublic.bilidownload.base
 
-import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.BuildConfig
-import io.github.sgpublic.bilidownload.manager.ConfigManager
-import io.github.sgpublic.bilidownload.util.MyLog
+import io.github.sgpublic.bilidownload.Application
+import io.github.sgpublic.bilidownload.core.manager.ConfigManager
+import io.github.sgpublic.bilidownload.core.util.LogCat
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
@@ -12,7 +12,7 @@ object CrashHandler {
     fun saveExplosion(e: Throwable?, code: Int, message: String? = "save exception"): String? {
         try {
             e ?: return null
-            MyLog.w(message ?: e.localizedMessage, e, 2)
+            LogCat.w(message ?: e.localizedMessage, e, 2)
             val exceptionLog: JSONObject
             var exceptionLogContent = JSONArray()
             val logPath: String = Application.APPLICATION_CONTEXT

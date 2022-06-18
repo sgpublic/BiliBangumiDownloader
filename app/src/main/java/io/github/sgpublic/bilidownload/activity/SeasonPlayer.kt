@@ -6,20 +6,21 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.BaseViewModelActivity
+import io.github.sgpublic.bilidownload.core.module.ApiModule
+import io.github.sgpublic.bilidownload.core.util.newObserve
 import io.github.sgpublic.bilidownload.databinding.ActivityPlayerBinding
 import io.github.sgpublic.bilidownload.fragment.factory.PlayerFragmentFactory
 import io.github.sgpublic.bilidownload.fragment.player.OnlinePlayer
 import io.github.sgpublic.bilidownload.fragment.season.SeasonOnlinePage
-import io.github.sgpublic.bilidownload.module.BaseAPI
 import io.github.sgpublic.bilidownload.room.entity.WatchHistoryEntity
-import io.github.sgpublic.bilidownload.ui.BlurHelper
-import io.github.sgpublic.bilidownload.ui.addOnReadyListener
-import io.github.sgpublic.bilidownload.util.newObserve
+import io.github.sgpublic.bilidownload.ui.customLoad
+import io.github.sgpublic.bilidownload.ui.withBlur
+import io.github.sgpublic.bilidownload.ui.withCrossFade
+import io.github.sgpublic.bilidownload.ui.withError
 import io.github.sgpublic.bilidownload.viewmodel.OnlinePlayerViewModel
 
 class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerViewModel>() {
@@ -28,7 +29,7 @@ class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerVie
     }
 
     override fun beforeCreate() {
-        supportFragmentManager.fragmentFactory = PlayerFragmentFactory(this)
+        supportFragmentManager.fragmentFactory = PlayerFragmentFactory(this@SeasonPlayer)
         super.beforeCreate()
     }
 
@@ -42,7 +43,7 @@ class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerVie
         }
     }
 
-    override fun onCreateViweBinding(): ActivityPlayerBinding =
+    override fun onCreateViewBinding(): ActivityPlayerBinding =
         ActivityPlayerBinding.inflate(layoutInflater)
 
     override fun onViewModelSetup() {
@@ -72,12 +73,10 @@ class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerVie
                     val dao = Application.DATABASE.WatchHistoryDao()
                     val data = list[index]
                     val history = dao.getByCid(data.cid)?.also {
-                        it.watch_time = BaseAPI.TS
-                    } ?: WatchHistoryEntity().also {
-                        it.cid = data.cid
-                        it.ep_index = index
-                        it.sid = ViewModel.getSeasonId()
-                    }
+                        it.watch_time = ApiModule.TS
+                    } ?: WatchHistoryEntity(
+                        data.cid, index, ViewModel.getSeasonId()
+                    )
                     dao.save(history)
                 }.run()
             }
@@ -90,16 +89,12 @@ class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerVie
                 setAnimateState(true, 500, ViewBinding.playerContent)
             }
             ViewBinding.playerToolbarTitle?.text = it.info.title
-            val requestOptions = RequestOptions()
-                .error(R.drawable.pic_load_failed)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
             ViewBinding.playerCover?.let { seasonCover ->
-                Glide.with(this@SeasonPlayer).load(it.info.cover)
-                    .apply(requestOptions)
-                    .apply(RequestOptions.bitmapTransform(BlurHelper()))
-                    .addOnReadyListener {
-                        setAnimateState(true, 400, ViewBinding.playerCover)
-                    }
+                Glide.with(this@SeasonPlayer)
+                    .customLoad(it.info.cover)
+                    .withError(R.drawable.pic_load_failed_h)
+                    .withBlur()
+                    .withCrossFade()
                     .into(seasonCover)
             }
             ViewModel.SEASON_ID.newObserve(this) sid@{ sid ->
@@ -125,6 +120,14 @@ class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerVie
         ViewModel.EXCEPTION.newObserve(this) {
             Application.onToast(this@SeasonPlayer, R.string.error_bangumi_load, it.message, it.code)
             ViewBinding.playerLoading?.stopLoad(true)
+        }
+        ViewModel.PLAYER_PLAYING.newObserve(this) {
+            val layout = ViewBinding.playerOrigin.layoutParams
+            if (layout !is CollapsingToolbarLayout.LayoutParams) {
+                return@newObserve
+            }
+            layout.collapseMode = if (it) CollapsingToolbarLayout.LayoutParams.COLLAPSE_MODE_PIN else
+                CollapsingToolbarLayout.LayoutParams.COLLAPSE_MODE_PARALLAX
         }
     }
 

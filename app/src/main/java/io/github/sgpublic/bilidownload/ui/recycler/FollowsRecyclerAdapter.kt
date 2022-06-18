@@ -8,14 +8,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.activity.SeasonPlayer
-import io.github.sgpublic.bilidownload.data.FollowData
+import io.github.sgpublic.bilidownload.core.data.FollowData
 import io.github.sgpublic.bilidownload.databinding.ItemBangumiFollowBinding
 import io.github.sgpublic.bilidownload.databinding.RecyclerFooterBinding
-import io.github.sgpublic.bilidownload.ui.addOnReadyListener
+import io.github.sgpublic.bilidownload.ui.customLoad
+import io.github.sgpublic.bilidownload.ui.withCrossFade
+import io.github.sgpublic.bilidownload.ui.withVerticalPlaceholder
 import java.util.*
 
 open class FollowsRecyclerAdapter(private val context: AppCompatActivity)
@@ -40,9 +40,11 @@ open class FollowsRecyclerAdapter(private val context: AppCompatActivity)
                 ))
             }
             TYPE_SEASON -> {
-                SeasonViewHolder(ItemBangumiFollowBinding.inflate(
-                    LayoutInflater.from(context), parent, false
-                ))
+                SeasonViewHolder(
+                    ItemBangumiFollowBinding.inflate(
+                        LayoutInflater.from(context), parent, false
+                    )
+                )
             }
             else -> throw IllegalStateException()
         }
@@ -105,22 +107,10 @@ open class FollowsRecyclerAdapter(private val context: AppCompatActivity)
         holder.binding.root.setOnClickListener {
             SeasonPlayer.startActivity(context, data.seasonId)
         }
-        if (holder.hasLoad) {
-            holder.binding.followImage.visibility = View.VISIBLE
-            return
-        }
-        val requestOptions = RequestOptions()
-            .placeholder(R.drawable.pic_doing_v)
-            .error(R.drawable.pic_load_failed)
-            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
         Glide.with(context)
-            .load(data.cover)
-            .apply(requestOptions)
-            .addOnReadyListener {
-                holder.binding.followImage.visibility = View.VISIBLE
-                holder.binding.followImage.animate().alpha(1f)
-                    .setDuration(400).setListener(null)
-            }
+            .customLoad(data.cover)
+            .withVerticalPlaceholder()
+            .withCrossFade()
             .into(holder.binding.followImage)
     }
 
@@ -190,7 +180,7 @@ open class FollowsRecyclerAdapter(private val context: AppCompatActivity)
 
     override fun getItemCount(): Int = follows.size + 1
 
-    class SeasonViewHolder(val binding: ItemBangumiFollowBinding, var hasLoad: Boolean = false)
+    class SeasonViewHolder(val binding: ItemBangumiFollowBinding)
         : RecyclerView.ViewHolder(binding.root)
 
     class FooterViewHolder(val binding: RecyclerFooterBinding)

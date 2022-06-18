@@ -11,18 +11,19 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import androidx.core.widget.addTextChangedListener
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.BaseActivity
 import io.github.sgpublic.bilidownload.base.CrashHandler
-import io.github.sgpublic.bilidownload.data.SearchData
+import io.github.sgpublic.bilidownload.core.data.SearchData
+import io.github.sgpublic.bilidownload.core.module.SearchModule
+import io.github.sgpublic.bilidownload.core.module.SearchModule.*
+import io.github.sgpublic.bilidownload.core.util.dp
 import io.github.sgpublic.bilidownload.databinding.*
-import io.github.sgpublic.bilidownload.module.SearchModule
-import io.github.sgpublic.bilidownload.module.SearchModule.*
-import io.github.sgpublic.bilidownload.ui.addOnReadyListener
-import io.github.sgpublic.bilidownload.util.MyLog
+import io.github.sgpublic.bilidownload.ui.customLoad
+import io.github.sgpublic.bilidownload.ui.withCrossFade
+import io.github.sgpublic.bilidownload.ui.withHorizontalPlaceholder
+import io.github.sgpublic.bilidownload.ui.withVerticalPlaceholder
 import org.json.JSONArray
 import org.json.JSONException
 import java.io.BufferedReader
@@ -31,13 +32,14 @@ import java.io.IOException
 import java.io.InputStreamReader
 import kotlin.math.roundToInt
 
+
 class Search: BaseActivity<ActivitySearchBinding>() {
     override fun onActivityCreated(hasSavedInstanceState: Boolean) {
         getHistory()
         getHotWords()
     }
 
-    override fun onCreateViweBinding(): ActivitySearchBinding =
+    override fun onCreateViewBinding(): ActivitySearchBinding =
         ActivitySearchBinding.inflate(layoutInflater)
 
     override fun onViewSetup() {
@@ -53,7 +55,6 @@ class Search: BaseActivity<ActivitySearchBinding>() {
             }
         })
         ViewBinding.searchEdit.setOnEditorActionListener listener@{ _, id, _ ->
-            MyLog.d("code: $id")
             if (id == EditorInfo.IME_ACTION_SEARCH) {
                 ViewBinding.searchEdit.clearFocus()
                 onSearch()
@@ -64,7 +65,7 @@ class Search: BaseActivity<ActivitySearchBinding>() {
     }
 
     private fun getHotWords() {
-        val helper = SearchModule(this@Search)
+        val helper = SearchModule()
         helper.getHotWord(object : HotWordCallback {
             override fun onResult(hotWords: List<String>) {
                 val paramsLinear = LinearLayout.LayoutParams(
@@ -88,7 +89,7 @@ class Search: BaseActivity<ActivitySearchBinding>() {
     }
 
     private fun getSuggestions() {
-        val helper = SearchModule(this@Search)
+        val helper = SearchModule()
         helper.suggest(ViewBinding.searchEdit.text.toString(), object : SuggestCallback {
             override fun onFailure(code: Int, message: String?, e: Throwable?) {
                 setAnimateState(false, 150, ViewBinding.searchSuggestionBase, null)
@@ -104,9 +105,9 @@ class Search: BaseActivity<ActivitySearchBinding>() {
                         ViewBinding.searchSuggestionResult.removeAllViews()
                         ViewBinding.searchSuggestionResult.columnCount = 1
                         ViewBinding.searchSuggestionResult.rowCount = rowCount
-                        val viewHeight = Application.dip2px(50f)
+                        val viewHeight = 50.dp
                         val viewWidth =
-                            resources.displayMetrics.widthPixels - Application.dip2px(40f)
+                            resources.displayMetrics.widthPixels - 40.dp
                         for (suggestion_index in 0 until rowCount) {
                             val spannableIndex = suggestions[suggestion_index]
                             val view = ItemSearchSuggestionBinding.inflate(layoutInflater, ViewBinding.searchSuggestionResult, false)
@@ -147,7 +148,7 @@ class Search: BaseActivity<ActivitySearchBinding>() {
             setAnimateState(true, 300, ViewBinding.searchLoadState)
             val keyword: String = ViewBinding.searchEdit.text.toString()
             onAddHistory(keyword)
-            val helper = SearchModule(this@Search)
+            val helper = SearchModule()
             helper.search(keyword, object : SearchCallback {
                 override fun onFailure(code: Int, message: String?, e: Throwable?) {
                     Application.onToast(this@Search, R.string.error_bangumi_load, message, code)
@@ -223,18 +224,10 @@ class Search: BaseActivity<ActivitySearchBinding>() {
         searchItem.root.setOnClickListener {
             goToSeason(data)
         }
-        val requestOptions = RequestOptions()
-            .placeholder(R.drawable.pic_doing_v)
-            .error(R.drawable.pic_load_failed)
-            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
         Glide.with(this@Search)
-            .load(data.seasonCover)
-            .apply(requestOptions)
-            .addOnReadyListener {
-                setAnimateState(false, 400, searchItem.itemSearchSeasonPlaceholder) {
-                    setAnimateState(true, 400, searchItem.itemSearchSeasonCover)
-                }
-            }
+            .customLoad(data.seasonCover)
+            .withVerticalPlaceholder()
+            .withCrossFade()
             .into(searchItem.itemSearchSeasonCover)
         return searchItem.root
     }
@@ -260,13 +253,10 @@ class Search: BaseActivity<ActivitySearchBinding>() {
         searchItem.root.setOnClickListener {
             goToSeason(data)
         }
-        val requestOptions = RequestOptions()
-            .placeholder(R.drawable.pic_doing_h)
-            .error(R.drawable.pic_load_failed)
-            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
         Glide.with(this@Search)
-            .load(data.episodeCover)
-            .apply(requestOptions)
+            .customLoad(data.episodeCover)
+            .withHorizontalPlaceholder()
+            .withCrossFade()
             .into(searchItem.itemSearchEpisodeCover)
         return searchItem.root
     }

@@ -2,15 +2,21 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "f981d1a4ab5900139e0a909cde820ed4",
+    "identityHash": "e878c765fa9640ef135bf1bb30d92710",
     "entities": [
       {
         "tableName": "tasks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cid` INTEGER NOT NULL, `status` INTEGER NOT NULL, `entry` TEXT, `index` TEXT, PRIMARY KEY(`cid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cid` INTEGER NOT NULL, `sid` INTEGER NOT NULL, `status` INTEGER NOT NULL, `entry` TEXT, `index` TEXT, PRIMARY KEY(`cid`))",
         "fields": [
           {
             "fieldPath": "cid",
             "columnName": "cid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sid",
+            "columnName": "sid",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -90,7 +96,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f981d1a4ab5900139e0a909cde820ed4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e878c765fa9640ef135bf1bb30d92710')"
     ]
   }
 }

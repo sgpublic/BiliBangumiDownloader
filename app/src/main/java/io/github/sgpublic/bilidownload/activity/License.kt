@@ -13,7 +13,7 @@ class License: BaseActivity<ActivityLicenseBinding>() {
 
     }
 
-    override fun onCreateViweBinding(): ActivityLicenseBinding =
+    override fun onCreateViewBinding(): ActivityLicenseBinding =
         ActivityLicenseBinding.inflate(layoutInflater)
 
     override fun onViewSetup() {
