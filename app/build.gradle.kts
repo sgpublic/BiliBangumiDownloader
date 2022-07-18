@@ -3,7 +3,6 @@
 import android.databinding.tool.util.StringUtils
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import org.gradle.internal.os.OperatingSystem
-import org.jetbrains.kotlin.ir.backend.js.toByteArray
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
@@ -46,7 +45,7 @@ val COMMIT_VERSION: Int get() {
 
 val TIME_MD5: String get() {
     val md5 = MessageDigest.getInstance("MD5")
-    val digest = md5.digest(System.currentTimeMillis().toByteArray())
+    val digest = md5.digest(System.currentTimeMillis().toString().toByteArray())
     val pre = BigInteger(1, digest)
     return pre.toString(16)
         .padStart(32, '0')
@@ -192,7 +191,7 @@ dependencies {
     implementation("com.google.android.material:material:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.4.2")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.5.0")
 
     val roomVer = "2.4.2"
     implementation("androidx.room:room-runtime:$roomVer")

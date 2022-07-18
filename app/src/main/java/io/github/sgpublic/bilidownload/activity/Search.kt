@@ -171,10 +171,10 @@ class Search: BaseActivity<ActivitySearchBinding>() {
                             for (data_index in searchData.indices) {
                                 val data = searchData[data_index]
                                 val searchItem: View? = when (data.selectionStyle) {
-                                    "grid" -> {
+                                    SearchData.SelectionStyle.GRID -> {
                                         getGridSearchView(data)
                                     }
-                                    "horizontal" -> {
+                                    SearchData.SelectionStyle.HORIZONTAL -> {
                                         getHorizontalSearchView(data)
                                     }
                                     else -> {

@@ -71,7 +71,7 @@ class SearchModule {
                     LogCat.d("empty result")
                     callback.onResult(listOf())
                 } else {
-                    val array = data.getJSONArray("result")
+                    val array = dataObj.getJSONArray("result")
                     callback.onResult(parse(array))
                 }
             }
@@ -122,10 +122,9 @@ class SearchModule {
             }
             searchData.seasonTitle = seasonTitleSpannable
             if (index.getLong("pubtime") * 1000 > System.currentTimeMillis()) {
-                searchData.selectionStyle = "grid"
+                searchData.selectionStyle = SearchData.SelectionStyle.GRID
             } else {
-                searchData.selectionStyle =
-                    index.getString("selection_style")
+                searchData.selectionStyle = SearchData.SelectionStyle.of(index.getString("selection_style"))
             }
             val date = Date(index.getLong("pubtime") * 1000)
             val format = SimpleDateFormat("yyyy", Locale.CHINA)
@@ -172,18 +171,15 @@ class SearchModule {
         return searchDataList
     }
 
-    interface SearchCallback :
-        ApiModule.Callback {
+    interface SearchCallback : ApiModule.Callback {
         fun onResult(searchData: List<SearchData>)
     }
 
-    interface SuggestCallback :
-        ApiModule.Callback {
+    interface SuggestCallback : ApiModule.Callback {
         fun onResult(suggestions: List<Spannable>)
     }
 
-    interface HotWordCallback :
-        ApiModule.Callback {
+    interface HotWordCallback : ApiModule.Callback {
         override fun onFailure(code: Int, message: String?, e: Throwable?) {}
         fun onResult(hotWords: List<String>)
     }
