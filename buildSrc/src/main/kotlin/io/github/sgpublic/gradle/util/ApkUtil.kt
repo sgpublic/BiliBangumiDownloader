@@ -3,6 +3,7 @@ package io.github.sgpublic.gradle.util
 import io.github.sgpublic.gradle.ApkPlugin
 import io.github.sgpublic.gradle.core.BuildTypes
 import net.dongliu.apk.parser.ApkFile
+import org.gradle.internal.component.external.model.ComponentVariant
 import org.gradle.internal.os.OperatingSystem
 import java.io.File
 import java.io.InputStream
@@ -24,6 +25,8 @@ object ApkUtil {
                 if (name.contains(BuildTypes.TYPE_RELEASE)) {
                     return@let " V${meta.versionName}(${meta.versionCode})"
                 } else if (name.contains(BuildTypes.TYPE_DEV)) {
+                    return@let "_${meta.versionName}"
+                } else if (name.contains(BuildTypes.TYPE_SNAPSHOT)) {
                     return@let "_${meta.versionName}"
                 } else {
                     return
