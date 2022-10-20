@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:maxLength="11"
-            android:inputType="numberDecimal"
+            android:inputType="phone|textEmailAddress"
             android:imeOptions="actionNext"
             android:imeActionLabel="@string/ime_label_next" />
     </com.google.android.material.textfield.TextInputLayout>

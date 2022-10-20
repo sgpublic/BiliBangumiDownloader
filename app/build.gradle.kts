@@ -66,9 +66,6 @@ android {
         }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        if (signInfoExit) {
-            signingConfig = signingConfigs.getByName(SignConfig.NAME)
-        }
 
         kapt {
             arguments {
@@ -96,6 +93,9 @@ android {
     buildTypes {
         all {
             isMinifyEnabled = false
+            if (signInfoExit) {
+                signingConfig = signingConfigs.getByName(SignConfig.NAME)
+            }
         }
 
         /** 自动化版本命名 */

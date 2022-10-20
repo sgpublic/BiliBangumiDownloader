@@ -159,7 +159,6 @@ class LoginPwd: BaseViewModelActivity<ActivityLoginPwdBinding, LoginPwdModel>() 
         fun startActivity(context: Context){
             val intent = Intent().run {
                 setClass(context, LoginPwd::class.java)
-                setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             context.startActivity(intent)
         }

@@ -33,10 +33,10 @@ class Application : Application() {
     private var onBoot = true
     override fun onCreate() {
         super.onCreate()
-        log.info("APP启动")
         application = this
         loadLogbackConfig()
         startListenException()
+        log.info("APP启动")
         room = Room.databaseBuilder(this, AppDatabase::class.java, BuildConfig.PROJECT_NAME)
             .fallbackToDestructiveMigration()
             .allowMainThreadQueries()
@@ -74,7 +74,7 @@ class Application : Application() {
         context.reset()
         try {
             configurator.doConfigure(resources.assets.open("logback-bilidl.xml"))
-            StatusPrinter.printInCaseOfErrorsOrWarnings(context)
+            StatusPrinter.printIfErrorsOccured(context)
         } catch (e: JoranException) {
             e.printStackTrace()
         } catch (e: IOException) {
