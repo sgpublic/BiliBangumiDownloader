@@ -2,6 +2,8 @@
     <string name="app_name">哔哩番剧</string>
     <string name="app_service">哔哩番剧下载服务</string>
 
+    <string name="ime_label_next">下一个</string>
+
     <string name="title_bangumi">番剧</string>
     <string name="title_mine">我的</string>
     <string name="text_version" translatable="false">Ver.%1$s</string>
@@ -10,14 +12,22 @@
     <string name="text_back_exit_notice">请再点击一次退出</string>
 
     <string name="title_login_welcome">欢迎使用哔哩番剧</string>
-    <string name="text_login_welcome">请使用哔哩哔哩 APP 扫码登录</string>
+    <string name="text_login_welcome_qrcode">请使用哔哩哔哩 APP 扫码登录</string>
+    <string name="text_login_welcome_pwd">请使用哔哩哔哩账号登录</string>
+    <string name="text_login_username">请输入手机号</string>
+    <string name="text_login_password">请输入密码</string>
+    <string name="text_login_action">登录</string>
+    <string name="text_login_action_doing">正在登录</string>
     <string name="text_login_qrcode_exception">二维码获取出错，原因：%1$s，点击重试</string>
     <string name="text_login_info_exception">登录出错，原因：%1$s，点击重试</string>
     <string name="text_login_qrcode_expire">二维码已过期，点击重新获取</string>
     <string name="text_login_qrcode_confirm">已扫描，请在客户端中确认登录</string>
     <string name="text_login_notice">此二维码在哔哩哔哩客户端中会提示为 TV 端，请放心登录</string>
     <string name="text_login_success">登录成功</string>
+    <string name="text_login_failed">登录失败</string>
     <string name="text_login_error_empty">账号或密码为空</string>
+    <string name="text_login_phone_validate">验证手机号</string>
+    <string name="text_login_phone_validate_failed">手机号验证逻辑失效啦，请联系开发者反馈</string>
 
     <string name="title_login_web">网页登录</string>
 
@@ -132,7 +142,7 @@
     <string name="error_network">请检查网络连接</string>
     <string name="error_login">登陆失败</string>
     <string name="error_login_refresh">登录状态失效，请重新登陆</string>
-    <string name="error_login_verify">您的账号登录受限，请使用网页登陆</string>
+    <string name="error_login_verify">您的账号登录受限</string>
     <string name="error_bangumi_load">数据加载出错</string>
     <string name="error_bangumi_play">播放失败</string>
     <string name="error_update">检查更新出错</string>

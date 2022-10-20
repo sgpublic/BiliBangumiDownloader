@@ -59,7 +59,7 @@
                     android:layout_gravity="center_vertical"
                     app:tint="@color/color_player_controller"
                     tools:ignore="ContentDescription" />
-                <io.github.sgpublic.bilidownload.widget.ScrollTextView
+                <io.github.sgpublic.bilidownload.app.widget.ScrollTextView
                     android:id="@+id/player_toolbar_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -88,7 +88,7 @@
                 android:alpha="0"
                 android:orientation="vertical" />
         </androidx.core.widget.NestedScrollView>
-        <io.github.sgpublic.bilidownload.widget.LoadingImageView
+        <io.github.sgpublic.bilidownload.app.widget.LoadingImageView
             android:id="@+id/player_loading"
             android:layout_width="150dp"
             android:layout_height="wrap_content"

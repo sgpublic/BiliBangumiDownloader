@@ -1,0 +1,85 @@
+name: Build Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo timedatectl set-timezone "Asia/Shanghai"
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+
+    - name: Setup JDK 17
+      uses: oracle-actions/setup-java@v1
+      with:
+        website: oracle.com
+        release: 17
+        version: 17
+
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+
+    - name: Setup aapt
+      run: |
+        sudo apt install aapt -y
+
+    - name: Get sign key
+      uses: actions/checkout@v2
+      with:
+        repository: sgpublic/private-key
+        token: ${{ secrets.TOKEN }}
+        path: ./app/sign
+
+    - name: Build with Gradle
+      run: |
+        bash ./gradlew packageReleaseAndLocate
+
+    - name: Organize files
+      run: |
+        cp ./build/assemble/*.apk /workdir/
+
+    - name: Generate release tag
+      id: tag
+      run: |
+        release_tag=v$(aapt dump badging /workdir/*.apk | grep -P "versionName='(.*?)'" -o | cut -d \' -f 2)
+        echo "::set-output name=release_tag::$release_tag"
+
+    - name: Upload to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ steps.tag.outputs.release_tag }}
+        file: "/workdir/*"
+        overwrite: true
+        file_glob: true
+
+    - name: Delete workflow runs
+      uses: GitRML/delete-workflow-runs@main
+      with:
+        token: ${{ secrets.TOKEN }}
+        retain_days: 1
+        keep_minimum_runs: 1
+
+    - name: Remove old release
+      uses: sgpublic/delete-release-action@v1.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+      with:
+        release-drop: false
+        pre-release-drop: true
+        pre-release-keep-count: -1
+        pre-release-drop-tag: true
+        draft-drop: true

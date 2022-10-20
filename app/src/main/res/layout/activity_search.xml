@@ -93,7 +93,7 @@
                             android:background="?android:attr/selectableItemBackgroundBorderless"
                             tools:ignore="ContentDescription" />
                     </LinearLayout>
-                    <io.github.sgpublic.bilidownload.widget.FlowLayout
+                    <io.github.sgpublic.bilidownload.app.widget.FlowLayout
                         android:id="@+id/search_history_list"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -113,7 +113,7 @@
                         android:textColor="@color/color_text_normal"
                         android:textStyle="bold"
                         android:textSize="16sp" />
-                    <io.github.sgpublic.bilidownload.widget.FlowLayout
+                    <io.github.sgpublic.bilidownload.app.widget.FlowLayout
                         android:id="@+id/search_hot_word_list"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -144,7 +144,7 @@
                     tools:ignore="ContentDescription" />
             </LinearLayout>
         </ScrollView>
-        <io.github.sgpublic.bilidownload.widget.LoadingImageView
+        <io.github.sgpublic.bilidownload.app.widget.LoadingImageView
             android:id="@+id/search_load_state"
             android:layout_width="match_parent"
             android:layout_height="150dp"

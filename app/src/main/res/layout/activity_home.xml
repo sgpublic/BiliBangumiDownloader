@@ -23,15 +23,12 @@
             android:layout_height="match_parent" />
     </FrameLayout>
 
-    <com.sgpublic.blurfixandroidx.BlurLayout
+    <FrameLayout
         android:id="@+id/nav_view"
         android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="58dp"
-        android:layout_gravity="bottom"
-        app:blurRadius="25"
-        app:fps="60"
-        app:downscaleFactor="0.5">
+        android:layout_gravity="bottom">
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -98,5 +95,5 @@
                     android:layout_gravity="center_horizontal" />
             </LinearLayout>
         </LinearLayout>
-    </com.sgpublic.blurfixandroidx.BlurLayout>
+    </FrameLayout>
 </FrameLayout>

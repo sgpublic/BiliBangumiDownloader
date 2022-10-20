@@ -1,12 +1,10 @@
-@file:Suppress("JcenterRepositoryObsolete")
-
 pluginManagement {
     repositories {
         gradlePluginPortal()
         google()
         mavenCentral()
         maven("https://jitpack.io")
-        @Suppress("DEPRECATION") jcenter()
+        jcenter()
     }
 }
 
@@ -16,7 +14,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://jitpack.io")
-        @Suppress("DEPRECATION") jcenter()
+        jcenter()
     }
 }
 

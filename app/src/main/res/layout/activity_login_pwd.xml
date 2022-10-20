@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".app.activity.LoginPwd">
+
+    <TextView
+        android:id="@+id/login_welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_marginHorizontal="20dp"
+        android:text="@string/title_login_welcome"
+        android:textColor="@color/color_text_normal"
+        android:textSize="28sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/login_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="20dp"
+        android:text="@string/text_login_welcome_pwd"
+        android:textColor="@color/color_text_light"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/login_welcome"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/login_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="20dp"
+        android:hint="@string/text_login_username"
+        app:layout_constraintTop_toBottomOf="@id/login_desc">
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:maxLength="11"
+            android:inputType="numberDecimal"
+            android:imeOptions="actionNext"
+            android:imeActionLabel="@string/ime_label_next" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/login_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="20dp"
+        android:hint="@string/text_login_password"
+        app:layout_constraintTop_toBottomOf="@id/login_username">
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:inputType="textPassword"
+            android:imeOptions="actionDone"
+            android:imeActionLabel="@string/text_login_password" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/login_action"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginHorizontal="20dp"
+        android:text="@string/text_login_action"
+        app:layout_constraintTop_toBottomOf="@id/login_password"/>
+
+
+    <ImageView
+        android:id="@+id/login_banner_left"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_weight="1"
+        android:scaleType="fitStart"
+        android:src="@drawable/pic_login_banner_left_show"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:fitsSystemWindows="true"/>
+
+    <ImageView
+        android:id="@+id/login_banner_right"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_weight="1"
+        android:scaleType="fitEnd"
+        android:src="@drawable/pic_login_banner_right_show"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:fitsSystemWindows="true"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

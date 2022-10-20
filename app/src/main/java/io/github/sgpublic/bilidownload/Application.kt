@@ -1,7 +1,8 @@
 package io.github.sgpublic.bilidownload
 
 import android.app.Application
-import android.content.*
+import android.content.ContentResolver
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Handler
 import android.os.Looper
@@ -9,81 +10,82 @@ import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.room.Room
+import ch.qos.logback.classic.LoggerContext
+import ch.qos.logback.classic.joran.JoranConfigurator
+import ch.qos.logback.core.joran.spi.JoranException
+import ch.qos.logback.core.util.StatusPrinter
 import com.arialyy.aria.core.Aria
-import com.lxj.xpopup.XPopup
-import io.github.sgpublic.bilidownload.base.CrashHandler
-import io.github.sgpublic.bilidownload.core.manager.ConfigManager
-import io.github.sgpublic.bilidownload.core.util.LogCat
+import com.dtflys.forest.Forest
+import com.dtflys.forest.converter.json.ForestGsonConverter
+import io.github.sgpublic.bilidownload.base.forest.GsonConverter
+import io.github.sgpublic.bilidownload.core.forest.core.BiliApiInterceptor
+import io.github.sgpublic.bilidownload.core.forest.core.UrlEncodedInterceptor
+import io.github.sgpublic.bilidownload.core.room.AppDatabase
 import io.github.sgpublic.bilidownload.core.util.finishAll
-import io.github.sgpublic.bilidownload.room.AppDatabase
-import io.github.sgpublic.bilidownload.room.entity.TaskEntity
-import io.github.sgpublic.bilidownload.service.DownloadService
+import io.github.sgpublic.bilidownload.core.util.log
+import io.github.sgpublic.exsp.ExPreference
+import okio.IOException
+import org.slf4j.LoggerFactory
 
 @Suppress("unused")
 class Application : Application() {
     private var onBoot = true
     override fun onCreate() {
         super.onCreate()
-        LogCat.i("APP启动")
+        log.info("APP启动")
         application = this
-        room = Room.databaseBuilder(applicationContext, AppDatabase::class.java, BuildConfig.PROJECT_NAME)
+        loadLogbackConfig()
+        startListenException()
+        room = Room.databaseBuilder(this, AppDatabase::class.java, BuildConfig.PROJECT_NAME)
             .fallbackToDestructiveMigration()
             .allowMainThreadQueries()
             .build()
-        room.TasksDao().let {
-            it.resetPreparingTasks()
-            it.resetProcessingTasks()
-        }
-        Aria.init(applicationContext)
+        Aria.init(this)
+        ExPreference.init(this)
+        configForest()
     }
 
     private fun startListenException() {
         Handler(mainLooper).post {
-            while (true) {
-                try {
+            try {
+                while (true) {
                     Looper.loop()
-                } catch (e: Throwable){
-                    CrashHandler.saveExplosion(e, -100, "应用意外停止")
-                    if (!BuildConfig.DEBUG) {
-                        finishAll()
-                        break
-                    }
                 }
+            } catch (e: Throwable){
+                log.error("应用意外退出", e)
+                finishAll()
             }
         }
     }
 
-    private fun showExceptionDialog(exc: String?) {
-        // TODO 应用意外退出弹窗
-        if (exc == null) {
-            finishAll()
-            return
+    private fun configForest() {
+        Forest.config().let {
+            it.interceptors = listOf(UrlEncodedInterceptor::class.java, BiliApiInterceptor::class.java)
+            it.jsonConverter = GsonConverter
+            it.isLogResponseContent = BuildConfig.DEBUG
         }
-        XPopup.Builder(APPLICATION_CONTEXT).asConfirm(
-            getString(R.string.title_function_crash),
-            getString(R.string.text_function_crash),
-            getString(R.string.text_function_crash_exit),
-            getString(R.string.text_function_crash_copy), {
-                val cs = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                cs.setPrimaryClip(ClipData.newPlainText("exception", exc))
-                finishAll()
-            }, {
-                finishAll()
-            }, false
-        ).show()
+    }
+
+    private fun loadLogbackConfig() {
+        val context = LoggerFactory.getILoggerFactory() as LoggerContext
+        val configurator = JoranConfigurator()
+        configurator.context = context
+        context.reset()
+        try {
+            configurator.doConfigure(resources.assets.open("logback-bilidl.xml"))
+            StatusPrinter.printInCaseOfErrorsOrWarnings(context)
+        } catch (e: JoranException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 
     override fun onTerminate() {
-        LogCat.i("APP结束")
+        log.info("APP结束")
         if (DATABASE.isOpen) {
             DATABASE.close()
-        }
-        tasksObserver?.let {
-            processingTasks?.removeObserver(it)
-            waitingTasks?.removeObserver(it)
         }
         super.onTerminate()
     }
@@ -99,35 +101,6 @@ class Application : Application() {
 
         val IS_NIGHT_MODE: Boolean get() = APPLICATION_CONTEXT.resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-
-        private var tasksObserver: Observer<List<TaskEntity>>? = null
-        private var processingTasks: LiveData<List<TaskEntity>>? = null
-        private var waitingTasks: LiveData<List<TaskEntity>>? = null
-        fun startListenTask() {
-            synchronized(this) {
-                if (tasksObserver != null) {
-                    return
-                }
-                tasksObserver = Observer<List<TaskEntity>> { tasks ->
-                    if (!ConfigManager.TASK_AUTO_START) {
-                        return@Observer
-                    }
-                    if (tasks.isNotEmpty()) {
-                        val intent = Intent(APPLICATION_CONTEXT, DownloadService::class.java)
-                        APPLICATION_CONTEXT.startForegroundService(intent)
-                    }
-                }.also { observer ->
-                    DATABASE.TasksDao().run {
-                        processingTasks = listenByTaskStatus(TaskEntity.STATUS_PROCESSING).also {
-                            it.observeForever(observer)
-                        }
-                        waitingTasks = listenByTaskStatus(TaskEntity.STATUS_WAITING).also {
-                            it.observeForever(observer)
-                        }
-                    }
-                }
-            }
-        }
 
         fun onToast(context: AppCompatActivity, content: String?) {
             context.runOnUiThread {

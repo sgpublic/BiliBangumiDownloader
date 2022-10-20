@@ -1,0 +1,3 @@
+[submodule "sign"]
+	path = app/sign
+	url = https://github.com/sgpublic/private-sign

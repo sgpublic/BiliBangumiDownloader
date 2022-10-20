@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <io.github.sgpublic.bilidownload.widget.LoadingImageView
+        <io.github.sgpublic.bilidownload.app.widget.LoadingImageView
             android:id="@+id/login_load_state"
             android:layout_width="match_parent"
             android:layout_height="150dp"

@@ -16,5 +16,5 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:name="io.github.sgpublic.bilidownload.fragment.season.TaskList"/>
+        android:name="io.github.sgpublic.bilidownload.app.fragment.season.TaskList"/>
 </LinearLayout>

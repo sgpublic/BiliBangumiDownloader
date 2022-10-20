@@ -2,7 +2,7 @@ package io.github.sgpublic.bilidownload.core.util
 
 import android.animation.Animator
 import android.view.View
-import io.github.sgpublic.bilidownload.ui.ViewState
+import io.github.sgpublic.bilidownload.app.ui.ViewState
 
 interface Animate {
     val animate: MutableMap<View, ViewState>
@@ -29,7 +29,7 @@ interface Animate {
                 alphaBy(1f).alpha(0f)
             }
         }.setDuration(duration).setListener(object : ViewState.AnimateListener {
-            override fun onAnimationEnd(p0: Animator?) {
+            override fun onAnimationEnd(p0: Animator) {
                 try {
                     state.animate = null
                     callback()
