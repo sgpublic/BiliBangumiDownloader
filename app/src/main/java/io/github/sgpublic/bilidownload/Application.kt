@@ -74,12 +74,10 @@ class Application : Application() {
         context.reset()
         try {
             configurator.doConfigure(resources.assets.open("logback-bilidl.xml"))
-            StatusPrinter.printIfErrorsOccured(context)
-        } catch (e: JoranException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
+            if (BuildConfig.DEBUG) {
+                StatusPrinter.printIfErrorsOccured(context)
+            }
+        } catch (_: Exception) { }
     }
 
     override fun onTerminate() {

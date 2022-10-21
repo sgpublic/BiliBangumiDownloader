@@ -59,7 +59,7 @@
         app:fabCustomSize="64dp"
         app:fabSize="normal"
         android:src="@drawable/ic_confirm"
-        android:tint="@color/colorCompat"
+        android:tint="@color/colorOnPrimary"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:ignore="ContentDescription" />
@@ -71,7 +71,7 @@
         app:fabCustomSize="64dp"
         app:fabSize="normal"
         android:src="@drawable/ic_download"
-        android:tint="@color/colorCompat"
+        android:tint="@color/colorOnPrimary"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:ignore="ContentDescription" />

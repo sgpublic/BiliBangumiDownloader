@@ -8,13 +8,13 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/bangumi_search_base"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
         android:layout_marginBottom="10dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:padding="10dp"
-        app:cardCornerRadius="25dp"
+        app:cardCornerRadius="30dp"
         app:cardElevation="2dp">
         <ImageView
             android:layout_width="20dp"

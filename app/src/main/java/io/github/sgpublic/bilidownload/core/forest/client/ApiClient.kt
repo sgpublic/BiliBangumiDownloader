@@ -4,27 +4,38 @@ import com.dtflys.forest.annotation.Address
 import com.dtflys.forest.annotation.Get
 import com.dtflys.forest.annotation.Query
 import com.dtflys.forest.http.ForestRequest
+import com.google.gson.JsonObject
 import io.github.sgpublic.bilidownload.app.activity.Search
+import io.github.sgpublic.bilidownload.base.forest.ResultResp
 import io.github.sgpublic.bilidownload.core.forest.annotations.BiliSearchReferer
 import io.github.sgpublic.bilidownload.core.forest.annotations.BiliSign
+import io.github.sgpublic.bilidownload.core.forest.data.BannerResp
 import io.github.sgpublic.bilidownload.core.forest.data.SearchSuggestResp
+import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
 
 @Address(
     scheme = "https",
     host = "api.bilibili.com"
 )
 interface ApiClient {
+    /**
+     * 追番列表
+     * @param status 状态，1：想看，2：在看，3：看过
+     * @param pageIndex 页数
+     * @param accessToken access_token
+     * @param ps 每页记录数量
+     */
     @BiliSign
     @Get("/pgc/app/follow/v2/bangumi")
-    fun getFollowsRequest(
-        @Query("pn") pageIndex: Int,
+    fun follow(
         @Query("status") status: Int,
+        @Query("pn") pageIndex: Int,
         @Query("access_key") accessToken: String,
         @Query("ps") ps: Int = 18,
     )
 
     @Get("/x/web-interface/search/type")
-    fun getSearchResultRequest(
+    fun searchResult(
         @Query("keyword") keyword: String,
         @Query("page") page: Int = 1,
         @Query("search_type") searchType: String = "media_bangumi",
@@ -32,7 +43,7 @@ interface ApiClient {
 
     @BiliSearchReferer
     @Get("https://s.search.bilibili.com/main/suggest")
-    fun getSearchSuggestRequest(
+    fun searchSuggest(
         @Query("term") keyword: String,
         @Query("main_ver") mainVer: String = "v1",
         @Query("special_acc_num") specialAccNum: Int = 1,
@@ -44,10 +55,36 @@ interface ApiClient {
         @Query("upuser_num") upuserNum: Int = 10,
     ): ForestRequest<SearchSuggestResp>
 
+    @Deprecated(
+        message = "Use v2 instead.",
+        replaceWith = ReplaceWith("seasonInfoV2(seasonId, accessToken)")
+    )
     @BiliSign
     @Get("/pgc/view/app/season")
-    fun getSeasonInfoAppRequest(
-        @Query("access_key") accessToken: String,
+    fun seasonInfo(
         @Query("season_id") seasonId: Int,
-    )
+        @Query("access_key") accessToken: String,
+    ): ForestRequest<String>
+
+    /**
+     * 番剧信息 v2 接口
+     * @param seasonId sid
+     * @param accessToken access_token
+     */
+    @BiliSign
+    @Get("/pgc/view/v2/app/season")
+    fun seasonInfoV2(
+        @Query("season_id") seasonId: Int,
+        @Query("access_key") accessToken: String,
+    ): ForestRequest<SeasonInfoResp>
+
+    /**
+     * 首页 banner
+     * @param accessToken access_token
+     */
+    @BiliSign
+    @Get("/pgc/page")
+    fun banner(
+        @Query("access_key") accessToken: String,
+    ): ForestRequest<BannerResp>
 }

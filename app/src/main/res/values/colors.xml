@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>>
-    <color name="colorPrimary">#2196F3</color>
-    <color name="colorPrimaryDark">#2196F3</color>
-    <color name="colorAccent">#2196F3</color>
-    <color name="colorAlert">#0099ff</color>
-    <color name="colorCompat">#E9F5FF</color>
-    <color name="colorWindowBackground">#FAFAFA</color>
-    <color name="colorWindowBackgroundDark">#F0F0F0</color>
-    <color name="colorTransparent">#00000000</color>
-    <color name="colorBlurAlphaStart">#D0FAFAFA</color>
-    <color name="colorBlurAlphaEnd">#EEFAFAFA</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00FFFFFF</color>
+
+    <color name="colorWindowBackground">#F8F9FB</color>
+
+    <color name="colorPrimary">#006FFF</color>
+    <color name="colorPrimaryVariant">#D5D5D5</color>
+    <color name="colorPrimaryText">#000000</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+
+    <color name="colorSecondary">#0056C5</color>
+    <color name="colorSecondaryVariant">#D5D5D5</color>
+    <color name="colorSecondaryText">#757575</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
+
+    <color name="colorAccent">#509CFF</color>
+    <color name="colorOutline">#000000</color>
+    <color name="colorSurfaceVariant">#4676767C</color>
 
     <color name="color_login_transparent">#AAFFFFFF</color>
 

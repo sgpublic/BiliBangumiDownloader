@@ -6,6 +6,6 @@ import org.junit.Test
 class SearchSuggestTest {
     @Test
     fun getSuggest() {
-        ForestClients.API.getSearchSuggestRequest("超炮").execute()
+        ForestClients.API.searchSuggest("超炮").execute()
     }
 }

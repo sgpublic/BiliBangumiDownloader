@@ -133,7 +133,7 @@
                 android:gravity="center"
                 android:text="@string/title_search_go"
                 android:textSize="12sp"
-                android:textColor="@color/colorCompat" />
+                android:textColor="@color/colorOnPrimary" />
         </androidx.cardview.widget.CardView>
     </LinearLayout>
 </LinearLayout>

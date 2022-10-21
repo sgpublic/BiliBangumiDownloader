@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
-    tools:context="io.github.sgpublic.bilidownload.activity.License">
+    tools:context="io.github.sgpublic.bilidownload.app.activity.License">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/license_toolbar"

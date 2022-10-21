@@ -5,14 +5,19 @@ import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.viewModels
 import androidx.lifecycle.viewModelScope
+import com.geetest.sdk.GT3ConfigBean
+import com.geetest.sdk.GT3ErrorBean
+import com.geetest.sdk.GT3GeetestUtils
+import com.geetest.sdk.GT3Listener
+import com.google.gson.JsonObject
 import com.lxj.xpopup.XPopup
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
-import io.github.sgpublic.bilidownload.app.dialog.GeetestDialog
 import io.github.sgpublic.bilidownload.app.viewmodel.LoginPwdModel
 import io.github.sgpublic.bilidownload.base.app.BaseViewModelActivity
 import io.github.sgpublic.bilidownload.core.exsp.TokenPreference
 import io.github.sgpublic.bilidownload.core.exsp.UserPreference
+import io.github.sgpublic.bilidownload.core.util.fromGson
 import io.github.sgpublic.bilidownload.core.util.take
 import io.github.sgpublic.bilidownload.core.util.takeOr
 import io.github.sgpublic.bilidownload.databinding.ActivityLoginPwdBinding
@@ -20,6 +25,7 @@ import io.github.sgpublic.exsp.ExPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 class LoginPwd: BaseViewModelActivity<ActivityLoginPwdBinding, LoginPwdModel>() {
     private val Token: TokenPreference by lazy { ExPreference.get() }
@@ -32,39 +38,81 @@ class LoginPwd: BaseViewModelActivity<ActivityLoginPwdBinding, LoginPwdModel>() 
             LoginValidateAccount.LoginValidateContract
         ) {
             if (it == null) {
-                ViewModel.LOADING.postValue(false)
+                ViewModel.Loading.postValue(false)
             } else {
                 ViewModel.accessToken(it)
             }
         }
     }
 
-    override fun onViewModelSetup() {
-        val asLoading = XPopup.Builder(this).asLoading(
-            Application.getString(R.string.text_login_action_doing)
-        )
-        ViewModel.LOADING.observe(this) {
-            it.take({asLoading.show()}, {asLoading.dismiss()})
+    private val geetest: GT3GeetestUtils by lazy {
+        return@lazy GT3GeetestUtils(this).also {
+            it.init(geetestBean)
         }
-        ViewModel.EXCEPTION.observe(this) {
-            ViewModel.LOADING.postValue(false)
-            Application.onToast(this, R.string.text_login_failed, it.message, it.code)
-        }
-        ViewModel.CaptchaData.observe(this) { data ->
-            ViewModel.LOADING.postValue(false)
-            XPopup.Builder(this)
-                .asCustom(GeetestDialog(this, data.url, {
-                    ViewModel.LOADING.postValue(false)
-                }, { validate ->
+    }
+    private val geetestBean: GT3ConfigBean by lazy {
+        return@lazy GT3ConfigBean().also {
+            it.listener = object : GT3Listener() {
+                override fun onReceiveCaptchaCode(p0: Int) { }
+                override fun onStatistics(p0: String?) { }
+                override fun onClosed(p0: Int) { }
+                override fun onSuccess(p0: String?) { }
+                override fun onFailed(p0: GT3ErrorBean?) {
+                    ViewModel.Loading.postValue(false)
+                }
+                override fun onDialogResult(result: String) {
+                    geetest.dismissGeetestDialog()
+                    ViewModel.Loading.postValue(true)
+                    val obj = JsonObject::class.java.fromGson(result)
                     ViewModel.startGeetestAction(
-                        data.token, data.geetest.challenge,
-                        validate, "$validate|jordan",
+                        geetestBean.api1Json.getString("token"),
+                        obj.get("geetest_challenge").asString,
+                        obj.get("geetest_validate").asString,
+                        obj.get("geetest_seccode").asString,
                         ViewBinding.loginUsername.editText!!.text.takeOr(""),
                         ViewBinding.loginPassword.editText!!.text.takeOr(""),
                         ::validatePhone
                     )
-                }))
-                .show()
+                }
+                override fun onButtonClick() {
+                    ViewModel.getCaptcha()
+                }
+            }
+        }
+    }
+    override fun onViewModelSetup() {
+        val asLoading = XPopup.Builder(this).asLoading(
+            Application.getString(R.string.text_login_action_doing)
+        )
+        ViewModel.Loading.observe(this) {
+            it.take({asLoading.show()}, {asLoading.dismiss()})
+        }
+        ViewModel.Exception.observe(this) {
+            ViewModel.Loading.postValue(false)
+            Application.onToast(this, R.string.text_login_failed, it.message, it.code)
+        }
+        ViewModel.CaptchaData.observe(this) { data ->
+            ViewModel.Loading.postValue(false)
+            geetestBean.api1Json = JSONObject().also {
+                it.put("success", 1)
+                it.put("challenge", data.geetest.challenge)
+                it.put("gt", data.geetest.gt)
+                it.put("token", data.token)
+            }
+            geetest.getGeetest()
+//            XPopup.Builder(this)
+//                .asCustom(GeetestDialog(this, data.url, {
+//                    ViewModel.LOADING.postValue(false)
+//                }, { validate ->
+//                    ViewModel.startGeetestAction(
+//                        data.token, data.geetest.challenge,
+//                        validate, "$validate|jordan",
+//                        ViewBinding.loginUsername.editText!!.text.takeOr(""),
+//                        ViewBinding.loginPassword.editText!!.text.takeOr(""),
+//                        ::validatePhone
+//                    )
+//                }))
+//                .show()
         }
         ViewModel.LoginData.observe(this) { data ->
             Token.accessToken = data.tokenInfo.accessToken
@@ -107,38 +155,9 @@ class LoginPwd: BaseViewModelActivity<ActivityLoginPwdBinding, LoginPwdModel>() 
         phoneValidate.launch(url)
     }
 
-//    private fun getUserInfo() {
-//        val module = UserInfoModule(Token.accessToken)
-//        module.getInfo(object : UserInfoModule.Callback {
-//            override fun onFailure(code: Int, message: String?, e: Throwable?) {
-//                setAnimateState(false, 500, ViewBinding.loginDoing)
-//                Application.onToast(this@LoginPwd, R.string.error_login, message, code)
-//            }
-//
-//            override fun onResult(data: UserPreference) {
-//                User.mid = data.mid
-//                User.name = data.name
-//                User.sign = data.sign
-//                User.face = data.face
-//                User.sex = data.sex
-//                User.level = data.level
-//                User.vipState = data.vipState
-//                User.vipType = data.vipType
-//                User.vipLabel = data.vipLabel
-//
-//                Token.isLogin = true
-//                Application.onToast(this@LoginPwd, R.string.text_login_success)
-//                runOnUiThread {
-//                    Home.startActivity(this@LoginPwd)
-//                    finish()
-//                }
-//            }
-//        })
-//    }
-
     override fun onViewSetup() {
         ViewBinding.loginAction.setOnClickListener {
-            ViewModel.LOADING.postValue(true)
+            ViewModel.Loading.postValue(true)
             ViewModel.startAction(
                 ViewBinding.loginUsername.editText!!.text.toString(),
                 ViewBinding.loginPassword.editText!!.text.toString(),
@@ -148,7 +167,8 @@ class LoginPwd: BaseViewModelActivity<ActivityLoginPwdBinding, LoginPwdModel>() 
     }
 
     override fun onDestroy() {
-        ViewModel.LOADING.postValue(false)
+        ViewModel.Loading.postValue(false)
+        geetest.destory()
         super.onDestroy()
     }
 

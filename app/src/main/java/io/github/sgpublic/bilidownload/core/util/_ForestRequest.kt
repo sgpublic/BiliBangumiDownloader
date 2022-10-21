@@ -8,7 +8,6 @@ import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.forest.CommonResp
 import io.github.sgpublic.bilidownload.core.forest.client.ApiClient
 import io.github.sgpublic.bilidownload.core.forest.client.AppClient
-import io.github.sgpublic.bilidownload.core.forest.client.GeetestClient
 import io.github.sgpublic.bilidownload.core.forest.client.PassportClient
 import io.github.sgpublic.bilidownload.core.forest.core.BiliApiException
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +17,6 @@ import kotlinx.coroutines.withContext
 
 object ForestClients {
     val PASSPORT: PassportClient by lazy { Forest.client(PassportClient::class.java) }
-    val GEETEST: GeetestClient by lazy { Forest.client(GeetestClient::class.java) }
     val APP: AppClient by lazy { Forest.client(AppClient::class.java) }
     val API: ApiClient by lazy { Forest.client(ApiClient::class.java) }
 }

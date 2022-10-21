@@ -26,4 +26,4 @@ fun Any?.toGson(): String {
     return GSON.toJson(this)
 }
 
-class GsonException: Exception("对象序列化失败")
+class GsonException(message: String? = null): Exception(message ?: "对象序列化失败")

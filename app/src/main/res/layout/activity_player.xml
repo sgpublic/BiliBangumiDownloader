@@ -9,14 +9,14 @@
         android:id="@+id/player_appbar"
         android:layout_width="match_parent"
         android:layout_height="230dp"
-        android:background="@color/colorTransparent">
+        android:background="@color/transparent">
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/player_collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/color_player"
             app:contentScrim="@color/colorPrimary"
-            app:statusBarScrim="@color/colorTransparent"
+            app:statusBarScrim="@color/transparent"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
             <ImageView
                 android:id="@+id/player_cover"

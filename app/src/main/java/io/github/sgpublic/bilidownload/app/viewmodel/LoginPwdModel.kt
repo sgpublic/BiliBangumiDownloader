@@ -24,10 +24,22 @@ class LoginPwdModel: BaseViewModel() {
     val LoginData: MutableLiveData<LoginResp.LoginData> = MutableLiveData()
     val UserInfo: MutableLiveData<UserInfoResp.UserInfo> = MutableLiveData()
 
+    fun getCaptcha() {
+        ForestClients.PASSPORT.captcha().biliapi(object : ForestCallback<CaptchaResp.CaptchaData>() {
+            override fun onFailure(code: Int, message: String?) {
+                Exception.postValue(code, message)
+            }
+
+            override fun onResponse(data: CaptchaResp.CaptchaData) {
+                CaptchaData.postValue(data)
+            }
+        }, viewModelScope)
+    }
+
     private fun encryptPwd(password: String, callback: (String) -> Unit) {
         ForestClients.PASSPORT.pubKey().biliapi(object : ForestCallback<GetKeyResp.GetKeyData>() {
             override fun onFailure(code: Int, message: String?) {
-                EXCEPTION.postValue(code, message)
+                Exception.postValue(code, message)
             }
 
             override fun onResponse(data: GetKeyResp.GetKeyData) {
@@ -42,7 +54,7 @@ class LoginPwdModel: BaseViewModel() {
                     cp.doFinal((data.hash + password).toByteArray()).BASE_64
                 } catch (e: Exception) {
                     log.error("密码加密失败", e)
-                    EXCEPTION.postValue(-125, e.message)
+                    Exception.postValue(-125, e.message)
                     return
                 }
                 callback(pwdEncrypt)
@@ -59,7 +71,7 @@ class LoginPwdModel: BaseViewModel() {
             } catch (e: BiliApiException) {
                 if (e.code != -105) {
                     log.error("登陆失败", e)
-                    EXCEPTION.postValue(e)
+                    Exception.postValue(e)
                     return@encryptPwd
                 }
                 log.warn("登陆需要验证码", e)
@@ -100,7 +112,7 @@ class LoginPwdModel: BaseViewModel() {
         ForestClients.PASSPORT.captcha().biliapi(object :
             ForestCallback<CaptchaResp.CaptchaData>() {
             override fun onFailure(code: Int, message: String?) {
-                EXCEPTION.postValue(code, message)
+                Exception.postValue(code, message)
             }
 
             override fun onResponse(data: CaptchaResp.CaptchaData) {
@@ -121,7 +133,7 @@ class LoginPwdModel: BaseViewModel() {
                 ), onPhoneValidate)
             } catch (e: BiliApiException) {
                 log.error("登陆失败", e)
-                EXCEPTION.postValue(e)
+                Exception.postValue(e)
             }
         }
     }
@@ -138,7 +150,7 @@ class LoginPwdModel: BaseViewModel() {
     fun accessToken(code: String) {
         ForestClients.PASSPORT.accessToken(code).biliapi(object : ForestCallback<LoginResp.LoginData>() {
             override fun onFailure(code: Int, message: String?) {
-                EXCEPTION.postValue(code, message)
+                Exception.postValue(code, message)
             }
 
             override fun onResponse(data: LoginResp.LoginData) {
@@ -150,7 +162,7 @@ class LoginPwdModel: BaseViewModel() {
     fun getUserInfo(accessToken: String) {
         ForestClients.APP.getUserInfoRequest(accessToken).biliapi(object : ForestCallback<UserInfoResp.UserInfo>() {
             override fun onFailure(code: Int, message: String?) {
-                EXCEPTION.postValue(code, message)
+                Exception.postValue(code, message)
             }
 
             override fun onResponse(data: UserInfoResp.UserInfo) {

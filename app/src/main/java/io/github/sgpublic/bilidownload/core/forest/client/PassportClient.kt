@@ -30,6 +30,7 @@ interface PassportClient {
     fun login(
         @Body("username") username: String,
         @Body("password") pwdEncrypted: String,
+        @Body("from_pv") fromPv: String = "main.homepage.avatar-nologin.all.click",
     ) : ForestRequest<LoginResp>
 
     @BiliSign(
@@ -44,6 +45,8 @@ interface PassportClient {
         @Body("gee_seccode") seccode: String,
         @Body("username") username: String,
         @Body("password") pwdEncrypted: String,
+        @Body("from_pv") fromPv: String = "main.homepage.avatar-nologin.all.click",
+        @Body("spm_id") spmId: String = "main.homepage.avatar-nologin.all.click",
     ) : ForestRequest<LoginResp>
 
     @BiliSign(

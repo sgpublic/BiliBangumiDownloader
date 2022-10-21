@@ -156,7 +156,7 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.5.1")
-    implementation("com.google.android.material:material:1.7.0-rc01")
+    implementation("com.google.android.material:material:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.2")
@@ -169,8 +169,6 @@ dependencies {
     val lombokVer = "1.18.24"
     compileOnly("org.projectlombok:lombok:$lombokVer")
     annotationProcessor("org.projectlombok:lombok:$lombokVer")
-    testCompileOnly("org.projectlombok:lombok:$lombokVer")
-    testAnnotationProcessor("org.projectlombok:lombok:$lombokVer")
     androidTestCompileOnly("org.projectlombok:lombok:$lombokVer")
     androidTestAnnotationProcessor("org.projectlombok:lombok:$lombokVer")
 
@@ -196,8 +194,8 @@ dependencies {
     implementation("com.github.AnJiaoDe:TabLayoutNiubility:V1.3.0")
     /* https://github.com/lihangleo2/ShadowLayout */
     implementation("com.github.lihangleo2:ShadowLayout:3.2.4")
-//    /* https://docs.geetest.com/sensebot/deploy/client/android */
-//    implementation("com.geetest.sensebot:sensebot:4.3.7")
+    /* https://docs.geetest.com/sensebot/deploy/client/android */
+    implementation("com.geetest.sensebot:sensebot:4.3.7")
 
     /* https://github.com/bumptech/glide */
     val glideVer = "4.14.2"

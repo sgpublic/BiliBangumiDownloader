@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import io.github.sgpublic.bilidownload.core.forest.core.BiliApiException
 
 abstract class BaseViewModel: ViewModel() {
-    val EXCEPTION: MutableLiveData<ExceptionData> = MutableLiveData()
-    fun getExceptionData() = EXCEPTION.value
+    val Exception: MutableLiveData<ExceptionData> = MutableLiveData()
+    fun getExceptionData() = Exception.value
     data class ExceptionData(var code: Int, var message: String?)
 
-    open val LOADING: MutableLiveData<Boolean> = MutableLiveData()
+    open val Loading: MutableLiveData<Boolean> = MutableLiveData()
 }
 
 fun MutableLiveData<BaseViewModel.ExceptionData>.postValue(
