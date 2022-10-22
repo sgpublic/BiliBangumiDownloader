@@ -32,7 +32,7 @@ class Welcome: BaseActivity<ActivityWelcomeBinding>() {
             Home.startActivity(this@Welcome)
             return
         }
-        val sid = data.path?.substring(1)?.toLongOrNull()
+        val sid = data.path?.substring(1)?.toIntOrNull()
         if (sid == null) {
             finish()
             return

@@ -1,14 +1,12 @@
 package io.github.sgpublic.bilidownload.core.forest.data;
 
-import com.google.gson.JsonArray;
-
-import java.util.List;
-
 import io.github.sgpublic.bilidownload.base.forest.ResultResp;
-import io.github.sgpublic.bilidownload.core.forest.annotations.ApiStyle;
+import io.github.sgpublic.bilidownload.core.forest.annotations.ModuleStyle;
 import io.github.sgpublic.bilidownload.core.forest.data.common.BadgeInfo;
+import io.github.sgpublic.bilidownload.core.forest.data.common.Modules;
 import io.github.sgpublic.bilidownload.core.forest.data.common.TextBadge;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author Madray Haven
@@ -16,19 +14,17 @@ import lombok.Data;
  */
 public class BangumiPageResp extends ResultResp<BangumiPageResp.BangumiPageData> {
     @Data
-    public static class BangumiPageData {
+    @EqualsAndHashCode(callSuper = true)
+    public static class BangumiPageData extends Modules {
         /** 是否有后续 */
         private int hasNext;
         /** 下一页索引 */
         private int nextCursor;
-        /** 模块 */
-        private JsonArray modules;
 
         @Data
-        @ApiStyle("fall_feed")
-        public static class FallFeed {
-            private List<Item> items;
-
+        @EqualsAndHashCode(callSuper = true)
+        @ModuleStyle("fall_feed")
+        public static class FallFeed extends ModuleItem<FallFeed.Item> {
             @Data
             public static class Item {
                 private BadgeInfo badgeInfo;
@@ -42,10 +38,9 @@ public class BangumiPageResp extends ResultResp<BangumiPageResp.BangumiPageData>
         }
 
         @Data
-        @ApiStyle("double_feed")
-        public static class DoubleFeed {
-            private List<Item> items;
-
+        @EqualsAndHashCode(callSuper = true)
+        @ModuleStyle("double_feed")
+        public static class DoubleFeed extends ModuleItem<FallFeed.Item> {
             @Data
             public static class Item {
                 private BadgeInfo badgeInfo;

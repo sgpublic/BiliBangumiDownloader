@@ -83,8 +83,19 @@ interface ApiClient {
      * @param accessToken access_token
      */
     @BiliSign
-    @Get("/pgc/page")
+    @Get("/pgc/page/")
     fun banner(
         @Query("access_key") accessToken: String,
     ): ForestRequest<BannerResp>
+
+    /**
+     * 首页推荐数据
+     * @param accessToken access_token
+     */
+    @BiliSign
+    @Get("/pgc/page/bangumi")
+    fun bangumi(
+        @Query("access_key") accessToken: String,
+        @Query("cursor") cursor: Int,
+    ): ForestRequest<String>
 }

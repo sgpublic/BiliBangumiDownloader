@@ -126,6 +126,7 @@ abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity() {
     protected open fun isActivityAtBottom(): Boolean = false
 
     private var last: Long = -1
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         supportFragmentManager.fragments.forEach {
             if (it is BaseFragment<*> && it.onBackPressed()) {

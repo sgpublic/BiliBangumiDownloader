@@ -54,7 +54,7 @@ class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerVie
         const val KEY_SEASON_ID = "season_id"
         const val KEY_EPISODE_INDEX = "ep_index"
 
-        fun startActivity(context: Context, sid: Long, target: Int? = null) {
+        fun startActivity(context: Context, sid: Int, target: Int? = null) {
             val intent = Intent(context, SeasonPlayer::class.java)
             intent.putExtra(KEY_SEASON_ID, sid)
             target?.let { intent.putExtra(KEY_EPISODE_INDEX, it) }
