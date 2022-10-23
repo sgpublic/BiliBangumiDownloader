@@ -3,15 +3,13 @@ package io.github.sgpublic.bilidownload.app.fragment.home
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
-import androidx.viewbinding.ViewBinding
 import io.github.sgpublic.bilidownload.app.activity.Search
-import io.github.sgpublic.bilidownload.app.ui.SeasonBannerAdapter
 import io.github.sgpublic.bilidownload.app.ui.recycler.HomeRecyclerAdapter
 import io.github.sgpublic.bilidownload.app.viewmodel.HomeBangumiModel
-import io.github.sgpublic.bilidownload.base.app.BaseFragment
 import io.github.sgpublic.bilidownload.base.app.BaseViewModelFragment
 import io.github.sgpublic.bilidownload.core.exsp.TokenPreference
 import io.github.sgpublic.bilidownload.core.util.dp
+import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.bilidownload.databinding.FragmentHomeBangumiBinding
 import io.github.sgpublic.exsp.ExPreference
 import java.util.*
@@ -44,9 +42,20 @@ class HomeBangumi(context: AppCompatActivity): BaseViewModelFragment<FragmentHom
 
     override fun onViewModelSetup() {
         ViewModel.BannerInfo.observe(this) {
+            log.debug("banner size: ${it.size}")
             HomeAdapter.setBannerData(it)
         }
     }
 
     override val ViewModel: HomeBangumiModel by viewModels()
+
+    override fun onPause() {
+        HomeAdapter.setBannerLoop(false)
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        HomeAdapter.setBannerLoop(true)
+    }
 }

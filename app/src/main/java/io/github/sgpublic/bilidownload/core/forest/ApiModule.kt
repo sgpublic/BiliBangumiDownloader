@@ -1,11 +1,11 @@
 package io.github.sgpublic.bilidownload.core.forest
 
-import com.google.gson.JsonArray
 import io.github.sgpublic.bilidownload.core.forest.annotations.ModuleStyle
+import io.github.sgpublic.bilidownload.core.forest.data.common.Modules
 import io.github.sgpublic.bilidownload.core.util.GsonException
 import io.github.sgpublic.bilidownload.core.util.fromGson
 import io.github.sgpublic.bilidownload.core.util.log
-import java.util.LinkedList
+import java.util.*
 
 class ApiModule {
     companion object {
@@ -14,11 +14,11 @@ class ApiModule {
     }
 }
 
-inline fun <reified T: Any> JsonArray.find(): List<T> {
+inline fun <reified T: Any> Modules.find(): List<T> {
     val moduleStyle = T::class.java.getAnnotation(ModuleStyle::class.java)
         ?: throw GsonException("To invoke this function, you must add annotation ApiStyle to target type!")
     val result = LinkedList<T>()
-    for (element in this) {
+    for (element in modules) {
         val obj = element.asJsonObject
         if (!obj.has("style") || obj.get("style").asString == moduleStyle.value) {
             result.add(T::class.java.fromGson(obj.toString()))

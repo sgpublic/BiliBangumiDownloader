@@ -23,11 +23,10 @@
                 tools:ignore="ContentDescription" />
             <ImageView
                 android:id="@+id/banner_badge"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
                 android:layout_gravity="end|top"
                 android:layout_marginTop="20dp"
-                android:scaleType="centerInside"
                 tools:ignore="ContentDescription" />
         </FrameLayout>
         <ImageView

@@ -9,6 +9,8 @@ import io.github.sgpublic.bilidownload.app.activity.SeasonPlayer
 import io.github.sgpublic.bilidownload.app.ui.SeasonBannerAdapter
 import io.github.sgpublic.bilidownload.core.forest.data.BannerResp
 import io.github.sgpublic.bilidownload.core.util.dp
+import io.github.sgpublic.bilidownload.core.util.log
+import io.github.sgpublic.bilidownload.core.util.toGson
 import io.github.sgpublic.bilidownload.databinding.ItemBangumiFollowBinding
 import io.github.sgpublic.bilidownload.databinding.RecyclerFooterBinding
 import io.github.sgpublic.bilidownload.databinding.RecyclerHomeBannerBinding
@@ -54,13 +56,15 @@ class HomeRecyclerAdapter(
         }
     }
 
-    private val adapter = SeasonBannerAdapter(this@HomeRecyclerAdapter.context)
+    private val adapter = SeasonBannerAdapter(context)
     private fun onBindBannerViewHolder(holder: BannerViewHolder) {
         if (bannerData.isEmpty()) {
+            log.warn("banner data is empty!")
             return
         }
-        (holder.binding.bangumiBanner.layoutParams
-                as GridLayoutManager.LayoutParams).topMargin = 110.dp
+        log.debug("bannerData: ${bannerData.toGson()}")
+        val param = holder.binding.bangumiBanner.layoutParams as GridLayoutManager.LayoutParams
+        param.topMargin = 110.dp
         val viewHolder = holder.binding.bangumiBanner
             .setAdapter(adapter)
             .setOnPageClickListener { _, position ->
@@ -75,13 +79,53 @@ class HomeRecyclerAdapter(
         }
     }
 
-    override fun getItemCount(): Int = 0
+    override fun getItemCount(): Int = 1
 
-    private val bannerData = arrayListOf<BannerResp.BannerData.BannerItem.Item>()
+    private val bannerData = ArrayList<BannerResp.BannerData.BannerItem.Item>()
     fun setBannerData(list: Collection<BannerResp.BannerData.BannerItem.Item>) {
+//        val size = bannerData.size.coerceAtLeast(list.size)
         bannerData.clear()
         bannerData.addAll(list)
         notifyItemChanged(0)
+    }
+
+    private var onScrollToEndCallback: () -> Boolean = { false }
+    fun setOnScrollToEndListener(callback: () -> Boolean) {
+        this.onScrollToEndCallback = callback
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        val manager = recyclerView.layoutManager as GridLayoutManager
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                if (position == 0) {
+                    return 3
+                }
+                return 1
+            }
+        }
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            private var isSlidingUpward = false
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState != RecyclerView.SCROLL_STATE_IDLE) {
+                    return
+                }
+                val lastItemPosition = manager.findLastCompletelyVisibleItemPosition()
+                val itemCount = manager.itemCount
+
+                if (lastItemPosition == itemCount - 1 &&
+                    isSlidingUpward) {
+                    onScrollToEndCallback.invoke()
+                }
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                isSlidingUpward = dy > 0
+            }
+        })
     }
 
     private var canLoop = true

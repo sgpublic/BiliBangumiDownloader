@@ -45,24 +45,12 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/bangumi_refresh"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <FrameLayout
+        android:layout_height="match_parent">
+        <io.github.sgpublic.bilidownload.app.widget.NestedRecyclerView
+            android:id="@+id/bangumi_recycler"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <io.github.sgpublic.bilidownload.app.widget.NestedRecyclerView
-                android:id="@+id/bangumi_recycler"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="3"/>
-            <io.github.sgpublic.bilidownload.app.widget.LoadingImageView
-                android:id="@+id/bangumi_load_state"
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_marginTop="130dp"
-                android:scaleType="fitCenter"
-                tools:ignore="ContentDescription" />
-        </FrameLayout>
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="3"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </FrameLayout>

@@ -4,11 +4,9 @@ import com.dtflys.forest.annotation.Address
 import com.dtflys.forest.annotation.Get
 import com.dtflys.forest.annotation.Query
 import com.dtflys.forest.http.ForestRequest
-import com.google.gson.JsonObject
-import io.github.sgpublic.bilidownload.app.activity.Search
-import io.github.sgpublic.bilidownload.base.forest.ResultResp
 import io.github.sgpublic.bilidownload.core.forest.annotations.BiliSearchReferer
 import io.github.sgpublic.bilidownload.core.forest.annotations.BiliSign
+import io.github.sgpublic.bilidownload.core.forest.data.BangumiPageResp
 import io.github.sgpublic.bilidownload.core.forest.data.BannerResp
 import io.github.sgpublic.bilidownload.core.forest.data.SearchSuggestResp
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
@@ -86,6 +84,8 @@ interface ApiClient {
     @Get("/pgc/page/")
     fun banner(
         @Query("access_key") accessToken: String,
+//        @Query("cursor") cursor: Int = 0,
+        @Query("tab_id") tabId: Int = 8,
     ): ForestRequest<BannerResp>
 
     /**
@@ -97,5 +97,6 @@ interface ApiClient {
     fun bangumi(
         @Query("access_key") accessToken: String,
         @Query("cursor") cursor: Int,
-    ): ForestRequest<String>
+        @Query("is_refresh") isRefresh: Int = 0,
+    ): ForestRequest<BangumiPageResp>
 }

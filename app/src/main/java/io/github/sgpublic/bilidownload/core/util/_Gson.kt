@@ -3,8 +3,7 @@ package io.github.sgpublic.bilidownload.core.util
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import okhttp3.Response
-import okhttp3.internal.closeQuietly
+import java.lang.reflect.Type
 import kotlin.reflect.KClass
 
 private val GSON: Gson = GsonBuilder()
@@ -18,6 +17,11 @@ fun <T: Any> KClass<T>.fromGson(src: String): T {
 }
 
 fun <T: Any> Class<T>.fromGson(src: String): T {
+    return GSON.fromJson(src, this)
+        ?: throw GsonException()
+}
+
+fun <T: Any> Type.fromGson(src: String): T {
     return GSON.fromJson(src, this)
         ?: throw GsonException()
 }

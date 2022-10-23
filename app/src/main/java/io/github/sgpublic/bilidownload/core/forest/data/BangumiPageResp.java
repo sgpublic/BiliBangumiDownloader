@@ -47,6 +47,26 @@ public class BangumiPageResp extends ResultResp<BangumiPageResp.BangumiPageData>
                 private TextBadge bottomLeftBadge;
                 private String cover;
                 private String desc;
+                private String type;
+            }
+        }
+
+        @Data
+        @EqualsAndHashCode(callSuper = true)
+        @ModuleStyle("follow")
+        public static class Follow extends Modules {
+            @Data
+            public static class Item {
+                private String desc;
+                private int descType;
+                private NewEp newEp;
+                private int seasonId;
+
+                @Data
+                public static class NewEp {
+                    private String cover;
+                    private String indexShow;
+                }
             }
         }
     }

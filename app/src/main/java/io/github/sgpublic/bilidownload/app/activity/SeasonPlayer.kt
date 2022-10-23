@@ -22,16 +22,17 @@ class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerVie
     }
 
     override fun onActivityCreated(hasSavedInstanceState: Boolean) {
-        if ((ViewModel.SID.value ?: -1) < 0) {
-            Application.onToast(this@SeasonPlayer, R.string.title_season_unknown)
-            finish()
-            return
-        }
-        ViewModel.SID.postValue(intent.getLongExtra(KEY_SEASON_ID, -1))
+        ViewModel.SID.postValue(intent.getIntExtra(KEY_SEASON_ID, -1))
     }
 
     override fun onViewModelSetup() {
-
+        ViewModel.SID.observe(this) {
+            if (it < 0) {
+                Application.onToast(this@SeasonPlayer, R.string.title_season_unknown)
+                finish()
+                return@observe
+            }
+        }
     }
 
     override fun onViewSetup() {

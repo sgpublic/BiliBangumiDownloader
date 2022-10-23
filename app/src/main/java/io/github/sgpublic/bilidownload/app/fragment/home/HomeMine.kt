@@ -9,12 +9,12 @@ import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.app.activity.LoginPwd
 import io.github.sgpublic.bilidownload.app.activity.MyFollows
 import io.github.sgpublic.bilidownload.app.activity.Setting
+import io.github.sgpublic.bilidownload.app.ui.asConfirm
 import io.github.sgpublic.bilidownload.base.app.BaseFragment
 import io.github.sgpublic.bilidownload.core.exsp.UserPreference
+import io.github.sgpublic.bilidownload.core.util.customLoad
+import io.github.sgpublic.bilidownload.core.util.withCrossFade
 import io.github.sgpublic.bilidownload.databinding.FragmentHomeMineBinding
-import io.github.sgpublic.bilidownload.app.ui.asConfirm
-import io.github.sgpublic.bilidownload.app.ui.customLoad
-import io.github.sgpublic.bilidownload.app.ui.withCrossFade
 import io.github.sgpublic.exsp.ExPreference
 
 class HomeMine(context: AppCompatActivity): BaseFragment<FragmentHomeMineBinding>(context) {

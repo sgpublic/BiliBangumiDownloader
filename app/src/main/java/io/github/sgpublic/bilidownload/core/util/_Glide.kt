@@ -1,9 +1,10 @@
-package io.github.sgpublic.bilidownload.app.ui
+package io.github.sgpublic.bilidownload.core.util
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
+import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.RequestManager
@@ -13,17 +14,39 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
+import com.bumptech.glide.request.transition.Transition
 import io.github.sgpublic.bilidownload.R
-import io.github.sgpublic.bilidownload.core.util.dp
 import jp.wasabeef.glide.transformations.internal.FastBlur
 import java.security.MessageDigest
+import kotlin.math.roundToInt
 
 fun RequestManager.customLoad(url: String): RequestBuilder<Drawable> {
     val option = RequestOptions()
         .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
         .centerCrop()
     return load(url).apply(option)
+}
+
+fun RequestBuilder<Drawable>.fittedInfo(view: ImageView) {
+    into(object : CustomTarget<Drawable>() {
+        override fun onLoadFailed(errorDrawable: Drawable?) {
+            view.setImageDrawable(errorDrawable)
+        }
+
+        override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
+            if (view.scaleType != ImageView.ScaleType.FIT_XY) {
+                view.scaleType = ImageView.ScaleType.FIT_XY
+            }
+            view.layoutParams.width = (view.height * (resource.intrinsicWidth.toDouble() / resource.intrinsicHeight)).roundToInt()
+            view.setImageDrawable(resource)
+        }
+
+        override fun onLoadCleared(placeholder: Drawable?) {
+            view.setImageDrawable(placeholder)
+        }
+    })
 }
 
 fun RequestBuilder<Drawable>.withRound(radius: Int = 8.dp): RequestBuilder<Drawable> {
