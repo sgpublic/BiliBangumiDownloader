@@ -9,7 +9,11 @@ class UrlEncodedInterceptor: Interceptor<Any> {
         if (request.type == ForestRequestType.POST) {
             request.contentFormUrlEncoded()
         }
-        request.addHeader("User-Agent", "Mozilla/5.0 BiliDroid/7.1.1 (sgpublic2002@gmail.com)")
+        request.addHeader("User-Agent", UserAgent)
         return true
+    }
+
+    companion object {
+        const val UserAgent = "Mozilla/5.0 BiliDroid/7.1.1 (sgpublic2002@gmail.com)"
     }
 }

@@ -7,6 +7,7 @@ package io.github.sgpublic.gradle
  */
 object Dep {
     const val Proto = "3.21.8"
+    const val GrpcJava = "1.50.2"
 
     const val EXSP = "1.0.0-alpha04"
     const val Lombok = "1.18.24"

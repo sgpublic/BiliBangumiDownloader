@@ -77,6 +77,7 @@ abstract class ForestCallback<Data> {
         const val CODE_NETWORK_UNKNOWN = -102
         const val CODE_RESOURCE = -103
         const val CODE_ACCOUNT_VALIDATE = -104
+        const val CODE_GRPC = -105
     }
 }
 

@@ -165,10 +165,20 @@ protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:${Dep.Proto}"
     }
+    plugins {
+        register("grpc") {
+            artifact = "io.grpc:protoc-gen-grpc-java:${Dep.GrpcJava}"
+        }
+    }
     generateProtoTasks {
         for(task in all()) {
             task.builtins {
                 register("java") {
+                    option("lite")
+                }
+            }
+            task.plugins {
+                register("grpc") {
                     option("lite")
                 }
             }
@@ -228,8 +238,13 @@ dependencies {
     implementation("com.github.lihangleo2:ShadowLayout:3.2.4")
     /* https://docs.geetest.com/sensebot/deploy/client/android */
     implementation("com.geetest.sensebot:sensebot:4.3.7")
+
     /* https://github.com/google/protobuf-gradle-plugin */
     implementation("com.google.protobuf:protobuf-javalite:${Dep.Proto}")
+    implementation("io.grpc:grpc-okhttp:${Dep.GrpcJava}")
+    implementation("io.grpc:grpc-protobuf-lite:${Dep.GrpcJava}")
+    implementation("io.grpc:grpc-stub:${Dep.GrpcJava}")
+    implementation("org.apache.tomcat:annotations-api:6.0.53")
 
     /* https://github.com/bumptech/glide */
     implementation("com.github.bumptech.glide:glide:${Dep.Glide}")
