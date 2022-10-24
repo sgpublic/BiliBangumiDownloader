@@ -79,12 +79,12 @@ interface ApiClient {
     /**
      * 首页 banner
      * @param accessToken access_token
+     * @param tabId 固定为 8
      */
     @BiliSign
     @Get("/pgc/page/")
     fun banner(
         @Query("access_key") accessToken: String,
-//        @Query("cursor") cursor: Int = 0,
         @Query("tab_id") tabId: Int = 8,
     ): ForestRequest<BannerResp>
 
@@ -97,6 +97,6 @@ interface ApiClient {
     fun bangumi(
         @Query("access_key") accessToken: String,
         @Query("cursor") cursor: Int,
-        @Query("is_refresh") isRefresh: Int = 0,
+        @Query("is_refresh") isRefresh: Int,
     ): ForestRequest<BangumiPageResp>
 }

@@ -19,6 +19,7 @@ class HomeBangumi(context: AppCompatActivity): BaseViewModelFragment<FragmentHom
 
     override fun onFragmentCreated(hasSavedInstanceState: Boolean) {
         ViewModel.getBannerInfo(accessKey)
+        ViewModel.getBangumiItems(accessKey, true)
     }
 
     override fun onCreateViewBinding(container: ViewGroup?): FragmentHomeBangumiBinding =
@@ -44,6 +45,10 @@ class HomeBangumi(context: AppCompatActivity): BaseViewModelFragment<FragmentHom
         ViewModel.BannerInfo.observe(this) {
             log.debug("banner size: ${it.size}")
             HomeAdapter.setBannerData(it)
+        }
+        ViewModel.BangumiItems.observe(this) {
+            log.debug("bangumi size: ${it.second.size}")
+            HomeAdapter.setBangumiData(it.second, it.first)
         }
     }
 

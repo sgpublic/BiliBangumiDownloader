@@ -2,11 +2,14 @@
 
 import com.android.build.api.dsl.VariantDimension
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import com.google.protobuf.gradle.proto
+import com.google.protobuf.gradle.remove
 import io.github.sgpublic.gradle.core.BuildTypes
 import io.github.sgpublic.gradle.core.SignConfig
 import io.github.sgpublic.gradle.core.VersionGen
 import io.github.sgpublic.gradle.util.ApkUtil
 import java.util.*
+import io.github.sgpublic.gradle.Dep
 
 plugins {
     id("bilidl-version")
@@ -18,6 +21,8 @@ plugins {
 
     id("org.jetbrains.kotlin.plugin.lombok")
     id("io.freefair.lombok") version "5.3.0"
+
+    id("com.google.protobuf")
 }
 
 fun VariantDimension.buildConfigField(name: String, value: String) {
@@ -54,6 +59,21 @@ android {
 
     buildFeatures {
         viewBinding = true
+    }
+
+    sourceSets {
+        named("main") {
+            proto {
+                srcDir("src/main/protobuf")
+                srcDir("src/main/protocolbuffers")
+                include("**/*.protodevel")
+            }
+        }
+        named("test") {
+            proto {
+                srcDir("src/test/protocolbuffers")
+            }
+        }
     }
 
     defaultConfig {
@@ -141,6 +161,21 @@ android {
     }
 }
 
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${Dep.Proto}"
+    }
+    generateProtoTasks {
+        for(task in all()) {
+            task.builtins {
+                register("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
+
 kapt {
     keepJavacAnnotationProcessors = true
 }
@@ -162,21 +197,18 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.2")
 
     /* https://github.com/sgpublic/ExSharedPreference */
-    val exspVer = "1.0.0-alpha04"
-    implementation("io.github.sgpublic:exsp-runtime:$exspVer")
-    kapt("io.github.sgpublic:exsp-compiler:$exspVer")
+    implementation("io.github.sgpublic:exsp-runtime:${Dep.EXSP}")
+    kapt("io.github.sgpublic:exsp-compiler:${Dep.EXSP}")
 
-    val lombokVer = "1.18.24"
-    compileOnly("org.projectlombok:lombok:$lombokVer")
-    annotationProcessor("org.projectlombok:lombok:$lombokVer")
-    androidTestCompileOnly("org.projectlombok:lombok:$lombokVer")
-    androidTestAnnotationProcessor("org.projectlombok:lombok:$lombokVer")
+    compileOnly("org.projectlombok:lombok:${Dep.Lombok}")
+    annotationProcessor("org.projectlombok:lombok:${Dep.Lombok}")
+    androidTestCompileOnly("org.projectlombok:lombok:${Dep.Lombok}")
+    androidTestAnnotationProcessor("org.projectlombok:lombok:${Dep.Lombok}")
 
-    val roomVer = "2.4.3"
-    implementation("androidx.room:room-runtime:$roomVer")
-    implementation("androidx.room:room-ktx:$roomVer")
-    kapt("androidx.room:room-compiler:$roomVer")
-    testImplementation("androidx.room:room-testing:$roomVer")
+    implementation("androidx.room:room-runtime:${Dep.Room}")
+    implementation("androidx.room:room-ktx:${Dep.Room}")
+    kapt("androidx.room:room-compiler:${Dep.Room}")
+    testImplementation("androidx.room:room-testing:${Dep.Room}")
 
     /* https://github.com/zhpanvip/BannerViewPager */
     implementation("com.github.zhpanvip:BannerViewPager:3.5.5")
@@ -196,23 +228,22 @@ dependencies {
     implementation("com.github.lihangleo2:ShadowLayout:3.2.4")
     /* https://docs.geetest.com/sensebot/deploy/client/android */
     implementation("com.geetest.sensebot:sensebot:4.3.7")
+    /* https://github.com/google/protobuf-gradle-plugin */
+    implementation("com.google.protobuf:protobuf-javalite:${Dep.Proto}")
 
     /* https://github.com/bumptech/glide */
-    val glideVer = "4.14.2"
-    implementation("com.github.bumptech.glide:glide:$glideVer")
-    kapt("com.github.bumptech.glide:compiler:$glideVer")
+    implementation("com.github.bumptech.glide:glide:${Dep.Glide}")
+    kapt("com.github.bumptech.glide:compiler:${Dep.Glide}")
     implementation("jp.wasabeef:glide-transformations:4.3.0")
 
     /* https://github.com/google/ExoPlayer */
-    val exoVer = "2.18.1"
-    implementation("com.google.android.exoplayer:exoplayer-core:$exoVer")
-    implementation("com.google.android.exoplayer:exoplayer-dash:$exoVer")
-    implementation("com.google.android.exoplayer:exoplayer-ui:$exoVer")
+    implementation("com.google.android.exoplayer:exoplayer-core:${Dep.ExoPlayer}")
+    implementation("com.google.android.exoplayer:exoplayer-dash:${Dep.ExoPlayer}")
+    implementation("com.google.android.exoplayer:exoplayer-ui:${Dep.ExoPlayer}")
 
     /* https://github.com/AriaLyy/Aria */
-    val ariaVer = "3.8.16"
-    implementation("me.laoyuyu.aria:core:$ariaVer")
-    kapt("me.laoyuyu.aria:compiler:$ariaVer")
+    implementation("me.laoyuyu.aria:core:${Dep.Aria}")
+    kapt("me.laoyuyu.aria:compiler:${Dep.Aria}")
 
     /* https://github.com/tony19/logback-android */
     implementation("com.github.tony19:logback-android:2.0.0")

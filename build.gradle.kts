@@ -9,6 +9,8 @@ plugins {
     id("org.jetbrains.kotlin.plugin.parcelize") version kotlinVer apply false
     id("org.jetbrains.kotlin.kapt") version kotlinVer apply false
     id("org.jetbrains.kotlin.plugin.lombok") version kotlinVer apply false
+
+    id("com.google.protobuf") version "0.9.1" apply false
 }
 
 task("clean", Delete::class) {

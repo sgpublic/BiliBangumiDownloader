@@ -22,6 +22,8 @@
 
     <color name="color_login_transparent">#AAFFFFFF</color>
 
+    <color name="color_home_bangumi_bottom">#AA000000</color>
+
     <color name="color_player">#000000</color>
     <color name="color_player_cover">#CF000000</color>
     <color name="color_player_controller">#EEFFFFFF</color>

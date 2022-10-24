@@ -32,7 +32,7 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:src="@drawable/pic_banner_content_background"
+            android:src="@drawable/shape_home_bangumi_bottom"
             android:layout_gravity="bottom"
             android:scaleType="centerCrop"
             tools:ignore="ContentDescription" />

@@ -37,9 +37,8 @@ inline fun <reified T: CommonResp<Data>, Data> ForestRequest<T>.biliapi(callback
 inline fun <reified T> ForestRequest<T>.enqueue(callback: ForestCallback<T>, viewModelScope: CoroutineScope) {
     viewModelScope.launch {
         withContext(Dispatchers.IO) {
-            try {
-                val data = execute(T::class.java)
-                callback.onResponse(data)
+            val data = try {
+                execute(T::class.java)
             } catch (ex: Exception) {
                 log.error("资源请求出错", ex)
                 when (ex) {
@@ -50,12 +49,23 @@ inline fun <reified T> ForestRequest<T>.enqueue(callback: ForestCallback<T>, vie
                     is BiliApiException -> callback.onFailure(ex)
                     else -> callback.onFailure(
                         ForestCallback.CODE_NETWORK_UNKNOWN,
-                        ex.message ?: "Unknown error"
+                        ex.requiredMessage()
                     )
                 }
+                return@withContext
+            }
+            try {
+                callback.onResponse(data)
+            } catch (e: Exception) {
+                log.error("资源处理出错", e)
+                callback.onFailure(ForestCallback.CODE_RESOURCE, e.requiredMessage())
             }
         }
     }
+}
+
+fun Exception.requiredMessage(): String {
+    return message ?: "Unknown error"
 }
 
 abstract class ForestCallback<Data> {
@@ -65,10 +75,11 @@ abstract class ForestCallback<Data> {
     companion object {
         const val CODE_NETWORK_ERROR = -101
         const val CODE_NETWORK_UNKNOWN = -102
-        const val CODE_ACCOUNT_VALIDATE = -103
+        const val CODE_RESOURCE = -103
+        const val CODE_ACCOUNT_VALIDATE = -104
     }
 }
 
 fun <T> ForestCallback<T>.onFailure(ex: BiliApiException) {
-    onFailure(ex.code, ex.msg)
+    onFailure(ex.code, ex.requiredMessage())
 }
