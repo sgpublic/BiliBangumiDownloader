@@ -59,6 +59,10 @@ val ByteArray.BASE_64: String get() {
     return Base64.getEncoder().encodeToString(this)
 }
 
+val String.ORIGIN_BASE64: ByteArray get() {
+    return Base64.getDecoder().decode(this)
+}
+
 private val instance: MessageDigest get() = MessageDigest.getInstance("MD5")
 
 /**

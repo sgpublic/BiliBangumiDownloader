@@ -64,14 +64,12 @@ android {
     sourceSets {
         named("main") {
             proto {
-                srcDir("src/main/protobuf")
-                srcDir("src/main/protocolbuffers")
-                include("**/*.protodevel")
+                srcDir("src/main/java")
             }
         }
         named("test") {
             proto {
-                srcDir("src/test/protocolbuffers")
+                srcDir("src/test/java")
             }
         }
     }
@@ -81,7 +79,7 @@ android {
         minSdk = 26
         targetSdk = 33
         versionCode = VersionGen.COMMIT_VERSION
-        versionName = "3.4.0".also {
+        versionName = "3.5.0".also {
             buildConfigField("ORIGIN_VERSION_NAME", it)
         }
 
@@ -206,20 +204,6 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.2")
 
-    /* https://github.com/sgpublic/ExSharedPreference */
-    implementation("io.github.sgpublic:exsp-runtime:${Dep.EXSP}")
-    kapt("io.github.sgpublic:exsp-compiler:${Dep.EXSP}")
-
-    compileOnly("org.projectlombok:lombok:${Dep.Lombok}")
-    annotationProcessor("org.projectlombok:lombok:${Dep.Lombok}")
-    androidTestCompileOnly("org.projectlombok:lombok:${Dep.Lombok}")
-    androidTestAnnotationProcessor("org.projectlombok:lombok:${Dep.Lombok}")
-
-    implementation("androidx.room:room-runtime:${Dep.Room}")
-    implementation("androidx.room:room-ktx:${Dep.Room}")
-    kapt("androidx.room:room-compiler:${Dep.Room}")
-    testImplementation("androidx.room:room-testing:${Dep.Room}")
-
     /* https://github.com/zhpanvip/BannerViewPager */
     implementation("com.github.zhpanvip:BannerViewPager:3.5.5")
     /* https://github.com/yanzhenjie/Sofia */
@@ -239,9 +223,24 @@ dependencies {
     /* https://docs.geetest.com/sensebot/deploy/client/android */
     implementation("com.geetest.sensebot:sensebot:4.3.7")
 
+    /* https://github.com/sgpublic/ExSharedPreference */
+    implementation("io.github.sgpublic:exsp-runtime:${Dep.EXSP}")
+    kapt("io.github.sgpublic:exsp-compiler:${Dep.EXSP}")
+
+    compileOnly("org.projectlombok:lombok:${Dep.Lombok}")
+    annotationProcessor("org.projectlombok:lombok:${Dep.Lombok}")
+    androidTestCompileOnly("org.projectlombok:lombok:${Dep.Lombok}")
+    androidTestAnnotationProcessor("org.projectlombok:lombok:${Dep.Lombok}")
+
+    implementation("androidx.room:room-runtime:${Dep.Room}")
+    implementation("androidx.room:room-ktx:${Dep.Room}")
+    kapt("androidx.room:room-compiler:${Dep.Room}")
+    testImplementation("androidx.room:room-testing:${Dep.Room}")
+
     /* https://github.com/google/protobuf-gradle-plugin */
     implementation("com.google.protobuf:protobuf-javalite:${Dep.Proto}")
     implementation("io.grpc:grpc-okhttp:${Dep.GrpcJava}")
+    implementation("io.grpc:grpc-android:${Dep.GrpcJava}")
     implementation("io.grpc:grpc-protobuf-lite:${Dep.GrpcJava}")
     implementation("io.grpc:grpc-stub:${Dep.GrpcJava}")
     implementation("org.apache.tomcat:annotations-api:6.0.53")

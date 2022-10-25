@@ -1,16 +1,9 @@
 package io.github.sgpublic.bilidownload.grpc
 
-import bilibili.pgc.gateway.player.v2.PlayURLGrpc
-import bilibili.pgc.gateway.player.v2.Playurl
-import io.github.sgpublic.bilidownload.core.exsp.TokenPreference
-import io.github.sgpublic.bilidownload.core.forest.core.UrlEncodedInterceptor
+import io.github.sgpublic.bilidownload.core.grpc.client.AppClient
 import io.github.sgpublic.bilidownload.core.util.log
-import io.github.sgpublic.exsp.ExPreference
-import io.grpc.ManagedChannel
-import io.grpc.ManagedChannelBuilder
-import io.grpc.Metadata
-import io.grpc.stub.MetadataUtils
-import org.junit.After
+import okhttp3.internal.closeQuietly
+import org.junit.AfterClass
 import org.junit.Test
 
 /**
@@ -19,34 +12,21 @@ import org.junit.Test
  * @date 2022/10/24 17:18
  */
 class PlayUrlTest {
-    private val Channel: ManagedChannel by lazy {
-        ManagedChannelBuilder.forTarget("app.bilibili.com")
-            .useTransportSecurity()
-            .userAgent(UrlEncodedInterceptor.UserAgent)
-            .build()
-    }
-
     @Test
     fun getUrl() {
-        val interceptor =
-            MetadataUtils.newAttachHeadersInterceptor(Metadata().also {
-                it.put(
-                    Metadata.Key.of("authorization", Metadata.ASCII_STRING_MARSHALLER),
-                    "identify_v1 " + ExPreference.get<TokenPreference>().accessToken
-                )
-            })
-        val stub = PlayURLGrpc.newFutureStub(Channel)
-            .withInterceptors(interceptor)
-        val req = Playurl.PlayViewReq.newBuilder()
-            .setCid(771780492)
-            .setEpid(562695)
-            .build()
-        val view = stub.playView(req).get()
-        log.debug("view: $view")
+        val execute = AppClient.getPlayUrl(866123996, 691172, 80).execute()
+        log.debug("result: $execute")
     }
 
-    @After
-    fun close() {
-        Channel.shutdown()
+    companion object {
+        private val AppClient: AppClient by lazy {
+            AppClient()
+        }
+
+        @AfterClass
+        @JvmStatic
+        fun cleanup() {
+            AppClient.closeQuietly()
+        }
     }
 }

@@ -7,11 +7,9 @@ import io.github.sgpublic.bilidownload.core.util.fromGson
 import io.github.sgpublic.bilidownload.core.util.log
 import java.util.*
 
-class ApiModule {
-    companion object {
-        val TS: Long get() = System.currentTimeMillis() / 1000
-        val TS_FULL: Long get() = System.currentTimeMillis()
-    }
+object ApiModule {
+    val TS: Long get() = System.currentTimeMillis() / 1000
+    val TS_FULL: Long get() = System.currentTimeMillis()
 }
 
 inline fun <reified T: Any> Modules.find(): List<T> {

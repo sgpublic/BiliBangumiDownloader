@@ -25,7 +25,7 @@ class LoginPwdModel: BaseViewModel() {
     val UserInfo: MutableLiveData<UserInfoResp.UserInfo> = MutableLiveData()
 
     fun getCaptcha() {
-        ForestClients.PASSPORT.captcha().biliapi(object : ForestCallback<CaptchaResp.CaptchaData>() {
+        ForestClients.PASSPORT.captcha().biliapi(object : RequestCallback<CaptchaResp.CaptchaData>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
@@ -37,7 +37,7 @@ class LoginPwdModel: BaseViewModel() {
     }
 
     private fun encryptPwd(password: String, callback: (String) -> Unit) {
-        ForestClients.PASSPORT.pubKey().biliapi(object : ForestCallback<GetKeyResp.GetKeyData>() {
+        ForestClients.PASSPORT.pubKey().biliapi(object : RequestCallback<GetKeyResp.GetKeyData>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
@@ -110,7 +110,7 @@ class LoginPwdModel: BaseViewModel() {
             return
         }
         ForestClients.PASSPORT.captcha().biliapi(object :
-            ForestCallback<CaptchaResp.CaptchaData>() {
+            RequestCallback<CaptchaResp.CaptchaData>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
@@ -148,7 +148,7 @@ class LoginPwdModel: BaseViewModel() {
     }
 
     fun accessToken(code: String) {
-        ForestClients.PASSPORT.accessToken(code).biliapi(object : ForestCallback<LoginResp.LoginData>() {
+        ForestClients.PASSPORT.accessToken(code).biliapi(object : RequestCallback<LoginResp.LoginData>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
@@ -160,7 +160,7 @@ class LoginPwdModel: BaseViewModel() {
     }
 
     fun getUserInfo(accessToken: String) {
-        ForestClients.APP.getUserInfoRequest(accessToken).biliapi(object : ForestCallback<UserInfoResp.UserInfo>() {
+        ForestClients.APP.getUserInfoRequest(accessToken).biliapi(object : RequestCallback<UserInfoResp.UserInfo>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }

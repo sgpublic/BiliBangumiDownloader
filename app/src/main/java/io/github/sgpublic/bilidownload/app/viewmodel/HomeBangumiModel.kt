@@ -17,7 +17,7 @@ import io.github.sgpublic.bilidownload.core.util.*
 class HomeBangumiModel : BaseViewModel() {
     val BannerInfo: MutableLiveData<List<BannerResp.BannerData.BannerItem.Item>> = MutableLiveData()
     fun getBannerInfo(accessToken: String) {
-        ForestClients.API.banner(accessToken).biliapi(object : ForestCallback<BannerResp.BannerData>() {
+        ForestClients.API.banner(accessToken).biliapi(object : RequestCallback<BannerResp.BannerData>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
@@ -34,7 +34,7 @@ class HomeBangumiModel : BaseViewModel() {
     fun getBangumiItems(accessToken: String, isRefresh: Boolean) {
         ForestClients.API.bangumi(
             accessToken, cursor, isRefresh.take(1, 0)
-        ).biliapi(object : ForestCallback<BangumiPageResp.BangumiPageData>() {
+        ).biliapi(object : RequestCallback<BangumiPageResp.BangumiPageData>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }

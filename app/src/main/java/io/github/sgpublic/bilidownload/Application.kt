@@ -21,7 +21,9 @@ import com.dtflys.forest.converter.json.ForestGsonConverter
 import io.github.sgpublic.bilidownload.base.forest.GsonConverter
 import io.github.sgpublic.bilidownload.core.forest.core.BiliApiInterceptor
 import io.github.sgpublic.bilidownload.core.forest.core.UrlEncodedInterceptor
+import io.github.sgpublic.bilidownload.core.grpc.GrpcModule
 import io.github.sgpublic.bilidownload.core.room.AppDatabase
+import io.github.sgpublic.bilidownload.core.util.BASE_64
 import io.github.sgpublic.bilidownload.core.util.finishAll
 import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.exsp.ExPreference
