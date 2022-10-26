@@ -14,10 +14,14 @@ import io.github.sgpublic.bilidownload.core.util.*
  * @author Madray Haven
  * @date 2022/10/21 10:52
  */
-class HomeBangumiModel : BaseViewModel() {
-    val BannerInfo: MutableLiveData<List<BannerResp.BannerData.BannerItem.Item>> = MutableLiveData()
-    fun getBannerInfo(accessToken: String) {
-        ForestClients.API.banner(accessToken).biliapi(object : RequestCallback<BannerResp.BannerData>() {
+class HomeModel : BaseViewModel() {
+    val BannerInfo: MutableLiveData<List<BannerResp.BannerData.BannerItem.Item>> by lazy {
+        getBannerInfo()
+        MutableLiveData()
+    }
+    fun getBannerInfo() {
+        Loading.postValue(true)
+        ForestClients.API.banner(TokenPreference.accessToken).biliapi(object : RequestCallback<BannerResp.BannerData>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
@@ -29,11 +33,17 @@ class HomeBangumiModel : BaseViewModel() {
         }, viewModelScope)
     }
 
-    val BangumiItems: MutableLiveData<Pair<Boolean, ArrayList<BangumiPageResp.BangumiPageData.AbstractFeed<*>>>> = MutableLiveData()
+    val BangumiItems: MutableLiveData<Pair<Boolean, ArrayList<BangumiPageResp.BangumiPageData.AbstractFeed<*>>>> by lazy {
+        getBangumiItems(true)
+        MutableLiveData()
+    }
     private var cursor = 0
-    fun getBangumiItems(accessToken: String, isRefresh: Boolean) {
+    fun getBangumiItems(isRefresh: Boolean) {
+        if (isRefresh) {
+            Loading.postValue(true)
+        }
         ForestClients.API.bangumi(
-            accessToken, cursor, isRefresh.take(1, 0)
+            TokenPreference.accessToken, cursor, isRefresh.take(1, 0)
         ).biliapi(object : RequestCallback<BangumiPageResp.BangumiPageData>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
@@ -42,7 +52,10 @@ class HomeBangumiModel : BaseViewModel() {
             override fun onResponse(data: BangumiPageResp.BangumiPageData) {
                 cursor = data.nextCursor
 
-                val list = BangumiItems.value?.second.takeIf { isRefresh } ?: ArrayList()
+                if (isRefresh) {
+                    BangumiItems.value?.second?.clear()
+                }
+                val list = BangumiItems.value?.second ?: ArrayList()
 
                 val doubleFeed: List<BangumiPageResp.BangumiPageData.DoubleFeed> = data.find()
                 val tmp: ArrayList<BangumiPageResp.BangumiPageData.DoubleFeed.Item> = ArrayList()
@@ -58,8 +71,12 @@ class HomeBangumiModel : BaseViewModel() {
                     BangumiPageResp.BangumiPageData.AbstractFeed(it, 1)
                 })
 
-                val fallFeed: List<BangumiPageResp.BangumiPageData.FallFeed> = data.find()
-                list.add(BangumiPageResp.BangumiPageData.AbstractFeed(fallFeed[0].items[0], 2))
+                data.find<BangumiPageResp.BangumiPageData.FallFeed>()
+                    .takeIf { it.isNotEmpty() }
+                    ?.get(0)?.items?.takeIf { it.isNotEmpty() }
+                    ?.get(0)?.let {
+                        list.add(BangumiPageResp.BangumiPageData.AbstractFeed(it, 2))
+                    }
 
                 BangumiItems.postValue((data.hasNext == 1) to list)
             }

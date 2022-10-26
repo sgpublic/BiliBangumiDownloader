@@ -32,13 +32,13 @@ class Welcome: BaseActivity<ActivityWelcomeBinding>() {
             Home.startActivity(this@Welcome)
             return
         }
-        val sid = data.path?.substring(1)?.toIntOrNull()
+        val sid = data.path?.substring(1)?.toLongOrNull()
         if (sid == null) {
             finish()
             return
         }
-        val index = data.getQueryParameter("index")?.toIntOrNull() ?: 0
-        SeasonPlayer.startActivity(this@Welcome, sid, index)
+        val epid = data.getQueryParameter("epid")?.toLongOrNull() ?: 0
+        SeasonPlayer.startActivity(this@Welcome, sid, epid)
     }
 
     override val ViewBinding: ActivityWelcomeBinding by viewBinding()

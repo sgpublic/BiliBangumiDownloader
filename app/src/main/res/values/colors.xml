@@ -52,11 +52,11 @@
     <color name="color_episode_selected_ic">#AA0099ff</color>
     <color name="color_episode_selected_background">#400099ff</color>
 
-    <color name="color_random_1">#4CAF50</color>
-    <color name="color_random_2">#FF5722</color>
-    <color name="color_random_3">#3F51B5</color>
-    <color name="color_random_4">#673AB7</color>
-    <color name="color_random_5">#FF9800</color>
+    <color name="color_random_1">#114CAF50</color>
+    <color name="color_random_2">#11FF5722</color>
+    <color name="color_random_3">#113F51B5</color>
+    <color name="color_random_4">#11673AB7</color>
+    <color name="color_random_5">#11FF9800</color>
 
     <color name="color_vip_big">#FA7298</color>
 </resources>

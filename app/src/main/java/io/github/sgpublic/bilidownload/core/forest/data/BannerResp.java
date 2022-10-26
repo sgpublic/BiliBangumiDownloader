@@ -4,6 +4,7 @@ import io.github.sgpublic.bilidownload.base.forest.ResultResp;
 import io.github.sgpublic.bilidownload.core.forest.annotations.ModuleStyle;
 import io.github.sgpublic.bilidownload.core.forest.data.common.BadgeInfo;
 import io.github.sgpublic.bilidownload.core.forest.data.common.Modules;
+import io.github.sgpublic.bilidownload.core.forest.data.common.SeasonEpisodeBean;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -20,12 +21,11 @@ public class BannerResp extends ResultResp<BannerResp.BannerData> {
         @EqualsAndHashCode(callSuper = true)
         public static class BannerItem extends ModuleItem<BannerItem.Item> {
             @Data
-            public static class Item {
-                private int aid;
+            @EqualsAndHashCode(callSuper = true)
+            public static class Item extends SeasonEpisodeBean {
                 private BadgeInfo badgeInfo;
                 private String cover;
                 private String desc;
-                private int seasonId;
                 private String title;
             }
         }

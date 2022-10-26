@@ -8,7 +8,7 @@ import lombok.Data;
  */
 @Data
 public class SeasonEpisodeBean {
-    private int seasonId;
+    private long seasonId;
     private long episodeId;
     private long cid;
 }

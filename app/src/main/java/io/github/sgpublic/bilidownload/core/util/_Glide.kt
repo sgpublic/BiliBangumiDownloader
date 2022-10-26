@@ -6,6 +6,7 @@ import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -20,7 +21,6 @@ import com.bumptech.glide.request.transition.Transition
 import io.github.sgpublic.bilidownload.R
 import jp.wasabeef.glide.transformations.internal.FastBlur
 import java.security.MessageDigest
-import kotlin.math.roundToInt
 
 fun RequestManager.customLoad(url: String): RequestBuilder<Drawable> {
     val option = RequestOptions()
@@ -29,22 +29,24 @@ fun RequestManager.customLoad(url: String): RequestBuilder<Drawable> {
     return load(url).apply(option)
 }
 
-fun RequestBuilder<Drawable>.fittedInfo(view: ImageView) {
+fun RequestBuilder<Drawable>.constraintInfo(view: ImageView) {
     into(object : CustomTarget<Drawable>() {
         override fun onLoadFailed(errorDrawable: Drawable?) {
-            view.setImageDrawable(errorDrawable)
+
         }
 
         override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
             if (view.scaleType != ImageView.ScaleType.FIT_XY) {
                 view.scaleType = ImageView.ScaleType.FIT_XY
             }
-            view.layoutParams.width = (view.height * (resource.intrinsicWidth.toDouble() / resource.intrinsicHeight)).roundToInt()
+            val param = view.layoutParams as ConstraintLayout.LayoutParams
+            param.dimensionRatio = "${resource.intrinsicWidth}:${resource.intrinsicHeight}"
+            view.layoutParams = param
             view.setImageDrawable(resource)
         }
 
         override fun onLoadCleared(placeholder: Drawable?) {
-            view.setImageDrawable(placeholder)
+
         }
     })
 }

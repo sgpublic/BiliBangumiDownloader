@@ -3,6 +3,8 @@ package io.github.sgpublic.bilidownload.app.activity
 import android.content.Context
 import android.content.Intent
 import androidx.activity.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.app.fragment.factory.PlayerFragmentFactory
@@ -13,8 +15,9 @@ import io.github.sgpublic.bilidownload.databinding.ActivityPlayerBinding
 import io.github.sgpublic.exsp.ExPreference
 
 class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerViewModel>() {
-    override val ViewModel: OnlinePlayerViewModel by viewModels()
-    private val mid = ExPreference.get(UserPreference::class.java).mid
+    override val ViewModel: OnlinePlayerViewModel by viewModels {
+        ViewModelFactory(intent.getLongExtra(KEY_SEASON_ID, -1))
+    }
 
     override fun beforeCreate() {
         supportFragmentManager.fragmentFactory = PlayerFragmentFactory(this@SeasonPlayer)
@@ -22,7 +25,7 @@ class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerVie
     }
 
     override fun onActivityCreated(hasSavedInstanceState: Boolean) {
-        ViewModel.SID.postValue(intent.getIntExtra(KEY_SEASON_ID, -1))
+
     }
 
     override fun onViewModelSetup() {
@@ -53,13 +56,21 @@ class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerVie
     override val ViewBinding: ActivityPlayerBinding by viewBinding()
     companion object {
         const val KEY_SEASON_ID = "season_id"
-        const val KEY_EPISODE_INDEX = "ep_index"
+        const val KEY_EPISODE_ID = "ep_id"
 
-        fun startActivity(context: Context, sid: Int, target: Int? = null) {
+        fun startActivity(context: Context, sid: Long, epid: Long? = null) {
             val intent = Intent(context, SeasonPlayer::class.java)
             intent.putExtra(KEY_SEASON_ID, sid)
-            target?.let { intent.putExtra(KEY_EPISODE_INDEX, it) }
+            epid?.let { intent.putExtra(KEY_EPISODE_ID, it) }
             context.startActivity(intent)
+        }
+    }
+
+    private class ViewModelFactory(
+        private val sid: Long
+    ): ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return modelClass.getConstructor(Long::class.java).newInstance(sid)
         }
     }
 }

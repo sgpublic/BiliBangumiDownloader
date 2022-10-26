@@ -3,14 +3,13 @@ package io.github.sgpublic.bilidownload.app.ui.recycler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
+import androidx.annotation.ColorRes
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.zhpan.bannerview.BannerViewPager
-import io.github.sgpublic.bilidownload.app.activity.SeasonPlayer
+import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.app.ui.SeasonBannerAdapter
-import io.github.sgpublic.bilidownload.core.forest.data.BangumiPageResp
 import io.github.sgpublic.bilidownload.core.forest.data.BangumiPageResp.BangumiPageData
 import io.github.sgpublic.bilidownload.core.forest.data.BannerResp
 import io.github.sgpublic.bilidownload.core.util.*
@@ -19,16 +18,13 @@ import io.github.sgpublic.bilidownload.databinding.ItemBangumiPgcBinding
 import io.github.sgpublic.bilidownload.databinding.RecyclerFooterBinding
 import io.github.sgpublic.bilidownload.databinding.RecyclerHomeBannerBinding
 import java.lang.ref.WeakReference
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  *
  * @author Madray Haven
  * @date 2022/10/22 17:20
  */
-class HomeRecyclerAdapter(
-    private val context: AppCompatActivity,
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class HomeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun getItemViewType(position: Int): Int {
         return when (position) {
             0 -> TYPE_BANNER
@@ -40,25 +36,15 @@ class HomeRecyclerAdapter(
         }
     }
 
-    private var onBannerClickListener: (BannerResp.BannerData.BannerItem.Item) -> Unit = { }
-    fun setOnBannerClickListener(onBannerClickListener: (BannerResp.BannerData.BannerItem.Item) -> Unit) {
-        this.onBannerClickListener = onBannerClickListener
-    }
-
-    private var bannerView: WeakReference<BannerViewPager<in Any>>? = null
+    private var BangumiBanner: BannerViewPager<in Any>? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val inflater = LayoutInflater.from(context)
+        val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_BANNER -> BannerViewHolder(RecyclerHomeBannerBinding.inflate(
                 inflater, parent, false
             )).also {
-                val holder = it.binding.bangumiBanner
+                BangumiBanner = it.binding.bangumiBanner
                     .setAdapter(adapter)
-                    .setOnPageClickListener { _, position ->
-                        val data = bannerData[position]
-                        onBannerClickListener.invoke(data)
-                    }
-                bannerView = WeakReference(holder)
             }
             TYPE_FOOTER -> FooterViewHolder(RecyclerFooterBinding.inflate(
                 inflater, parent, false
@@ -85,16 +71,22 @@ class HomeRecyclerAdapter(
         }
     }
 
-    private val adapter = SeasonBannerAdapter(context)
+    private val adapter: SeasonBannerAdapter by lazy {
+        SeasonBannerAdapter().also {
+            it.setOnEpisodeClickListener { sid, epid ->
+                onEpisodeClickListener.invoke(sid, epid)
+            }
+        }
+    }
     private fun onBindBannerViewHolder(holder: BannerViewHolder) {
-        val param = holder.binding.bangumiBanner.layoutParams as GridLayoutManager.LayoutParams
-        param.topMargin = 110.dp
-        val banner = bannerView?.get() ?: return
-        banner.create(bannerData)
-        if (canLoop.get()) {
-            banner.startLoop()
-        } else {
-            banner.stopLoop()
+        holder.binding.bangumiBanner.let {
+            val param = it.layoutParams as GridLayoutManager.LayoutParams
+            param.topMargin = 110.dp
+            if (canLoop) {
+                it.startLoop()
+            } else {
+                it.stopLoop()
+            }
         }
     }
 
@@ -109,11 +101,12 @@ class HomeRecyclerAdapter(
         }
     }
 
-    private var onEpisodeClickListener: (BannerResp.BannerData.BannerItem.Item) -> Unit = { }
-    fun setOnEpisodeClickListener(onBannerClickListener: (BannerResp.BannerData.BannerItem.Item) -> Unit) {
-        this.onBannerClickListener = onBannerClickListener
+    private var onEpisodeClickListener: (Long, Long?) -> Unit = { _, _ -> }
+    fun setOnEpisodeClickListener(onBannerClickListener: (Long, Long?) -> Unit) {
+        this.onEpisodeClickListener = onBannerClickListener
     }
     private fun onBindEpisodeViewHolder(holder: EpisodeViewHolder, item: BangumiPageData.DoubleFeed.Item) {
+        val context = holder.binding.root.context
         Glide.with(context)
             .customLoad(item.cover)
             .withCrossFade()
@@ -122,16 +115,43 @@ class HomeRecyclerAdapter(
             Glide.with(context)
                 .customLoad(it.img)
                 .withCrossFade()
-                .fittedInfo(holder.binding.itemBangumiEpisodeBadge)
+                .constraintInfo(holder.binding.itemBangumiEpisodeBadge)
         }
         holder.binding.itemBangumiEpisodeTag.text = item.bottomLeftBadge.text
         holder.binding.itemBangumiEpisodeDesc.text = item.desc
         holder.binding.itemBangumiEpisodeTitle.text = item.title
         holder.binding.itemBangumiEpisodeStatus.text = item.stat.followView
+        holder.binding.root.setOnClickListener {
+            onEpisodeClickListener.invoke(item.seasonId, item.episodeId)
+        }
     }
 
+    @ColorRes
+    private val Colors: Array<Int> = arrayOf(
+        R.color.color_random_1,
+        R.color.color_random_2,
+        R.color.color_random_3,
+        R.color.color_random_4,
+        R.color.color_random_5,
+    )
     private fun onBindPgcViewHolder(holder: PgcViewHolder, item: BangumiPageData.FallFeed.Item) {
-
+        val context = holder.binding.root.context
+        item.badgeInfo?.let {
+            Glide.with(context)
+                .customLoad(it.img)
+                .withCrossFade()
+                .constraintInfo(holder.binding.itemBangumiPgcBadge)
+        }
+        Glide.with(context)
+            .customLoad(item.cover)
+            .withCrossFade()
+            .into(holder.binding.itemBangumiPgcCover)
+        holder.binding.itemBangumiPcgDesc.text = item.desc
+        holder.binding.itemBangumiPgcTitle.text = item.title
+        holder.binding.root.setCardBackgroundColor(context.resources.getColor(Colors.random(), context.theme))
+        holder.binding.root.setOnClickListener {
+            onEpisodeClickListener.invoke(item.seasonId, item.episodeId)
+        }
     }
 
     override fun getItemCount(): Int = bangumiData.size + 2
@@ -139,14 +159,15 @@ class HomeRecyclerAdapter(
     private val bannerData = ArrayList<BannerResp.BannerData.BannerItem.Item>()
     fun setBannerData(list: Collection<BannerResp.BannerData.BannerItem.Item>) {
 //        val size = bannerData.size.coerceAtLeast(list.size)
+//        adapter.setData(list)
+//        adapter.notifyItemRangeChanged(0, size)
+        if (list.isEmpty()) {
+            log.warn("bannerData is empty!")
+            return
+        }
         bannerData.clear()
         bannerData.addAll(list)
-        if (bannerData.isEmpty()) {
-            log.warn("bannerData is empty!")
-        } else {
-            log.debug("bannerData: ${bannerData.toGson()}")
-        }
-        notifyItemChanged(0)
+        BangumiBanner?.create(bannerData)
     }
 
     private val bangumiData = ArrayList<BangumiPageData.AbstractFeed<*>>()
@@ -156,15 +177,13 @@ class HomeRecyclerAdapter(
         bangumiData.addAll(list)
         if (bannerData.isEmpty()) {
             log.warn("bangumiData is empty!")
-        } else {
-            log.debug("bangumiData: ${bangumiData.toGson()}")
         }
         this.hasNext = hasNext
         notifyItemChanged(1, size + 2)
     }
 
-    private var onScrollToEndCallback: () -> Boolean = { false }
-    fun setOnScrollToEndListener(callback: () -> Boolean) {
+    private var onScrollToEndCallback: () -> Unit = { }
+    fun setOnScrollToEndListener(callback: () -> Unit) {
         this.onScrollToEndCallback = callback
     }
 
@@ -204,15 +223,17 @@ class HomeRecyclerAdapter(
         })
     }
 
-    private var canLoop = AtomicBoolean(true)
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        this.recyclerView = null
+    }
+
+    private var canLoop = false
     fun setBannerLoop(canLoop: Boolean) {
-        this.canLoop.set(canLoop)
-        val banner = bannerView?.get() ?: return
-        if (canLoop) {
-            banner.startLoop()
-        } else {
-            banner.stopLoop()
+        if (canLoop == this.canLoop) {
+            return
         }
+        this.canLoop = canLoop
+        notifyItemChanged(0)
     }
 
     class BannerViewHolder(val binding: RecyclerHomeBannerBinding)

@@ -1,6 +1,8 @@
 package io.github.sgpublic.bilidownload.base.app
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -87,5 +89,14 @@ abstract class BaseFragment<VB: ViewBinding>(private val contest: AppCompatActiv
 
     open fun onBackPressed(): Boolean {
         return false
+    }
+
+    val mainLooper: Looper get() = contest.mainLooper
+
+    protected fun postDelayed(delay: Long, block: () -> Unit) {
+        Handler(mainLooper).postDelayed(block, delay)
+    }
+    protected fun post(block: () -> Unit) {
+        Handler(mainLooper).post(block)
     }
 }
