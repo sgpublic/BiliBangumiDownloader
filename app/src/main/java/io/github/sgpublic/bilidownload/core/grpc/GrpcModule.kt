@@ -6,6 +6,7 @@ import io.github.sgpublic.bilidownload.core.forest.annotations.BiliSign
 import io.github.sgpublic.bilidownload.core.forest.core.UrlEncodedInterceptor
 import io.github.sgpublic.exsp.ExPreference
 import io.grpc.*
+import io.grpc.cronet.CronetChannelBuilder
 import io.grpc.stub.MetadataUtils
 import okio.Closeable
 import java.util.concurrent.TimeUnit
@@ -55,6 +56,14 @@ object GrpcModule {
 fun ManagedChannelBuilder<*>.customBuild(): ManagedChannel {
     return useTransportSecurity()
         .compressorRegistry(GrpcModule.Compress)
+        .decompressorRegistry(GrpcModule.Decompress)
+        .userAgent(UrlEncodedInterceptor.UserAgent)
+        .enableFullStreamDecompression()
+        .build()
+}
+
+fun CronetChannelBuilder.customBuild(): ManagedChannel {
+    return compressorRegistry(GrpcModule.Compress)
         .decompressorRegistry(GrpcModule.Decompress)
         .userAgent(UrlEncodedInterceptor.UserAgent)
         .enableFullStreamDecompression()

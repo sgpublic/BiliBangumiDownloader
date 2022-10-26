@@ -167,6 +167,9 @@ protobuf {
         register("grpc") {
             artifact = "io.grpc:protoc-gen-grpc-java:${Dep.GrpcJava}"
         }
+//        register("grpckt") {
+//            artifact = "io.grpc:protoc-gen-grpc-kotlin:1.3.0:jdk8@jar"
+//        }
     }
     generateProtoTasks {
         for(task in all()) {
@@ -174,11 +177,17 @@ protobuf {
                 register("java") {
                     option("lite")
                 }
+//                register("kotlin") {
+//                    option("lite")
+//                }
             }
             task.plugins {
                 register("grpc") {
                     option("lite")
                 }
+//                register("grpckt") {
+//                    option("lite")
+//                }
             }
         }
     }
@@ -202,7 +211,7 @@ dependencies {
     implementation("com.google.android.material:material:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.5.2")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
 
     /* https://github.com/zhpanvip/BannerViewPager */
     implementation("com.github.zhpanvip:BannerViewPager:3.5.5")
@@ -238,11 +247,16 @@ dependencies {
     testImplementation("androidx.room:room-testing:${Dep.Room}")
 
     /* https://github.com/google/protobuf-gradle-plugin */
-    implementation("com.google.protobuf:protobuf-javalite:${Dep.Proto}")
-    implementation("io.grpc:grpc-okhttp:${Dep.GrpcJava}")
+    implementation("com.google.protobuf:protobuf-java:${Dep.Proto}")
+//    implementation("com.google.protobuf:protobuf-kotlin:${Dep.Proto}")
+    // 阿b用的 cronet，如果用 okhttp 会导致 io.grpc.StatusRuntimeException: INTERNAL: Received unexpected EOS on DATA frame from server.
+    implementation("io.grpc:grpc-cronet:${Dep.GrpcJava}")
+    implementation("com.google.android.gms:play-services-cronet:18.0.1")
+//    implementation("io.grpc:grpc-okhttp:${Dep.GrpcJava}")
     implementation("io.grpc:grpc-android:${Dep.GrpcJava}")
-    implementation("io.grpc:grpc-protobuf-lite:${Dep.GrpcJava}")
+    implementation("io.grpc:grpc-protobuf:${Dep.GrpcJava}")
     implementation("io.grpc:grpc-stub:${Dep.GrpcJava}")
+//    implementation("io.grpc:grpc-kotlin-stub:1.0.0")
     implementation("org.apache.tomcat:annotations-api:6.0.53")
 
     /* https://github.com/bumptech/glide */
