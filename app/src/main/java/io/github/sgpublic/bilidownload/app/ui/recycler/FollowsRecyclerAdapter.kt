@@ -73,8 +73,8 @@ class FollowsRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    private var onEpisodeClickListener: (Long, Long?) -> Unit = { _, _ -> }
-    fun setOnEpisodeClickListener(onBannerClickListener: (Long, Long?) -> Unit) {
+    private var onEpisodeClickListener: (Long) -> Unit = { _ -> }
+    fun setOnEpisodeClickListener(onBannerClickListener: (Long) -> Unit) {
         this.onEpisodeClickListener = onBannerClickListener
     }
     private fun onBindSeasonViewHolder(holder: SeasonViewHolder, data: FollowsResp.FollowsData.FollowItem) {
@@ -92,7 +92,7 @@ class FollowsRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             .centerCrop()
             .into(holder.binding.followImage)
         holder.binding.root.setOnClickListener {
-            onEpisodeClickListener.invoke(data.seasonId, data.process?.lastEpId)
+            onEpisodeClickListener.invoke(data.seasonId)
         }
     }
 

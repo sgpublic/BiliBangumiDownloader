@@ -57,7 +57,7 @@ interface ApiClient {
     @BiliSign
     @Get("/pgc/view/app/season")
     fun seasonInfo(
-        @Query("season_id") seasonId: Int,
+        @Query("season_id") seasonId: Long,
         @Query("access_key") accessToken: String,
     ): ForestRequest<String>
 
@@ -69,9 +69,21 @@ interface ApiClient {
     @BiliSign
     @Get("/pgc/view/v2/app/season")
     fun seasonInfoV2(
-        @Query("season_id") seasonId: Int,
+        @Query("season_id") seasonId: Long,
         @Query("access_key") accessToken: String,
     ): ForestRequest<SeasonInfoResp>
+
+    /**
+     * 番剧推荐接口
+     * @param seasonId sid
+     * @param accessToken access_token
+     */
+    @BiliSign
+    @Get("/pgc/season/app/related/recommend")
+    fun seasonRecommend(
+        @Query("season_id") seasonId: Long,
+        @Query("access_key") accessToken: String,
+    ): ForestRequest<SeasonRecommendResp>
 
     /**
      * 首页 banner

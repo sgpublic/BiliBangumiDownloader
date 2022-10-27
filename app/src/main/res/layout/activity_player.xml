@@ -85,7 +85,7 @@
                 android:id="@+id/player_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:alpha="0"
+                android:visibility="gone"
                 android:orientation="vertical" />
         </androidx.core.widget.NestedScrollView>
         <io.github.sgpublic.bilidownload.app.widget.LoadingImageView

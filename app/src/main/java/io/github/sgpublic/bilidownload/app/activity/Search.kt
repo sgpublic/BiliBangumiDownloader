@@ -8,12 +8,11 @@ import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import androidx.core.widget.addTextChangedListener
-import io.github.sgpublic.bilidownload.base.CrashHandler
 import io.github.sgpublic.bilidownload.base.app.BaseActivity
+import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.bilidownload.databinding.ActivitySearchBinding
 import io.github.sgpublic.bilidownload.databinding.ItemSearchWordBinding
 import org.json.JSONArray
-import org.json.JSONException
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -100,12 +99,10 @@ class Search: BaseActivity<ActivitySearchBinding>() {
                 }
                 setAnimateState(true, 500, ViewBinding.searchHistory)
             }
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             if (e !is FileNotFoundException) {
-                CrashHandler.saveExplosion(e, -705)
+                log.warn("history read failed", e)
             }
-        } catch (e: JSONException) {
-            CrashHandler.saveExplosion(e, -703)
         }
     }
 
@@ -133,18 +130,16 @@ class Search: BaseActivity<ActivitySearchBinding>() {
                         arrayIndex++
                     }
                 }
-            } catch (ignore: FileNotFoundException) {
-            }
+            } catch (ignore: FileNotFoundException) { }
             val fileOutputStream = applicationContext.openFileOutput("history.json", MODE_PRIVATE)
             fileOutputStream.write(arraySave.toString().toByteArray())
             fileOutputStream.close()
         } catch (e: IOException) {
-            CrashHandler.saveExplosion(e, -715)
-        } catch (e: JSONException) {
-            CrashHandler.saveExplosion(e, -713)
+            log.warn("save history failed", e)
         }
     }
 
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         if (ViewBinding.searchEdit.hasFocus()) {
             ViewBinding.searchEdit.clearFocus()

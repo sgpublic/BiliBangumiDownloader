@@ -22,10 +22,11 @@ class FollowModel(private val status: FollowStatus): BaseViewModel() {
         getFollows(true)
         MutableLiveData(ArrayList<FollowsResp.FollowsData.FollowItem>() to true)
     }
-    private var pageIndex: Int = 0
+    private var pageIndex: Int = 1
 
     fun getFollows(isRefresh: Boolean) {
         if (isRefresh) {
+            pageIndex = 1
             Loading.postValue(true)
         }
         ForestClients.API.follow(
@@ -36,6 +37,7 @@ class FollowModel(private val status: FollowStatus): BaseViewModel() {
             }
 
             override fun onResponse(data: FollowsResp.FollowsData) {
+                pageIndex += 1
                 val liveData = Follows.value?.takeIf { !isRefresh }
                     ?: (ArrayList<FollowsResp.FollowsData.FollowItem>() to true)
                 liveData.first.addAll(data.followList.advSub(3))

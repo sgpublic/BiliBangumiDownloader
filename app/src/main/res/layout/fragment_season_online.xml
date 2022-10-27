@@ -17,31 +17,6 @@
         android:ellipsize="end"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"/>
-    <androidx.cardview.widget.CardView
-        android:id="@+id/season_producer_avatar_base"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_margin="10dp"
-        app:cardCornerRadius="14dp"
-        app:cardElevation="0dp"
-        app:layout_constraintTop_toBottomOf="@id/season_title"
-        app:layout_constraintLeft_toLeftOf="parent">
-        <ImageView
-            android:id="@+id/season_producer_avatar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:ignore="ContentDescription" />
-    </androidx.cardview.widget.CardView>
-    <TextView
-        android:id="@+id/season_producer_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/color_text_normal"
-        android:textSize="14sp"
-        android:layout_marginStart="10dp"
-        app:layout_constraintTop_toTopOf="@id/season_producer_avatar_base"
-        app:layout_constraintBottom_toBottomOf="@id/season_producer_avatar_base"
-        app:layout_constraintLeft_toRightOf="@id/season_producer_avatar_base"/>
     <TextView
         android:id="@+id/season_detail"
         android:layout_width="0dp"
@@ -49,7 +24,7 @@
         android:padding="10dp"
         android:textColor="@color/color_text_dark"
         android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@id/season_producer_avatar_base"
+        app:layout_constraintTop_toBottomOf="@id/season_title"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/season_detail_text"/>
     <TextView

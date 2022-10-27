@@ -22,7 +22,7 @@ class SeasonInfoTest {
         log.debug("租借女友: ${realSeason.toGson()}")
     }
 
-    private fun realSeason(sid: Int): Any {
+    private fun realSeason(sid: Long): Any {
         return ForestClients.API.seasonInfoV2(sid, Token.accessToken).execute()
     }
 }

@@ -30,14 +30,7 @@ public class FollowsResp extends ResultResp<FollowsResp.FollowsData> {
             @Nullable
             private BadgeInfo badgeInfo;
             private String cover;
-            @Nullable
-            private Process process;
             private String title;
-
-            @Data
-            public static class Process {
-                private long lastEpId;
-            }
         }
     }
 }

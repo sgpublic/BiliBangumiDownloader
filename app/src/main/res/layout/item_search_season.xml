@@ -116,24 +116,10 @@
                     android:numStars="5" />
             </LinearLayout>
         </LinearLayout>
-        <androidx.cardview.widget.CardView
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/color_button_alert"
-            app:cardCornerRadius="10dp">
-            <TextView
-                android:id="@+id/item_search_go"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:gravity="center"
-                android:text="@string/title_search_go"
-                android:textSize="12sp"
-                android:textColor="@color/colorOnPrimary" />
-        </androidx.cardview.widget.CardView>
+            android:layout_marginHorizontal="10dp"
+            android:text="@string/title_search_go" />
     </LinearLayout>
 </LinearLayout>

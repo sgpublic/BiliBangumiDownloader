@@ -2,25 +2,26 @@ package io.github.sgpublic.bilidownload.app.activity
 
 import android.content.Context
 import android.content.Intent
+import android.view.View
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.app.fragment.factory.PlayerFragmentFactory
-import io.github.sgpublic.bilidownload.app.viewmodel.OnlinePlayerViewModel
+import io.github.sgpublic.bilidownload.app.fragment.player.OnlinePlayer
+import io.github.sgpublic.bilidownload.app.fragment.player.SeasonOnlinePage
+import io.github.sgpublic.bilidownload.app.viewmodel.OnlinePlayerModel
 import io.github.sgpublic.bilidownload.base.app.BaseViewModelActivity
-import io.github.sgpublic.bilidownload.core.exsp.UserPreference
 import io.github.sgpublic.bilidownload.databinding.ActivityPlayerBinding
-import io.github.sgpublic.exsp.ExPreference
 
-class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerViewModel>() {
-    override val ViewModel: OnlinePlayerViewModel by viewModels {
+class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerModel>() {
+    override val ViewModel: OnlinePlayerModel by viewModels {
         ViewModelFactory(intent.getLongExtra(KEY_SEASON_ID, -1))
     }
 
     override fun beforeCreate() {
-        supportFragmentManager.fragmentFactory = PlayerFragmentFactory(this@SeasonPlayer)
+        supportFragmentManager.fragmentFactory = PlayerFragmentFactory(this)
         super.beforeCreate()
     }
 
@@ -31,19 +32,28 @@ class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerVie
     override fun onViewModelSetup() {
         ViewModel.SID.observe(this) {
             if (it < 0) {
-                Application.onToast(this@SeasonPlayer, R.string.title_season_unknown)
-                finish()
+                Application.onToast(this, R.string.title_season_unknown)
+                ViewBinding.playerLoading?.stopLoad(true)
                 return@observe
+            }
+        }
+        ViewModel.Loading.observe(this) {
+            if (it) {
+                ViewBinding.playerContent?.visibility = View.GONE
+                ViewBinding.playerLoading?.startLoad()
+            } else {
+                ViewBinding.playerContent?.visibility = View.VISIBLE
+                ViewBinding.playerLoading?.stopLoad()
             }
         }
     }
 
     override fun onViewSetup() {
         supportFragmentManager.beginTransaction().apply {
-//            replace(ViewBinding.playerOrigin.id, OnlinePlayer::class.java, null, "OnlinePlayer")
-//            ViewBinding.playerContent?.let {
-//                replace(it.id, SeasonOnlinePage::class.java, null, "SeasonPage")
-//            }
+            replace(ViewBinding.playerOrigin.id, OnlinePlayer::class.java, null, "OnlinePlayer")
+            ViewBinding.playerContent?.let {
+                replace(it.id, SeasonOnlinePage::class.java, null, "SeasonPage")
+            }
         }.commit()
 
 

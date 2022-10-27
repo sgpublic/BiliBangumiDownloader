@@ -21,8 +21,8 @@ class Follows(
             it.setOnScrollToEndListener {
                 ViewModel.getFollows(false)
             }
-            it.setOnEpisodeClickListener { sid, epid ->
-                SeasonPlayer.startActivity(context, sid, epid)
+            it.setOnEpisodeClickListener { sid ->
+                SeasonPlayer.startActivity(context, sid)
             }
         }
     }

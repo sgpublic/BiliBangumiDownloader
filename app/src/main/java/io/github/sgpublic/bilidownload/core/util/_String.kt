@@ -146,3 +146,7 @@ fun Pattern.matchString(target: CharSequence, def: String): String {
     }
     return matcher.group();
 }
+
+fun String.countLine(): Int {
+    return split("\n").size
+}
