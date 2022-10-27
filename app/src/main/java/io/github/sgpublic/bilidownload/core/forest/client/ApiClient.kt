@@ -6,10 +6,7 @@ import com.dtflys.forest.annotation.Query
 import com.dtflys.forest.http.ForestRequest
 import io.github.sgpublic.bilidownload.core.forest.annotations.BiliSearchReferer
 import io.github.sgpublic.bilidownload.core.forest.annotations.BiliSign
-import io.github.sgpublic.bilidownload.core.forest.data.BangumiPageResp
-import io.github.sgpublic.bilidownload.core.forest.data.BannerResp
-import io.github.sgpublic.bilidownload.core.forest.data.SearchSuggestResp
-import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
+import io.github.sgpublic.bilidownload.core.forest.data.*
 
 @Address(
     scheme = "https",
@@ -30,7 +27,7 @@ interface ApiClient {
         @Query("pn") pageIndex: Int,
         @Query("access_key") accessToken: String,
         @Query("ps") ps: Int = 18,
-    )
+    ): ForestRequest<FollowsResp>
 
     @Get("/x/web-interface/search/type")
     fun searchResult(

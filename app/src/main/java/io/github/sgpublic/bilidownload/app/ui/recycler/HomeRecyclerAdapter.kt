@@ -17,7 +17,9 @@ import io.github.sgpublic.bilidownload.databinding.ItemBangumiEpisodeBinding
 import io.github.sgpublic.bilidownload.databinding.ItemBangumiPgcBinding
 import io.github.sgpublic.bilidownload.databinding.RecyclerFooterBinding
 import io.github.sgpublic.bilidownload.databinding.RecyclerHomeBannerBinding
+import java.lang.Double.max
 import java.lang.ref.WeakReference
+import kotlin.math.max
 
 /**
  *
@@ -172,14 +174,21 @@ class HomeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val bangumiData = ArrayList<BangumiPageData.AbstractFeed<*>>()
     fun setBangumiData(list: Collection<BangumiPageData.AbstractFeed<*>>, hasNext: Boolean) {
-        val size = bangumiData.size.coerceAtLeast(list.size)
+        val size = bangumiData.size
         bangumiData.clear()
         bangumiData.addAll(list)
         if (bannerData.isEmpty()) {
             log.warn("bangumiData is empty!")
         }
         this.hasNext = hasNext
-        notifyItemChanged(1, size + 2)
+        if (size < list.size && size != 0) {
+            notifyItemRangeInserted(size + 1, list.size - size)
+        } else {
+            notifyItemRangeChanged(1, size + 1)
+            if (size > list.size) {
+                notifyItemRangeRemoved(size + 2, size - list.size)
+            }
+        }
     }
 
     private var onScrollToEndCallback: () -> Unit = { }
@@ -187,9 +196,7 @@ class HomeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         this.onScrollToEndCallback = callback
     }
 
-    private var recyclerView: WeakReference<RecyclerView>? = null
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        this.recyclerView = WeakReference(recyclerView)
         val manager = recyclerView.layoutManager as GridLayoutManager
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
@@ -210,8 +217,7 @@ class HomeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 val lastItemPosition = manager.findLastCompletelyVisibleItemPosition()
                 val itemCount = manager.itemCount
 
-                if (lastItemPosition == itemCount - 1 &&
-                    isSlidingUpward && hasNext) {
+                if (lastItemPosition == itemCount - 1 && isSlidingUpward && hasNext) {
                     onScrollToEndCallback.invoke()
                 }
             }
@@ -221,10 +227,6 @@ class HomeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 isSlidingUpward = dy > 0
             }
         })
-    }
-
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        this.recyclerView = null
     }
 
     private var canLoop = false

@@ -47,7 +47,7 @@ fun <T> MutableCollection<T>?.addAll(list: Collection<T>?) {
     list.forEach { contains(it).take { add(it) } }
 }
 
-fun <T> ArrayList<T>.advSub(factor: Int): ArrayList<T> {
+fun <T> List<T>.advSub(factor: Int): List<T> {
     val sub = size - (size % factor)
-    return ArrayList(subList(0, sub))
+    return subList(0, sub)
 }

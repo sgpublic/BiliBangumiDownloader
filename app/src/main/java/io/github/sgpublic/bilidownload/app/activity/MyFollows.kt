@@ -6,6 +6,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.app.fragment.follows.Follows
 import io.github.sgpublic.bilidownload.app.ui.fragment.FollowsFragmentAdapter
+import io.github.sgpublic.bilidownload.app.viewmodel.FollowModel
 import io.github.sgpublic.bilidownload.base.app.BaseActivity
 import io.github.sgpublic.bilidownload.databinding.ActivityMyFollowsBinding
 
@@ -22,9 +23,9 @@ class MyFollows: BaseActivity<ActivityMyFollowsBinding>() {
         }
 
         val list = ArrayList<Follows>()
-//        list.add(Follows(this@MyFollows, R.string.title_follows_want, FollowsModule.STATUS_WANT))
-//        list.add(Follows(this@MyFollows, R.string.title_follows_watching, FollowsModule.STATUS_WATCHING))
-//        list.add(Follows(this@MyFollows, R.string.title_follows_has_watched, FollowsModule.STATUS_HAS_WATCHED))
+        list.add(Follows(this@MyFollows, FollowModel.FollowStatus.Want))
+        list.add(Follows(this@MyFollows, FollowModel.FollowStatus.Watching))
+        list.add(Follows(this@MyFollows, FollowModel.FollowStatus.Watched))
         ViewBinding.myFollowsPager.adapter = FollowsFragmentAdapter(this@MyFollows, list)
         TabLayoutMediator(ViewBinding.myFollowsTab, ViewBinding.myFollowsPager) { tab, pos ->
             tab.text = list[pos].getTitle()
