@@ -20,11 +20,11 @@ object IntentUtil {
         }
     }
 
-    fun openBrowser(url: String) {
+    fun openUrl(url: String) {
         startActivity(url)
     }
 
     fun openBiliComic(id: Long) {
-        startActivity("bilicomic://detail/$id")
+        openUrl("bilicomic://detail/$id")
     }
 }

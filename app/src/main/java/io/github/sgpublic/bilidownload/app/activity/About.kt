@@ -28,10 +28,10 @@ class About: BaseActivity<ActivityAboutBinding>() {
             )
         } catch (ignore: PackageManager.NameNotFoundException) { }
         ViewBinding.aboutOpensource.setOnClickListener {
-            IntentUtil.openBrowser("https://github.com/${BuildConfig.GITHUB_REPO}")
+            IntentUtil.openUrl("https://github.com/${BuildConfig.GITHUB_REPO}")
         }
         ViewBinding.aboutFeedback.setOnClickListener {
-            IntentUtil.openBrowser("https://github.com/${BuildConfig.GITHUB_REPO}/issues")
+            IntentUtil.openUrl("https://github.com/${BuildConfig.GITHUB_REPO}/issues")
         }
         ViewBinding.aboutLicense.setOnClickListener {
             io.github.sgpublic.bilidownload.app.activity.License.Companion.startActivity(this@About)

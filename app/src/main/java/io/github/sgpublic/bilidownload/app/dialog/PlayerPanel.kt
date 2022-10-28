@@ -40,7 +40,7 @@ class PlayerPanel(context: Context) : DrawerPopupView(context) {
             panelWidth = 320.dp
             it.dialogPanelList.layoutParams.width = panelWidth
             it.dialogEpisodeListTitle.visibility = View.VISIBLE
-            it.dialogPanelList.adapter = adapter
+//            it.dialogPanelList.adapter = adapter
         }
     }
 

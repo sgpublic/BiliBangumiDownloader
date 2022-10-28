@@ -86,6 +86,7 @@
     <string name="text_season_placeholder" translatable="false">\n\n\n</string>
     <string name="title_season_origin_name">原名</string>
     <string name="title_season_styles">风格</string>
+    <string name="title_season_celebrity">演职人员</string>
     <string name="title_season_actors">角色声优</string>
     <string name="title_season_staff">制作信息</string>
     <string name="title_season_evaluate">简介</string>
@@ -101,8 +102,9 @@
     <string name="title_season_episode_list">正片</string>
     <string name="text_episode_vip_needed">该剧集需要大会员才能观看哦~</string>
     <string name="text_episode_no_app_installed">您尚未安装任何哔哩哔哩客户端，请安装后下载哦~</string>
-    <string name="title_season_recommend_comic">浏览推荐</string>
-    <string name="text_season_recommend_comic">您将打开新的页面以查看详情，是否继续？</string>
+
+    <string name="title_open_other">浏览详情</string>
+    <string name="text_open_other">您将前往其他应用以查看详情，是否继续？</string>
 
     <string name="text_player_episode">选集</string>
     <string name="text_player_dialog_episode">选集（%1$d）</string>

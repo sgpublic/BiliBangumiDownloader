@@ -1,14 +1,18 @@
-package io.github.sgpublic.bilidownload.app.ui.list
+package io.github.sgpublic.bilidownload.base.ui
 
-import android.widget.BaseAdapter
 import androidx.annotation.ColorRes
+import androidx.viewbinding.ViewBinding
 import io.github.sgpublic.bilidownload.R
+import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
+import io.github.sgpublic.bilidownload.databinding.ItemSeasonEpisodeBinding
 
-abstract class SelectableBaseAdapter : BaseAdapter() {
+abstract class SelectableArrayAdapter<VB: ViewBinding, ItemT> : ArrayRecyclerAdapter<VB, ItemT>() {
     protected open var position: Int = 0
     fun setSelection(pos: Int) {
+        val pre = position
         position = pos
-        notifyDataSetChanged()
+        notifyItemChanged(pre)
+        notifyItemChanged(pos)
     }
     fun getSelection(): Int = position
 
@@ -17,10 +21,5 @@ abstract class SelectableBaseAdapter : BaseAdapter() {
     fun setColor(@ColorRes selectedColor: Int, @ColorRes normalColor: Int) {
         this.selectedColor = selectedColor
         this.normalColor = normalColor
-    }
-
-    protected var onItemClick: (Int, String) -> Unit = { _, _ -> }
-    fun setOnItemClickListener(onItemClickListener: (Int, String) -> Unit) {
-        onItemClick = onItemClickListener
     }
 }

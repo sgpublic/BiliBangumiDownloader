@@ -2,6 +2,8 @@ package io.github.sgpublic.bilidownload.core.forest.data;
 
 import androidx.annotation.Nullable;
 
+import com.badlogic.gdx.utils.Null;
+
 import java.util.List;
 
 import io.github.sgpublic.bilidownload.base.forest.ResultResp;
@@ -48,6 +50,7 @@ public class SeasonRecommendResp extends ResultResp<SeasonRecommendResp.SeasonRe
             @Data
             @EqualsAndHashCode(callSuper = true)
             public static class Season extends SeasonEpisodeBean {
+                @Nullable
                 private BadgeInfo badgeInfo;
                 private String cover;
                 private NewEp newEp;

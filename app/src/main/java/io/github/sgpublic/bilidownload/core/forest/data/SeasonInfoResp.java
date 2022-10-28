@@ -12,6 +12,7 @@ import io.github.sgpublic.bilidownload.core.forest.data.common.BadgeInfo;
 import io.github.sgpublic.bilidownload.core.forest.data.common.Modules;
 import io.github.sgpublic.bilidownload.core.forest.data.common.Rating;
 import io.github.sgpublic.bilidownload.core.forest.data.common.SeasonEpisodeBean;
+import io.github.sgpublic.bilidownload.core.forest.data.common.TimeDuration;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -98,7 +99,7 @@ public class SeasonInfoResp extends DataResp<SeasonInfoResp.SeasonInfoData> {
             }
         }
 
-        @ModuleStyle("season")
+        @ModuleStyle("positive")
         @Data
         public static class Episodes {
             private EpisodesData data;
@@ -112,8 +113,19 @@ public class SeasonInfoResp extends DataResp<SeasonInfoResp.SeasonInfoData> {
                 public static class EpisodesItem extends SeasonEpisodeBean {
                     private BadgeInfo badgeInfo;
                     private String cover;
+                    /** epid */
                     private long id;
+                    /** 完整标题 */
                     private String longTitle;
+                    private long pubTime;
+                    private Skip skip;
+                    /** 剧集标题，第 x 话 */
+                    private String title;
+
+                    public static class Skip {
+                        private TimeDuration ed;
+                        private TimeDuration op;
+                    }
 
                     @Override
                     public long getEpisodeId() {
@@ -126,8 +138,8 @@ public class SeasonInfoResp extends DataResp<SeasonInfoResp.SeasonInfoData> {
         @Data
         public static class Celebrity {
             private String avatar;
-            private String desc;
             private String name;
+            private String shortDesc;
         }
 
         @Data

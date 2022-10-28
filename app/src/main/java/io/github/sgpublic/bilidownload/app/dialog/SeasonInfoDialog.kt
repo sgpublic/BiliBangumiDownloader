@@ -4,8 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import com.bumptech.glide.Glide
+import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.core.BottomPopupView
 import io.github.sgpublic.bilidownload.R
+import io.github.sgpublic.bilidownload.app.ui.recycler.SeasonCelebrityAdapter
+import io.github.sgpublic.bilidownload.app.ui.recycler.SeasonStyleAdapter
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
 import io.github.sgpublic.bilidownload.core.util.*
 import io.github.sgpublic.bilidownload.databinding.DialogSeasonInfoBinding
@@ -43,15 +46,20 @@ class SeasonInfoDialog(context: Context, private val data: SeasonInfoResp.Season
             val lines = data.staff.info.countLine()
             binding.seasonStaff.maxLines = (lines == binding.seasonStaff.maxLines).take(3, lines)
         }
-        if (data.actor != null) {
+        binding.seasonStaff.text = data.staff.info
+        if (data.celebrity != null) {
+            binding.seasonCelebrityTitle.visibility = View.VISIBLE
+            binding.seasonCelebrity.visibility = View.VISIBLE
+            binding.seasonCelebrity.adapter = SeasonCelebrityAdapter(data.celebrity!!)
+        } else if (data.actor != null) {
+            binding.seasonActorsTitle.visibility = View.VISIBLE
             binding.seasonActorsTitle.text = data.actor!!.title
+            binding.seasonActors.visibility = View.VISIBLE
             binding.seasonActors.text = data.actor!!.info
             binding.seasonActors.setOnClickListener {
                 val lines = data.actor!!.info.countLine()
                 binding.seasonActors.maxLines = (lines == binding.seasonActors.maxLines).take(3, lines)
             }
-        } else if (data.celebrity != null) {
-
         }
         binding.seasonContent.text = data.typeDesc
         if (data.originName != "") {
@@ -61,8 +69,16 @@ class SeasonInfoDialog(context: Context, private val data: SeasonInfoResp.Season
             binding.seasonOriginNameTitle.visibility = View.GONE
         }
         if (data.styles.isNotEmpty()) {
-            // TODO 风格列表
-//            binding.seasonStyles.text = data.styles
+            binding.seasonStyles.adapter = SeasonStyleAdapter(data.styles) {
+                XPopup.Builder(context)
+                    .asConfirm(
+                        context.getString(R.string.title_open_other),
+                        context.getString(R.string.text_open_other)
+                    ) {
+                        IntentUtil.openUrl(it)
+                    }
+                    .show()
+            }
         } else {
             binding.seasonStyles.visibility = View.GONE
             binding.seasonStylesTitle.visibility = View.GONE
