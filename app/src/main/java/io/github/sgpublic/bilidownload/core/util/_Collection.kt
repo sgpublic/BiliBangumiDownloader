@@ -51,3 +51,12 @@ fun <T> List<T>.advSub(factor: Int): List<T> {
     val sub = size - (size % factor)
     return subList(0, sub)
 }
+
+fun <ItemT, T: MutableCollection<ItemT>> T.addIf(other: Collection<ItemT>, check: (ItemT) -> Boolean): T {
+    for (item in other) {
+        if (check.invoke(item)) {
+            add(item)
+        }
+    }
+    return this
+}

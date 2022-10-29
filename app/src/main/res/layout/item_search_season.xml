@@ -105,7 +105,7 @@
                         android:textSize="12sp" />
                 </FrameLayout>
                 <RatingBar
-                    android:id="@+id/item_search_rating_start"
+                    android:id="@+id/item_search_rating_star"
                     style="@style/Widget.AppCompat.RatingBar.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

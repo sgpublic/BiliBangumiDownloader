@@ -22,8 +22,8 @@ class RecommendAdapter(private val context: AppCompatActivity)
     fun setOnResourceItemClickListener(onClick: (String) -> Unit) {
         this.onResourceClick = onClick
     }
-    private var onEpisodeClick: (Long, Long) -> Unit = { _, _ -> }
-    fun setOnEpisodeItemClickListener(onClick: (Long, Long) -> Unit) {
+    private var onEpisodeClick: (Long, Long?) -> Unit = { _, _ -> }
+    fun setOnEpisodeItemClickListener(onClick: (Long, Long?) -> Unit) {
         this.onEpisodeClick = onClick
     }
 
@@ -69,9 +69,9 @@ class RecommendAdapter(private val context: AppCompatActivity)
         }
         binding.itemSearchSeasonContent.text = data.newEp.indexShow
         binding.itemSearchRatingString.text = String.format("%.1f", data.rating.score)
-        binding.itemSearchRatingStart.progress = data.rating.score.roundToInt()
+        binding.itemSearchRatingStar.progress = data.rating.score.roundToInt()
         binding.root.setOnClickListener {
-            onEpisodeClick.invoke(data.seasonId, data.episodeId)
+            onEpisodeClick.invoke(data.seasonId ?: return@setOnClickListener, data.episodeId)
         }
         Glide.with(context)
             .customLoad(data.cover)

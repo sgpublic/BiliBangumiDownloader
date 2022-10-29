@@ -6,6 +6,7 @@ import io.github.sgpublic.bilidownload.core.exsp.BangumiPreference
 import io.github.sgpublic.bilidownload.core.exsp.TokenPreference
 import io.github.sgpublic.bilidownload.core.exsp.UserPreference
 import io.github.sgpublic.bilidownload.core.forest.core.BiliApiException
+import io.github.sgpublic.bilidownload.core.util.RequestCallback
 import io.github.sgpublic.exsp.ExPreference
 
 abstract class BaseViewModel: ViewModel() {
@@ -15,10 +16,24 @@ abstract class BaseViewModel: ViewModel() {
 
     open val Loading: MutableLiveData<Boolean> = MutableLiveData()
 
+    fun <T> newRequestCallback(reply: (T) -> Unit): RequestCallback<T> {
+        return object : RequestCallback<T>() {
+            override fun onFailure(code: Int, message: String?) {
+                Exception.postValue(code, message)
+            }
+
+            override fun onResponse(data: T) {
+                reply.invoke(data)
+            }
+        }
+    }
+
     companion object {
         @JvmStatic
         protected val TokenPreference: TokenPreference by lazy { return@lazy ExPreference.get<TokenPreference>() }
+        @JvmStatic
         protected val UserPreference: UserPreference by lazy { return@lazy ExPreference.get<UserPreference>() }
+        @JvmStatic
         protected val BangumiPreference: BangumiPreference by lazy { return@lazy ExPreference.get<BangumiPreference>() }
     }
 }

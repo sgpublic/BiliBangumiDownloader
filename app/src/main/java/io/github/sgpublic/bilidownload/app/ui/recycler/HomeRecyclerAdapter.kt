@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.zhpan.bannerview.BannerViewPager
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.app.ui.SeasonBannerAdapter
+import io.github.sgpublic.bilidownload.base.ui.ViewBindingHolder
 import io.github.sgpublic.bilidownload.core.forest.data.BangumiPageResp.BangumiPageData
 import io.github.sgpublic.bilidownload.core.forest.data.BannerResp
 import io.github.sgpublic.bilidownload.core.util.*
@@ -38,15 +39,19 @@ class HomeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    private var BangumiBanner: BannerViewPager<in Any>? = null
+    private lateinit var bannerHolder: BannerViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_BANNER -> BannerViewHolder(RecyclerHomeBannerBinding.inflate(
                 inflater, parent, false
-            )).also {
-                BangumiBanner = it.binding.bangumiBanner
-                    .setAdapter(adapter)
+            )).also { holder ->
+                bannerHolder = holder
+                holder.ViewBinding.bangumiBanner.setAdapter(SeasonBannerAdapter().also {
+                    it.setOnEpisodeClickListener { sid, epid ->
+                        onEpisodeClickListener.invoke(sid, epid)
+                    }
+                })
             }
             TYPE_FOOTER -> FooterViewHolder(RecyclerFooterBinding.inflate(
                 inflater, parent, false
@@ -73,15 +78,8 @@ class HomeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    private val adapter: SeasonBannerAdapter by lazy {
-        SeasonBannerAdapter().also {
-            it.setOnEpisodeClickListener { sid, epid ->
-                onEpisodeClickListener.invoke(sid, epid)
-            }
-        }
-    }
     private fun onBindBannerViewHolder(holder: BannerViewHolder) {
-        holder.binding.bangumiBanner.let {
+        holder.ViewBinding.bangumiBanner.let {
             val param = it.layoutParams as GridLayoutManager.LayoutParams
             param.topMargin = 110.dp
             if (canLoop) {
@@ -94,7 +92,7 @@ class HomeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var hasNext: Boolean = true
     private fun onBindFooterViewHolder(holder: FooterViewHolder) {
-        val img = holder.binding.root
+        val img = holder.ViewBinding.root
         img.visibility = (bangumiData.isEmpty()).take(View.INVISIBLE, View.VISIBLE)
         if (hasNext) {
             img.startLoad()
@@ -108,23 +106,22 @@ class HomeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         this.onEpisodeClickListener = onBannerClickListener
     }
     private fun onBindEpisodeViewHolder(holder: EpisodeViewHolder, item: BangumiPageData.DoubleFeed.Item) {
-        val context = holder.binding.root.context
-        Glide.with(context)
+        Glide.with(holder.context)
             .customLoad(item.cover)
             .withCrossFade()
-            .into(holder.binding.itemBangumiEpisodeCover)
+            .into(holder.ViewBinding.itemBangumiEpisodeCover)
         item.badgeInfo?.let {
-            Glide.with(context)
+            Glide.with(holder.context)
                 .customLoad(it.img)
                 .withCrossFade()
-                .constraintInfo(holder.binding.itemBangumiEpisodeBadge)
+                .constraintInfo(holder.ViewBinding.itemBangumiEpisodeBadge)
         }
-        holder.binding.itemBangumiEpisodeTag.text = item.bottomLeftBadge.text
-        holder.binding.itemBangumiEpisodeDesc.text = item.desc
-        holder.binding.itemBangumiEpisodeTitle.text = item.title
-        holder.binding.itemBangumiEpisodeStatus.text = item.stat.followView
-        holder.binding.root.setOnClickListener {
-            onEpisodeClickListener.invoke(item.seasonId, item.episodeId)
+        holder.ViewBinding.itemBangumiEpisodeTag.text = item.bottomLeftBadge.text
+        holder.ViewBinding.itemBangumiEpisodeDesc.text = item.desc
+        holder.ViewBinding.itemBangumiEpisodeTitle.text = item.title
+        holder.ViewBinding.itemBangumiEpisodeStatus.text = item.stat.followView
+        holder.ViewBinding.root.setOnClickListener {
+            onEpisodeClickListener.invoke(item.seasonId ?: return@setOnClickListener, item.episodeId)
         }
     }
 
@@ -137,22 +134,21 @@ class HomeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         R.color.color_random_5,
     )
     private fun onBindPgcViewHolder(holder: PgcViewHolder, item: BangumiPageData.FallFeed.Item) {
-        val context = holder.binding.root.context
         item.badgeInfo?.let {
-            Glide.with(context)
+            Glide.with(holder.context)
                 .customLoad(it.img)
                 .withCrossFade()
-                .constraintInfo(holder.binding.itemBangumiPgcBadge)
+                .constraintInfo(holder.ViewBinding.itemBangumiPgcBadge)
         }
-        Glide.with(context)
+        Glide.with(holder.context)
             .customLoad(item.cover)
             .withCrossFade()
-            .into(holder.binding.itemBangumiPgcCover)
-        holder.binding.itemBangumiPcgDesc.text = item.desc
-        holder.binding.itemBangumiPgcTitle.text = item.title
-        holder.binding.root.setCardBackgroundColor(context.resources.getColor(Colors.random(), context.theme))
-        holder.binding.root.setOnClickListener {
-            onEpisodeClickListener.invoke(item.seasonId, item.episodeId)
+            .into(holder.ViewBinding.itemBangumiPgcCover)
+        holder.ViewBinding.itemBangumiPcgDesc.text = item.desc
+        holder.ViewBinding.itemBangumiPgcTitle.text = item.title
+        holder.ViewBinding.root.setCardBackgroundColor(holder.context.resources.getColor(Colors.random(), holder.context.theme))
+        holder.ViewBinding.root.setOnClickListener {
+            onEpisodeClickListener.invoke(item.seasonId ?: return@setOnClickListener, item.episodeId)
         }
     }
 
@@ -168,8 +164,10 @@ class HomeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             return
         }
         bannerData.clear()
-        bannerData.addAll(list)
-        BangumiBanner?.create(bannerData)
+        bannerData.addIf(list) {
+            it.seasonId != null
+        }
+        bannerHolder.ViewBinding.bangumiBanner.create(bannerData)
     }
 
     private val bangumiData = ArrayList<BangumiPageData.AbstractFeed<*>>()
@@ -238,17 +236,17 @@ class HomeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         notifyItemChanged(0)
     }
 
-    class BannerViewHolder(val binding: RecyclerHomeBannerBinding)
-        : RecyclerView.ViewHolder(binding.root)
+    class BannerViewHolder(binding: RecyclerHomeBannerBinding)
+        : ViewBindingHolder<RecyclerHomeBannerBinding>(binding)
 
-    class PgcViewHolder(val binding: ItemBangumiPgcBinding)
-        : RecyclerView.ViewHolder(binding.root)
+    class PgcViewHolder(binding: ItemBangumiPgcBinding)
+        : ViewBindingHolder<ItemBangumiPgcBinding>(binding)
 
-    class EpisodeViewHolder(val binding: ItemBangumiEpisodeBinding)
-        : RecyclerView.ViewHolder(binding.root)
+    class EpisodeViewHolder(binding: ItemBangumiEpisodeBinding)
+        : ViewBindingHolder<ItemBangumiEpisodeBinding>(binding)
 
-    class FooterViewHolder(val binding: RecyclerFooterBinding)
-        : RecyclerView.ViewHolder(binding.root)
+    class FooterViewHolder(binding: RecyclerFooterBinding)
+        : ViewBindingHolder<RecyclerFooterBinding>(binding)
 
     companion object {
         const val TYPE_BANNER = 1

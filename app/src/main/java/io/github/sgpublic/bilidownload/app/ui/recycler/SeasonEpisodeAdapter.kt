@@ -32,8 +32,7 @@ class SeasonEpisodeAdapter(
 
     private val sdf = SimpleDateFormat("yyyy.MM.dd", Locale.CHINA)
     override fun onBindViewHolder(
-        context: Context,
-        ViewBinding: ItemSeasonEpisodeBinding,
+        context: Context, ViewBinding: ItemSeasonEpisodeBinding,
         data: SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem
     ) {
         Glide.with(context)
@@ -42,13 +41,15 @@ class SeasonEpisodeAdapter(
             .withCrossFade()
             .centerCrop()
             .into(ViewBinding.episodeImage)
-        if (data.badgeInfo.text != "") {
+        if ((data.badgeInfo?.text ?: "") != "") {
             ViewBinding.episodeVipBackground.setCardBackgroundColor(
                 Color.parseColor(context.isNightMode.take(
-                    data.badgeInfo.bgColorNight, data.badgeInfo.bgColor
+                    data.badgeInfo!!.bgColorNight, data.badgeInfo!!.bgColor
                 ))
             )
-            ViewBinding.episodeVip.text = data.badgeInfo.text
+            ViewBinding.episodeVip.text = data.badgeInfo!!.text
+        } else {
+            ViewBinding.episodeVipBackground.visibility = View.GONE
         }
         ViewBinding.episodePublicTime.text = Application.getString(
             R.string.text_episode_public_time, sdf.format(Date(data.pubTime * 1000))

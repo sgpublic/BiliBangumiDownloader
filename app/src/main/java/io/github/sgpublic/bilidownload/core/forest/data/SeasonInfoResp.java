@@ -111,7 +111,9 @@ public class SeasonInfoResp extends DataResp<SeasonInfoResp.SeasonInfoData> {
                 @Data
                 @EqualsAndHashCode(callSuper = true)
                 public static class EpisodesItem extends SeasonEpisodeBean {
+                    @Nullable
                     private BadgeInfo badgeInfo;
+                    private int badgeType;
                     private String cover;
                     /** epid */
                     private long id;
@@ -122,13 +124,14 @@ public class SeasonInfoResp extends DataResp<SeasonInfoResp.SeasonInfoData> {
                     /** 剧集标题，第 x 话 */
                     private String title;
 
+                    @Data
                     public static class Skip {
                         private TimeDuration ed;
                         private TimeDuration op;
                     }
 
                     @Override
-                    public long getEpisodeId() {
+                    public Long getEpisodeId() {
                         return getId();
                     }
                 }

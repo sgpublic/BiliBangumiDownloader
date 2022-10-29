@@ -18,10 +18,12 @@ class SeasonBannerAdapter : BaseBannerAdapter<BannerItem.Item>() {
     override fun bindData(holder: BaseViewHolder<BannerItem.Item>, data: BannerItem.Item, position: Int, pageSize: Int) {
         val binding = ItemBangumiBannerBinding.bind(holder.itemView)
         val context = binding.root.context
-        Glide.with(context)
-            .customLoad(data.badgeInfo.img)
-            .withCrossFade()
-            .constraintInfo(binding.bannerBadge)
+        data.badgeInfo?.img?.let {
+            Glide.with(context)
+                .customLoad(it)
+                .withCrossFade()
+                .constraintInfo(binding.bannerBadge)
+        }
         Glide.with(context)
             .customLoad(data.cover)
             .withHorizontalPlaceholder()
@@ -29,7 +31,7 @@ class SeasonBannerAdapter : BaseBannerAdapter<BannerItem.Item>() {
             .into(binding.bannerImage)
         binding.bannerContent.text = data.title
         binding.bannerBase.setOnClickListener {
-            onEpisodeClickListener.invoke(data.seasonId, data.episodeId)
+            onEpisodeClickListener.invoke(data.seasonId ?: return@setOnClickListener, data.episodeId)
         }
     }
 

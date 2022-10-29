@@ -1,5 +1,7 @@
 package io.github.sgpublic.bilidownload.core.forest.data;
 
+import androidx.annotation.Nullable;
+
 import io.github.sgpublic.bilidownload.base.forest.ResultResp;
 import io.github.sgpublic.bilidownload.core.forest.annotations.ModuleStyle;
 import io.github.sgpublic.bilidownload.core.forest.data.common.BadgeInfo;
@@ -23,6 +25,7 @@ public class BannerResp extends ResultResp<BannerResp.BannerData> {
             @Data
             @EqualsAndHashCode(callSuper = true)
             public static class Item extends SeasonEpisodeBean {
+                @Nullable
                 private BadgeInfo badgeInfo;
                 private String cover;
                 private String desc;

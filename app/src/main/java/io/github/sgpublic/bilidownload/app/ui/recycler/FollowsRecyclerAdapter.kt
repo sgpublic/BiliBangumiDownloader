@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import io.github.sgpublic.bilidownload.base.ui.ViewBindingHolder
 import io.github.sgpublic.bilidownload.core.forest.data.FollowsResp
 import io.github.sgpublic.bilidownload.core.util.*
 import io.github.sgpublic.bilidownload.databinding.ItemBangumiFollowBinding
@@ -64,7 +65,7 @@ class FollowsRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     private fun onBindFooterViewHolder(holder: FooterViewHolder) {
-        val img = holder.binding.root
+        val img = holder.ViewBinding.root
         img.visibility = (follows.isEmpty()).take(View.INVISIBLE, View.VISIBLE)
         if (hasNext) {
             img.startLoad()
@@ -78,21 +79,21 @@ class FollowsRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         this.onEpisodeClickListener = onBannerClickListener
     }
     private fun onBindSeasonViewHolder(holder: SeasonViewHolder, data: FollowsResp.FollowsData.FollowItem) {
-        holder.binding.followContent.text = data.title
+        holder.ViewBinding.followContent.text = data.title
         data.badgeInfo?.let {
-            Glide.with(holder.binding.followBadge.context)
+            Glide.with(holder.ViewBinding.followBadge.context)
                 .customLoad(it.img)
                 .withCrossFade()
-                .constraintInfo(holder.binding.followBadge)
+                .constraintInfo(holder.ViewBinding.followBadge)
         }
-        Glide.with(holder.binding.followImage.context)
+        Glide.with(holder.ViewBinding.followImage.context)
             .customLoad(data.cover)
             .withVerticalPlaceholder()
             .withCrossFade()
             .centerCrop()
-            .into(holder.binding.followImage)
-        holder.binding.root.setOnClickListener {
-            onEpisodeClickListener.invoke(data.seasonId)
+            .into(holder.ViewBinding.followImage)
+        holder.ViewBinding.root.setOnClickListener {
+            onEpisodeClickListener.invoke(data.seasonId ?: return@setOnClickListener)
         }
     }
 
@@ -134,11 +135,8 @@ class FollowsRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemCount(): Int = follows.size + 1
 
-    class SeasonViewHolder(val binding: ItemBangumiFollowBinding)
-        : RecyclerView.ViewHolder(binding.root)
-
-    class FooterViewHolder(val binding: RecyclerFooterBinding)
-        : RecyclerView.ViewHolder(binding.root)
+    class SeasonViewHolder(binding: ItemBangumiFollowBinding) : ViewBindingHolder<ItemBangumiFollowBinding>(binding)
+    class FooterViewHolder(binding: RecyclerFooterBinding) : ViewBindingHolder<RecyclerFooterBinding>(binding)
 
     companion object {
         const val TYPE_SEASON = 1

@@ -25,11 +25,11 @@ class AppClient : Closeable {
             .customBuild()
     }
 
-    fun getPlayUrl(cid: Long, epid: Long, qn: Long, dash: Boolean = true): GrpcRequest<PlayViewReq, PlayViewReply> {
+    fun getPlayUrl(cid: Long, epid: Long, qn: Int, dash: Boolean = true): GrpcRequest<PlayViewReq, PlayViewReply> {
         PlayViewReq.newBuilder().let {
             it.cid = cid
             it.epid = epid
-            it.qn = qn
+            it.qn = qn.toLong()
             if (dash) {
                 it.fnval = 976
             }

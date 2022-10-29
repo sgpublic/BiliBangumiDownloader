@@ -77,11 +77,12 @@ abstract class RequestCallback<Data> {
     abstract fun onResponse(data: Data)
 
     companion object {
-        const val CODE_NETWORK_ERROR = -101
-        const val CODE_NETWORK_UNKNOWN = -102
-        const val CODE_RESOURCE = -103
-        const val CODE_ACCOUNT_VALIDATE = -104
-        const val CODE_GRPC = -105
+        const val CODE_NETWORK_ERROR = -1001
+        const val CODE_NETWORK_UNKNOWN = -1002
+        const val CODE_RESOURCE = -1003
+        const val CODE_ACCOUNT_VALIDATE = -1004
+        const val CODE_GRPC = -1005
+        const val CODE_PLAYER_QUALITY = -1011
     }
 }
 

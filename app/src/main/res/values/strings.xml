@@ -110,6 +110,7 @@
     <string name="text_player_dialog_episode">选集（%1$d）</string>
     <string name="text_player_dialog_download">下载</string>
     <string name="text_player_current">正在播放</string>
+    <string name="text_player_quality">找不到合适的清晰度</string>
 
     <string name="text_download">下载任务</string>
     <string name="text_download_doing">正在获取链接</string>

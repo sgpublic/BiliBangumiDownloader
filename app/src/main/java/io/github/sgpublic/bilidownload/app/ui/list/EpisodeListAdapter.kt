@@ -13,8 +13,7 @@ import kotlin.collections.ArrayList
 
 class EpisodeListAdapter : SelectableArrayAdapter<ItemEpisodeListBinding, SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem>(){
     override fun onBindViewHolder(
-        context: Context,
-        ViewBinding: ItemEpisodeListBinding,
+        context: Context, ViewBinding: ItemEpisodeListBinding,
         data: SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem
     ) {
         ViewBinding.itemEpisodeTitle.apply {

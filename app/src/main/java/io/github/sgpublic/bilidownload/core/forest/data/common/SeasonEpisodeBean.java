@@ -1,8 +1,11 @@
 package io.github.sgpublic.bilidownload.core.forest.data.common;
 
+import androidx.annotation.Nullable;
+
 import java.util.Objects;
 
 import lombok.Data;
+import lombok.val;
 
 /**
  * @author Madray Haven
@@ -10,19 +13,23 @@ import lombok.Data;
  */
 @Data
 public class SeasonEpisodeBean {
-    private long seasonId;
-    private long episodeId;
-    private long cid;
+    @Nullable
+    private Long seasonId;
+    @Nullable
+    private Long episodeId;
+    @Nullable
+    private Long cid;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        return getEpisodeId() == ((SeasonEpisodeBean) o).getEpisodeId();
+        Long epid = getEpisodeId();
+        return epid != null && epid.equals(((SeasonEpisodeBean) o).getEpisodeId());
     }
 
-    public boolean equals(long epid) {
-        return getEpisodeId() == epid;
+    public boolean equals(@Nullable Long epid) {
+        return epid != null && epid.equals(getEpisodeId());
     }
 
     @Override

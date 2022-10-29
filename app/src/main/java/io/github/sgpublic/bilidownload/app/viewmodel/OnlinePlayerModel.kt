@@ -2,18 +2,18 @@ package io.github.sgpublic.bilidownload.app.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import bilibili.pgc.gateway.player.v2.Playurl.PlayViewReply
 import io.github.sgpublic.bilidownload.base.app.BaseViewModel
 import io.github.sgpublic.bilidownload.base.app.postValue
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonRecommendResp
+import io.github.sgpublic.bilidownload.core.forest.find
 import io.github.sgpublic.bilidownload.core.grpc.client.AppClient
-import io.github.sgpublic.bilidownload.core.util.ForestClients
-import io.github.sgpublic.bilidownload.core.util.RequestCallback
-import io.github.sgpublic.bilidownload.core.util.biliapi
-import io.github.sgpublic.bilidownload.core.util.log
+import io.github.sgpublic.bilidownload.core.util.*
 import okhttp3.internal.closeQuietly
+import java.util.PriorityQueue
 
-class OnlinePlayerModel(sid: Long): BasePlayerModel() {
+class OnlinePlayerModel(sid: Long, private val epid: Long): BasePlayerModel() {
     val SID: MutableLiveData<Long> by lazy {
         getSeasonInfo(sid)
         MutableLiveData(sid)
@@ -21,13 +21,31 @@ class OnlinePlayerModel(sid: Long): BasePlayerModel() {
     val SeasonData: MutableLiveData<SeasonInfoResp.SeasonInfoData> = MutableLiveData()
 
     fun getSeasonInfo(sid: Long) {
-        ForestClients.API.seasonInfoV2(sid, TokenPreference.accessToken).biliapi(object : RequestCallback<SeasonInfoResp.SeasonInfoData>() {
+        ForestClients.API.seasonInfoV2(
+            sid, TokenPreference.accessToken
+        ).biliapi(newRequestCallback { data ->
+            val list: HashMap<Long, SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem> = HashMap()
+            for (episodes in data.find<SeasonInfoResp.SeasonInfoData.Episodes>()) {
+                for (item in episodes.data.episodes) {
+                    list[item.id] = item
+                }
+            }
+            initPlayerData(data, list[epid] ?: ArrayList(list.values)[0])
+        }, viewModelScope)
+    }
+
+    private fun initPlayerData(
+        season: SeasonInfoResp.SeasonInfoData,
+        episode: SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem,
+    ) {
+        AppClient.getPlayUrl(episode.cid!!, episode.id, 80).enqueue(object : RequestCallback<PlayViewReply>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
 
-            override fun onResponse(data: SeasonInfoResp.SeasonInfoData) {
-                SeasonData.postValue(data)
+            override fun onResponse(data: PlayViewReply) {
+                setPlayerData(data)
+                SeasonData.postValue(season)
             }
         }, viewModelScope)
     }
@@ -38,7 +56,9 @@ class OnlinePlayerModel(sid: Long): BasePlayerModel() {
     }
 
     fun getSeasonRecommend(sid: Long) {
-        ForestClients.API.seasonRecommend(sid, TokenPreference.accessToken).biliapi(object : RequestCallback<SeasonRecommendResp.SeasonRecommend>() {
+        ForestClients.API.seasonRecommend(
+            sid, TokenPreference.accessToken
+        ).biliapi(object : RequestCallback<SeasonRecommendResp.SeasonRecommend>() {
             override fun onFailure(code: Int, message: String?) {
 
             }
@@ -51,8 +71,34 @@ class OnlinePlayerModel(sid: Long): BasePlayerModel() {
 
     private val AppClient: AppClient by lazy { AppClient() }
 
+    val QualityData: HashMap<Int, String> = HashMap()
+    fun setPlayerData(data: PlayViewReply) {
+        for (stream in data.videoInfo.streamListList) {
+            QualityData[stream.info.quality] = stream.info.newDescription
+        }
+        PlayerData.postValue(data)
+    }
+    val PlayerData: MutableLiveData<PlayViewReply> = MutableLiveData()
     fun getPlayUrl(epid: Long, cid: Long) {
+        AppClient.getPlayUrl(cid, epid, FittedQuality).enqueue(object : RequestCallback<PlayViewReply>() {
+            override fun onFailure(code: Int, message: String?) {
 
+            }
+
+            override fun onResponse(data: PlayViewReply) {
+
+            }
+        }, viewModelScope)
+    }
+    val FittedQuality: Int get() {
+        val pq = PriorityQueue<Int> { o1, o2 ->
+            o2 - o1
+        }.addIf(QualityData.keys) {
+            it <= BangumiPreference.quality
+        }
+        return pq.peek()!!.also {
+            pq.clear()
+        }
     }
 
     override fun onCleared() {
