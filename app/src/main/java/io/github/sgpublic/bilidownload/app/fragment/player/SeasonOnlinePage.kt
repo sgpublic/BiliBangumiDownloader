@@ -48,11 +48,7 @@ class SeasonOnlinePage(activity: AppCompatActivity): BaseViewModelFragment<Fragm
 
             }
 
-            val episodeList = ArrayList<SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem>()
-            for (item in season.find<SeasonInfoResp.SeasonInfoData.Episodes>()) {
-                episodeList.addAll(item.data.episodes)
-            }
-            adapter.setEpisode(episodeList)
+            adapter.setEpisode(ViewModel.EpisodeList.values)
             adapter.setOnEpisodeItemClickListener { sid, epid ->
                 if (sid != ViewModel.SID.value) {
                     ViewModel.SID.postValue(epid)

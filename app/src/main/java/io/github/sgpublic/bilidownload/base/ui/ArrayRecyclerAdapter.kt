@@ -64,5 +64,5 @@ abstract class ArrayRecyclerAdapter<VB: ViewBinding, ItemT>(list: List<ItemT>? =
     abstract fun onBindViewHolder(context: Context, ViewBinding: VB, data: ItemT)
     final override fun getItemCount() = data.size
 
-    class Holder<VB: ViewBinding>(val binding: VB, ): ViewHolder(binding.root)
+    class Holder<VB: ViewBinding>(val binding: VB): ViewHolder(binding.root)
 }

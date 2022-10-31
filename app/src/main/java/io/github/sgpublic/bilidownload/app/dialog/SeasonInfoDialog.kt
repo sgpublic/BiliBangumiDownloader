@@ -31,15 +31,15 @@ class SeasonInfoDialog(context: Context, private val data: SeasonInfoResp.Season
             .withVerticalPlaceholder()
             .withCrossFade()
             .into(binding.seasonCover)
-        if (data.rating.score == 0f) {
+        if ((data.rating?.score ?: 0f) == 0f) {
             binding.seasonRatingString.visibility = View.INVISIBLE
             binding.seasonRatingNull.visibility = View.VISIBLE
             binding.seasonRatingStar.progress = 0
         } else {
+            binding.seasonRatingString.text = String.format("%.1f", data.rating!!.score)
+            binding.seasonRatingStar.progress = data.rating!!.score.roundToInt()
             binding.seasonRatingNull.visibility = View.INVISIBLE
             binding.seasonRatingString.visibility = View.VISIBLE
-            binding.seasonRatingString.text = String.format("%.1f", data.rating.score)
-            binding.seasonRatingStar.progress = data.rating.score.roundToInt()
         }
         binding.seasonStaffTitle.text = data.staff.title
         binding.seasonStaff.setOnClickListener {

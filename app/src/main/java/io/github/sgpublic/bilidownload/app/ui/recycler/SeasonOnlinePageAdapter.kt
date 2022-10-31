@@ -158,16 +158,17 @@ class SeasonOnlinePageAdapter: ViewBindingRecyclerAdapter() {
             .into(ViewBinding.itemSearchSeasonCover)
         ViewBinding.itemSearchSeasonTitle.text = data.title
         ViewBinding.itemSearchSeasonContent.text = data.newEp.indexShow
-        if (data.rating.score == 0f) {
+        if ((data.rating?.score ?: 0f) == 0f) {
             ViewBinding.itemSearchRatingNull.visibility = View.VISIBLE
             ViewBinding.itemSearchRatingString.visibility = View.INVISIBLE
+            ViewBinding.itemSearchRatingStar.progress = 0
         } else {
+            ViewBinding.itemSearchRatingString.text = String.format("%.1f", data.rating!!.score)
+            ViewBinding.itemSearchRatingStar.progress = data.rating!!.score.roundToInt()
             ViewBinding.itemSearchRatingNull.visibility = View.INVISIBLE
             ViewBinding.itemSearchRatingString.visibility = View.VISIBLE
         }
         ViewBinding.itemSearchSeasonContent.text = data.newEp.indexShow
-        ViewBinding.itemSearchRatingString.text = String.format("%.1f", data.rating.score)
-        ViewBinding.itemSearchRatingStar.progress = data.rating.score.roundToInt()
         if ((data.badgeInfo?.text ?: "") == "") {
             ViewBinding.itemSeasonBadges.visibility = View.GONE
         } else {

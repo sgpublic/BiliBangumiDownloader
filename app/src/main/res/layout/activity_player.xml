@@ -22,8 +22,7 @@
                 android:id="@+id/player_origin"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/color_player"
-                android:visibility="gone" />
+                android:background="@color/color_player" />
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/player_toolbar"
                 android:layout_width="match_parent"
@@ -47,8 +46,7 @@
                     android:textSize="16sp"
                     android:textColor="@color/color_player_controller"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="30dp"
-                    android:fitsSystemWindows="true"/>
+                    android:layout_marginStart="30dp" />
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>

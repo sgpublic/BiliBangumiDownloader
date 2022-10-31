@@ -29,6 +29,7 @@ import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.exsp.ExPreference
 import okio.IOException
 import org.slf4j.LoggerFactory
+import kotlin.system.exitProcess
 
 @Suppress("unused")
 class Application : Application() {
@@ -50,13 +51,13 @@ class Application : Application() {
 
     private fun startListenException() {
         Handler(mainLooper).post {
-            try {
-                while (true) {
+            while (true) {
+                try {
                     Looper.loop()
+                } catch (e: Throwable){
+                    log.error("应用意外退出", e)
+                    throw e
                 }
-            } catch (e: Throwable){
-                log.error("应用意外退出", e)
-                finishAll()
             }
         }
     }

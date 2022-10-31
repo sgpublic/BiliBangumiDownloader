@@ -1,7 +1,6 @@
 package io.github.sgpublic.bilidownload.app.fragment.player
 
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import bilibili.pgc.gateway.player.v2.Playurl.PlayViewReply
@@ -11,38 +10,55 @@ import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.MergingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import com.lxj.xpopup.XPopup
+import com.lxj.xpopup.enums.PopupPosition
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
+import io.github.sgpublic.bilidownload.app.dialog.PlayerPanel
+import io.github.sgpublic.bilidownload.app.ui.list.EpisodeListAdapter
+import io.github.sgpublic.bilidownload.app.ui.list.QualityListAdapter
 import io.github.sgpublic.bilidownload.app.viewmodel.OnlinePlayerModel
 import io.github.sgpublic.bilidownload.base.app.postValue
+import io.github.sgpublic.bilidownload.core.exsp.BangumiPreference
+import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp.SeasonInfoData
 import io.github.sgpublic.bilidownload.core.util.*
-import io.github.sgpublic.bilidownload.databinding.FragmentPlayerBinding
+import io.github.sgpublic.exsp.ExPreference
 
 /**
  *
  * @author Madray Haven
  * @date 2022/10/27 14:29
  */
-class OnlinePlayer(activity: AppCompatActivity): BasePlayer<FragmentPlayerBinding, OnlinePlayerModel>(activity) {
+class OnlinePlayer(activity: AppCompatActivity): BasePlayer<OnlinePlayerModel>(activity) {
     override fun onFragmentCreated(hasSavedInstanceState: Boolean) {
 
     }
 
     override fun onViewSetup() {
-        ViewBinding.playerCover?.setOnClickListener {
-            val player = ViewModel.PlayerData.value ?: return@setOnClickListener
-            ViewBinding.playerCover?.visibility = View.GONE
-            ViewBinding.playerPlayerCover?.visibility = View.GONE
-            onPlay(player)
+        super.onViewSetup()
+        ViewBinding.playerControllerQuality?.visibility = View.VISIBLE
+        ViewBinding.playerControllerQuality?.setOnClickListener {
+            openQualityListPanel()
         }
     }
 
     override fun onViewModelSetup() {
-        ViewModel.PlayerData.observe(this) {
-            if (ViewBinding.playerCover?.visibility != View.GONE) {
+        super.onViewModelSetup()
+        ViewModel.PlayerData.observe(this) { play ->
+            if (ViewBinding.playerCover?.visibility == View.GONE) {
+                onPlay(play)
+                ViewBinding.playerCover?.setOnClickListener(null)
                 return@observe
             }
-            onPlay(it)
+            ViewBinding.playerPlayerCover?.visibility = View.VISIBLE
+            ViewBinding.playerControllerQuality?.text = play.videoInfo.streamListList.find {
+                it.info.quality == ViewModel.FittedQuality
+            }?.info?.newDescription
+            ViewBinding.playerCover?.setOnClickListener {
+                ViewBinding.playerCover?.visibility = View.GONE
+                ViewBinding.playerPlayerCover?.visibility = View.GONE
+                onPlay(play)
+            }
         }
         ViewModel.SeasonData.observe(this) {
             ViewBinding.playerCover?.let { playerCover ->
@@ -51,6 +67,15 @@ class OnlinePlayer(activity: AppCompatActivity): BasePlayer<FragmentPlayerBindin
                     .withCrossFade()
                     .withBlur()
                     .into(playerCover)
+            }
+            ViewBinding.playerControllerEpisode?.setOnClickListener {
+                openEpisodeListPanel(ViewModel.EpisodeList.values)
+            }
+        }
+        ViewModel.PlayerPlaying.observe(this) {
+            if (it) {
+                ViewBinding.playerCover?.visibility = View.GONE
+                ViewBinding.playerPlayerCover?.visibility = View.GONE
             }
         }
     }
@@ -71,6 +96,7 @@ class OnlinePlayer(activity: AppCompatActivity): BasePlayer<FragmentPlayerBindin
             )
             return
         }
+        ViewBinding.playerControllerQuality?.text = video.info.newDescription
         val factory = ProgressiveMediaSource.Factory(
             DefaultHttpDataSource.Factory()
         )
@@ -96,7 +122,46 @@ class OnlinePlayer(activity: AppCompatActivity): BasePlayer<FragmentPlayerBindin
         ViewModel.Player.prepare()
     }
 
+    private val BangumiPreference: BangumiPreference by lazy { ExPreference.get() }
+    private fun openQualityListPanel() {
+        val panel = PlayerPanel(context)
+        val popup = XPopup.Builder(context)
+            .popupPosition(PopupPosition.Right)
+            .asCustom(panel)
+        val adapter = QualityListAdapter()
+        adapter.setData(ViewModel.QualityData.entries)
+        adapter.setSelection(ViewModel.FittedQuality)
+        adapter.setOnItemClickListener { (qn, name) ->
+            popup.dismissWith {
+                popup.destroy()
+            }
+            if (BangumiPreference.quality == qn) {
+                return@setOnItemClickListener
+            }
+            ViewBinding.playerControllerQuality?.text = name
+            ViewModel.PlayerData.postValue(ViewModel.PlayerData.value)
+        }
+        panel.setQualityAdapter(adapter)
+        popup.show()
+    }
+
+    private fun openEpisodeListPanel(list: Collection<SeasonInfoData.Episodes.EpisodesData.EpisodesItem>) {
+        val panel = PlayerPanel(context)
+        val popup = XPopup.Builder(context)
+            .popupPosition(PopupPosition.Right)
+            .asCustom(panel)
+        val adapter = EpisodeListAdapter()
+        adapter.setData(list)
+        adapter.setSelection(ViewModel.EpisodeId.toInt())
+        panel.setEpisodeAdapter(adapter)
+        popup.show()
+        adapter.setOnItemClickListener {
+            popup.dismissWith {
+                popup.destroy()
+            }
+            ViewModel.getPlayUrl(it.episodeId!!, it.cid!!)
+        }
+    }
+
     override val ViewModel: OnlinePlayerModel by activityViewModels()
-    override fun onCreateViewBinding(container: ViewGroup?) =
-        FragmentPlayerBinding.inflate(layoutInflater, container, false)
 }

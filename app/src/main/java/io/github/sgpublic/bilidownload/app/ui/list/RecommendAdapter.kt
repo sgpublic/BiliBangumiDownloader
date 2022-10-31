@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.Glide
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonRecommendResp
@@ -60,16 +61,17 @@ class RecommendAdapter(private val context: AppCompatActivity)
             binding.itemSeasonBadges.visibility = View.VISIBLE
             binding.itemSeasonBadges.text = data.badgeInfo!!.text
         }
-        if (data.rating.score == 0f) {
+        if ((data.rating?.score ?: 0f) == 0f) {
             binding.itemSearchRatingNull.visibility = View.VISIBLE
             binding.itemSearchRatingString.visibility = View.INVISIBLE
+            binding.itemSearchRatingStar.progress = 0
         } else {
+            binding.itemSearchRatingString.text = String.format("%.1f", data.rating!!.score)
+            binding.itemSearchRatingStar.progress = data.rating!!.score.roundToInt()
             binding.itemSearchRatingNull.visibility = View.INVISIBLE
             binding.itemSearchRatingString.visibility = View.VISIBLE
         }
         binding.itemSearchSeasonContent.text = data.newEp.indexShow
-        binding.itemSearchRatingString.text = String.format("%.1f", data.rating.score)
-        binding.itemSearchRatingStar.progress = data.rating.score.roundToInt()
         binding.root.setOnClickListener {
             onEpisodeClick.invoke(data.seasonId ?: return@setOnClickListener, data.episodeId)
         }

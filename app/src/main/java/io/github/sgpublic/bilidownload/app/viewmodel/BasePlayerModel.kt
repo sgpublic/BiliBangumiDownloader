@@ -62,6 +62,7 @@ abstract class BasePlayerModel: BaseViewModel(), Player.Listener {
         }
         PlayerState.postValue(playbackState)
     }
+    val PlayerCurrentDuration: MutableLiveData<Long> = MutableLiveData()
 
     fun isControllerVisible(): Boolean = ControllerVisibility.value ?: false
     val ControllerVisibility: MutableLiveData<Boolean> = MutableLiveData()

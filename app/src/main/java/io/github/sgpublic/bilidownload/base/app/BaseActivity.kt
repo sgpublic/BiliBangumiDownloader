@@ -37,8 +37,6 @@ abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity() {
         onActivityCreated(savedInstanceState != null)
     }
 
-//    protected abstract fun onCreateViewBinding(): VB
-
     protected open fun beforeCreate() { }
 
     protected abstract fun onActivityCreated(hasSavedInstanceState: Boolean)
@@ -88,39 +86,10 @@ abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity() {
         super.onSaveInstanceState(outState)
     }
 
-//    final override val animate: MutableMap<View, ViewState> = mutableMapOf()
     override fun onDestroy() {
         STATE.clear()
-//        clearAnimate()
         unregister()
         super.onDestroy()
-    }
-
-    protected open fun setAnimateState(isVisible: Boolean, duration: Int, view: View?, callback: Runnable? = null) {
-        val onEnd = object : TimerTask() {
-            override fun run() {
-                runOnUiThread {
-                    view?.visibility = View.GONE
-                    callback?.run()
-                }
-            }
-        }
-        if (view == null) {
-            Timer().schedule(onEnd, duration.toLong())
-            return
-        }
-        runOnUiThread {
-            if (isVisible) {
-                view.visibility = View.VISIBLE
-                view.animate().alphaBy(0f).alpha(1f).setDuration(duration.toLong())
-                    .setListener(null)
-                callback?.run()
-                return@runOnUiThread
-            }
-            view.animate().alphaBy(1f).alpha(0f).setDuration(duration.toLong())
-                .setListener(null)
-            Timer().schedule(onEnd, duration.toLong())
-        }
     }
 
     protected open fun isActivityAtBottom(): Boolean = false

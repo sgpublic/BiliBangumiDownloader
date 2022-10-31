@@ -45,6 +45,7 @@ public class SeasonInfoResp extends DataResp<SeasonInfoResp.SeasonInfoData> {
         /** 发布信息 */
         private Publish publish;
         /** 评分 */
+        @Nullable
         private Rating rating;
         /** 封面图片 */
         private String refineCover;

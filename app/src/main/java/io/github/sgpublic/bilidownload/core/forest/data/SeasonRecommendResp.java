@@ -54,6 +54,7 @@ public class SeasonRecommendResp extends ResultResp<SeasonRecommendResp.SeasonRe
                 private BadgeInfo badgeInfo;
                 private String cover;
                 private NewEp newEp;
+                @Nullable
                 private Rating rating;
                 private String title;
 

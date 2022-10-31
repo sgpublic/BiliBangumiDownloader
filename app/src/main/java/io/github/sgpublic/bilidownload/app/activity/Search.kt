@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import androidx.core.widget.addTextChangedListener
 import io.github.sgpublic.bilidownload.base.app.BaseActivity
+import io.github.sgpublic.bilidownload.core.util.animate
 import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.bilidownload.databinding.ActivitySearchBinding
 import io.github.sgpublic.bilidownload.databinding.ItemSearchWordBinding
@@ -59,12 +60,11 @@ class Search: BaseActivity<ActivitySearchBinding>() {
         } else {
             ViewBinding.searchResult
         }
-        setAnimateState(false, 300, viewVisible) {
+        viewVisible.animate(false, 300) {
             ViewBinding.searchLoadState.startLoad()
-            setAnimateState(true, 300, ViewBinding.searchLoadState)
+            ViewBinding.searchLoadState.animate(true, 300)
             val keyword: String = ViewBinding.searchEdit.text.toString()
             onAddHistory(keyword)
-
         }
     }
 
@@ -97,7 +97,7 @@ class Search: BaseActivity<ActivitySearchBinding>() {
                     }
                     ViewBinding.searchHistoryList.addView(itemSearchWord.root, paramsLinear)
                 }
-                setAnimateState(true, 500, ViewBinding.searchHistory)
+                ViewBinding.searchHistory.animate(true, 500)
             }
         } catch (e: Exception) {
             if (e !is FileNotFoundException) {

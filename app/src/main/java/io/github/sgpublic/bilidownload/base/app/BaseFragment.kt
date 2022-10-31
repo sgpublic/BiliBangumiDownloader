@@ -11,7 +11,11 @@ import android.widget.LinearLayout
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
 import androidx.viewbinding.ViewBinding
+import com.badlogic.gdx.utils.reflect.ClassReflection.getConstructor
+import io.github.sgpublic.bilidownload.core.util.log
+import io.github.sgpublic.bilidownload.databinding.ActivityPlayerBinding
 
 abstract class BaseFragment<VB: ViewBinding>(private val contest: AppCompatActivity) : Fragment() {
     private var _binding: VB? = null
@@ -40,11 +44,11 @@ abstract class BaseFragment<VB: ViewBinding>(private val contest: AppCompatActiv
     protected abstract fun onFragmentCreated(hasSavedInstanceState: Boolean)
 
     protected fun runOnUiThread(runnable: () -> Unit){
-        contest.runOnUiThread(runnable)
+        context.runOnUiThread(runnable)
     }
 
     protected fun finish(){
-        contest.finish()
+        context.finish()
     }
 
     protected fun <T: View?> findViewById(@IdRes res: Int): T? {
@@ -77,11 +81,9 @@ abstract class BaseFragment<VB: ViewBinding>(private val contest: AppCompatActiv
         super.onSaveInstanceState(outState)
     }
 
-//    final override val animate: MutableMap<View, ViewState> = mutableMapOf()
     override fun onDestroyView() {
         _binding = null
         STATE.clear()
-//        clearAnimate()
         super.onDestroyView()
     }
 
@@ -98,5 +100,17 @@ abstract class BaseFragment<VB: ViewBinding>(private val contest: AppCompatActiv
     }
     protected fun post(block: () -> Unit) {
         Handler(mainLooper).post(block)
+    }
+
+    class Factory(private val context: AppCompatActivity): FragmentFactory() {
+        override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
+            val clazz = loadFragmentClass(classLoader, className)
+            return if (BaseFragment::class.java.isAssignableFrom(clazz)) {
+                clazz.getConstructor(AppCompatActivity::class.java)
+                    .newInstance(context)
+            } else {
+                super.instantiate(classLoader, className)
+            }
+        }
     }
 }

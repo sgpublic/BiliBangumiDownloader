@@ -6,16 +6,14 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import bilibili.pgc.gateway.player.v2.Playurl.PlayViewReply
-import com.bumptech.glide.Glide
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
-import io.github.sgpublic.bilidownload.app.fragment.factory.PlayerFragmentFactory
 import io.github.sgpublic.bilidownload.app.fragment.player.OnlinePlayer
 import io.github.sgpublic.bilidownload.app.fragment.player.SeasonOnlinePage
 import io.github.sgpublic.bilidownload.app.viewmodel.OnlinePlayerModel
+import io.github.sgpublic.bilidownload.base.app.BaseFragment
 import io.github.sgpublic.bilidownload.base.app.BaseViewModelActivity
-import io.github.sgpublic.bilidownload.core.util.*
+import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.bilidownload.databinding.ActivityPlayerBinding
 
 class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerModel>() {
@@ -27,7 +25,7 @@ class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerMod
     }
 
     override fun beforeCreate() {
-        supportFragmentManager.fragmentFactory = PlayerFragmentFactory(this)
+        supportFragmentManager.fragmentFactory = BaseFragment.Factory(this)
         super.beforeCreate()
     }
 

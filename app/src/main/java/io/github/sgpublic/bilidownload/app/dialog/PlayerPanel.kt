@@ -6,6 +6,7 @@ import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.lxj.xpopup.core.DrawerPopupView
 import io.github.sgpublic.bilidownload.app.ui.list.EpisodeListAdapter
+import io.github.sgpublic.bilidownload.app.ui.list.QualityListAdapter
 import io.github.sgpublic.bilidownload.core.util.dp
 import io.github.sgpublic.bilidownload.databinding.DialogPlayerPanelBinding
 
@@ -14,42 +15,38 @@ class PlayerPanel(context: Context) : DrawerPopupView(context) {
     override fun getPopupWidth(): Int {
         return panelWidth
     }
-    private var binding: DialogPlayerPanelBinding? = null
+
+    private val binding: DialogPlayerPanelBinding
+
     init {
         binding = DialogPlayerPanelBinding.inflate(
             LayoutInflater.from(context), drawerContentContainer, false
         )
     }
 
-
-//    fun setQualityAdapter(adapter: QualityListAdapter) {
-//        binding?.let {
-//            (it.dialogPanelList.layoutParams as ConstraintLayout.LayoutParams).bottomToBottom =
-//                ConstraintLayout.LayoutParams.PARENT_ID
-//            panelWidth = 180.dp
-//            it.dialogPanelList.layoutParams.width = panelWidth
-//            it.dialogEpisodeListTitle.visibility = View.GONE
-//            it.dialogPanelList.adapter = adapter
-//        }
-//    }
+    fun setQualityAdapter(adapter: QualityListAdapter) {
+        panelWidth = 180.dp
+        val params = binding.dialogPanelList.layoutParams as ConstraintLayout.LayoutParams
+        params.width = panelWidth
+        params.height = ConstraintLayout.LayoutParams.WRAP_CONTENT
+        binding.dialogPanelList.layoutParams = params
+        binding.dialogPanelList.adapter = adapter
+        binding.dialogEpisodeListTitle.visibility = View.GONE
+    }
 
     fun setEpisodeAdapter(adapter: EpisodeListAdapter) {
-        binding?.let {
-            (it.dialogPanelList.layoutParams as ConstraintLayout.LayoutParams).bottomToBottom =
-                ConstraintLayout.LayoutParams.UNSET
-            panelWidth = 320.dp
-            it.dialogPanelList.layoutParams.width = panelWidth
-            it.dialogEpisodeListTitle.visibility = View.VISIBLE
-//            it.dialogPanelList.adapter = adapter
-        }
+        panelWidth = 320.dp
+        val params = binding.dialogPanelList.layoutParams as ConstraintLayout.LayoutParams
+        params.width = panelWidth
+        params.height = 0
+        binding.dialogPanelList.layoutParams = params
+        binding.dialogPanelList.adapter = adapter
+        binding.dialogEpisodeListTitle.visibility = View.VISIBLE
     }
 
     override fun addInnerContent() {
-        drawerContentContainer.addView(binding?.root)
+        drawerContentContainer.addView(binding.root)
     }
 
-    override fun onDestroy() {
-        binding = null
-        super.onDestroy()
-    }
+    override fun getPopupImplView() = binding.root
 }

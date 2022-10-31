@@ -3,7 +3,6 @@ package io.github.sgpublic.bilidownload.app.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import bilibili.pgc.gateway.player.v2.Playurl.PlayViewReply
-import io.github.sgpublic.bilidownload.base.app.BaseViewModel
 import io.github.sgpublic.bilidownload.base.app.postValue
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonRecommendResp
@@ -13,24 +12,23 @@ import io.github.sgpublic.bilidownload.core.util.*
 import okhttp3.internal.closeQuietly
 import java.util.PriorityQueue
 
-class OnlinePlayerModel(sid: Long, private val epid: Long): BasePlayerModel() {
+class OnlinePlayerModel(sid: Long, var EpisodeId: Long): BasePlayerModel() {
     val SID: MutableLiveData<Long> by lazy {
         getSeasonInfo(sid)
         MutableLiveData(sid)
     }
     val SeasonData: MutableLiveData<SeasonInfoResp.SeasonInfoData> = MutableLiveData()
-
+    val EpisodeList: HashMap<Long, SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem> = HashMap()
     fun getSeasonInfo(sid: Long) {
         ForestClients.API.seasonInfoV2(
             sid, TokenPreference.accessToken
         ).biliapi(newRequestCallback { data ->
-            val list: HashMap<Long, SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem> = HashMap()
             for (episodes in data.find<SeasonInfoResp.SeasonInfoData.Episodes>()) {
                 for (item in episodes.data.episodes) {
-                    list[item.id] = item
+                    EpisodeList[item.id] = item
                 }
             }
-            initPlayerData(data, list[epid] ?: ArrayList(list.values)[0])
+            initPlayerData(data, EpisodeList[EpisodeId] ?: ArrayList(EpisodeList.values)[0])
         }, viewModelScope)
     }
 
