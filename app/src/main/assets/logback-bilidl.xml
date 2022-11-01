@@ -28,9 +28,9 @@
             <!-- 分段命名规则 -->
             <fileNamePattern>${LOG_DIR}/%d{yyyy-MM-dd}/bilidownload.%i.log</fileNamePattern>
             <!-- 最大保留天数 -->
-            <MaxHistory>7</MaxHistory>
+            <MaxHistory>5</MaxHistory>
             <!-- 单日志文件最大文件大小 -->
-            <maxFileSize>1MB</maxFileSize>
+            <maxFileSize>5MB</maxFileSize>
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger %-5level \(%trace\): %msg%n</pattern>

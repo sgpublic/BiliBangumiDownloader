@@ -103,6 +103,7 @@ abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity() {
             }
         }
         if (!isActivityAtBottom()){
+            @Suppress("DEPRECATION")
             super.onBackPressed()
             return
         }

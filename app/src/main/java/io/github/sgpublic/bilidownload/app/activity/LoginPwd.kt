@@ -157,12 +157,14 @@ class LoginPwd: BaseViewModelActivity<ActivityLoginPwdBinding, LoginPwdModel>() 
 
     override fun onViewSetup() {
         ViewBinding.loginAction.setOnClickListener {
+            val username = ViewBinding.loginUsername.editText!!.text.toString()
+            val password = ViewBinding.loginPassword.editText!!.text.toString()
+            if (username.isBlank() || password.isBlank()) {
+                Application.onToast(this, R.string.text_login_error_empty)
+                return@setOnClickListener
+            }
             ViewModel.Loading.postValue(true)
-            ViewModel.startAction(
-                ViewBinding.loginUsername.editText!!.text.toString(),
-                ViewBinding.loginPassword.editText!!.text.toString(),
-                ::validatePhone
-            )
+            ViewModel.startAction(username, password, ::validatePhone)
         }
     }
 

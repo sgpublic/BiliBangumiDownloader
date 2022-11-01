@@ -12,6 +12,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import ch.qos.logback.classic.LoggerContext
+import ch.qos.logback.classic.PatternLayout
 import ch.qos.logback.classic.joran.JoranConfigurator
 import ch.qos.logback.core.util.StatusPrinter
 import com.arialyy.aria.core.Aria
@@ -19,6 +20,8 @@ import com.dtflys.forest.Forest
 import io.github.sgpublic.bilidownload.base.forest.GsonConverter
 import io.github.sgpublic.bilidownload.core.forest.core.BiliApiInterceptor
 import io.github.sgpublic.bilidownload.core.forest.core.UrlEncodedInterceptor
+import io.github.sgpublic.bilidownload.core.logback.PkgNameConverter
+import io.github.sgpublic.bilidownload.core.logback.TraceConverter
 import io.github.sgpublic.bilidownload.core.room.AppDatabase
 import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.exsp.ExPreference
@@ -64,6 +67,8 @@ class Application : Application() {
     }
 
     private fun loadLogbackConfig() {
+        PatternLayout.defaultConverterMap["trace"] = TraceConverter::class.java.name
+        PatternLayout.defaultConverterMap["pkgName"] = PkgNameConverter::class.java.name
         val context = LoggerFactory.getILoggerFactory() as LoggerContext
         val configurator = JoranConfigurator()
         configurator.context = context

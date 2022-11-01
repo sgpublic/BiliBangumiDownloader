@@ -18,11 +18,4 @@ class ExternalLogFileDefiner: PropertyDefinerBase() {
             logDir.path
         }
     }
-
-    companion object {
-        init {
-            PatternLayout.defaultConverterMap["trace"] = TraceConverter::class.java.name
-            PatternLayout.defaultConverterMap["pkgName"] = PkgNameConverter::class.java.name
-        }
-    }
 }
