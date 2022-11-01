@@ -17,6 +17,7 @@ import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.app.dialog.PlayerPanel
 import io.github.sgpublic.bilidownload.app.ui.list.EpisodeListAdapter
 import io.github.sgpublic.bilidownload.app.ui.list.QualityListAdapter
+import io.github.sgpublic.bilidownload.app.ui.smartDestroy
 import io.github.sgpublic.bilidownload.app.viewmodel.OnlinePlayerModel
 import io.github.sgpublic.bilidownload.base.app.postValue
 import io.github.sgpublic.bilidownload.core.exsp.BangumiPreference
@@ -40,24 +41,25 @@ class OnlinePlayer(activity: AppCompatActivity): BasePlayer<OnlinePlayerModel>(a
         ViewBinding.playerControllerQuality?.setOnClickListener {
             openQualityListPanel()
         }
+        ViewModel.isCoverVisible.take(View.VISIBLE, View.GONE).let { visibility ->
+            ViewBinding.playerCover?.visibility = visibility
+            ViewBinding.playerPlayerCover?.visibility = visibility
+        }
     }
 
     override fun onViewModelSetup() {
         super.onViewModelSetup()
-        ViewModel.PlayerData.observe(this) { play ->
-            if (ViewBinding.playerCover?.visibility == View.GONE) {
+        ViewModel.setOnResolvePlayDataListener { play ->
+            if (ViewBinding.playerCover?.visibility != View.VISIBLE) {
                 onPlay(play)
-                ViewBinding.playerCover?.setOnClickListener(null)
-                return@observe
-            }
-            ViewBinding.playerPlayerCover?.visibility = View.VISIBLE
-            ViewBinding.playerControllerQuality?.text = play.videoInfo.streamListList.find {
-                it.info.quality == ViewModel.FittedQuality
-            }?.info?.newDescription
-            ViewBinding.playerCover?.setOnClickListener {
-                ViewBinding.playerCover?.visibility = View.GONE
-                ViewBinding.playerPlayerCover?.visibility = View.GONE
-                onPlay(play)
+            } else {
+                ViewBinding.playerPlayerCover?.visibility = View.VISIBLE
+                ViewBinding.playerCover?.setOnClickListener {
+                    log.debug("playerCover onClick")
+                    ViewBinding.playerCover?.visibility = View.GONE
+                    ViewBinding.playerPlayerCover?.visibility = View.GONE
+                    onPlay(play)
+                }
             }
         }
         ViewModel.SeasonData.observe(this) {
@@ -78,6 +80,9 @@ class OnlinePlayer(activity: AppCompatActivity): BasePlayer<OnlinePlayerModel>(a
                 ViewBinding.playerPlayerCover?.visibility = View.GONE
             }
         }
+        ViewModel.QualityDesc.observe(this) {
+            ViewBinding.playerControllerQuality?.text = it
+        }
     }
 
     private fun onPlay(data: PlayViewReply) {
@@ -96,7 +101,8 @@ class OnlinePlayer(activity: AppCompatActivity): BasePlayer<OnlinePlayerModel>(a
             )
             return
         }
-        ViewBinding.playerControllerQuality?.text = video.info.newDescription
+        ViewModel.isCoverVisible = false
+        ViewModel.QualityDesc.postValue(video.info.newDescription)
         val factory = ProgressiveMediaSource.Factory(
             DefaultHttpDataSource.Factory()
         )
@@ -118,8 +124,10 @@ class OnlinePlayer(activity: AppCompatActivity): BasePlayer<OnlinePlayerModel>(a
         log.info("onResolvePlayData: " +
                 "\n  - video: ${video.dashVideo.baseUrl}" +
                 "\n  - audio: ${audio.baseUrl}")
-        ViewModel.Player.setMediaSource(media)
-        ViewModel.Player.prepare()
+        runOnUiThread {
+            ViewModel.Player.setMediaSource(media)
+            ViewModel.Player.prepare()
+        }
     }
 
     private val BangumiPreference: BangumiPreference by lazy { ExPreference.get() }
@@ -132,14 +140,12 @@ class OnlinePlayer(activity: AppCompatActivity): BasePlayer<OnlinePlayerModel>(a
         adapter.setData(ViewModel.QualityData.entries)
         adapter.setSelection(ViewModel.FittedQuality)
         adapter.setOnItemClickListener { (qn, name) ->
-            popup.dismissWith {
-                popup.destroy()
-            }
-            if (BangumiPreference.quality == qn) {
-                return@setOnItemClickListener
-            }
+            popup.dismiss()
+            BangumiPreference.quality = qn
             ViewBinding.playerControllerQuality?.text = name
-            ViewModel.PlayerData.postValue(ViewModel.PlayerData.value)
+            val epid = ViewModel.EpisodeId.value ?: return@setOnItemClickListener
+            ViewModel.Player.stop()
+            ViewModel.getPlayUrl(epid.first, epid.second)
         }
         panel.setQualityAdapter(adapter)
         popup.show()
@@ -152,14 +158,13 @@ class OnlinePlayer(activity: AppCompatActivity): BasePlayer<OnlinePlayerModel>(a
             .asCustom(panel)
         val adapter = EpisodeListAdapter()
         adapter.setData(list)
-        adapter.setSelection(ViewModel.EpisodeId.toInt())
+        adapter.setSelectedEpid(ViewModel.EpisodeId.value?.first ?: 0)
         panel.setEpisodeAdapter(adapter)
         popup.show()
         adapter.setOnItemClickListener {
-            popup.dismissWith {
-                popup.destroy()
-            }
-            ViewModel.getPlayUrl(it.episodeId!!, it.cid!!)
+            ViewModel.Player.stop()
+            ViewModel.getPlayUrl(it.id, it.cid!!)
+            popup.dismiss()
         }
     }
 

@@ -10,7 +10,7 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="end|bottom"
-        android:translationZ="3dp"/>
+        android:translationZ="5dp"/>
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/item_episode_base"
         android:layout_width="match_parent"

@@ -70,9 +70,9 @@ class HomeMine(context: AppCompatActivity): BaseFragment<FragmentHomeMineBinding
         ViewBinding.mineAbout.setOnClickListener {
             io.github.sgpublic.bilidownload.app.activity.About.startActivity(context)
         }
-        ViewBinding.mineSetting.setOnClickListener {
-            Setting.startActivity(context)
-        }
+//        ViewBinding.mineSetting.setOnClickListener {
+//            Setting.startActivity(context)
+//        }
         ViewBinding.mineOtherBangumi.setOnClickListener {
             MyFollows.startActivity(context)
         }

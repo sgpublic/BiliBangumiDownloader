@@ -4,9 +4,11 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.viewbinding.ViewBinding
+import io.github.sgpublic.bilidownload.core.util.log
 import java.lang.Integer.max
 
 /**
@@ -20,7 +22,8 @@ abstract class ArrayRecyclerAdapter<VB: ViewBinding, ItemT>(list: List<ItemT>? =
     private val data: ArrayList<ItemT> = ArrayList<ItemT>().also {
         it.addAll(list ?: return@also)
     }
-    fun setData(list: Collection<ItemT>) {
+    @CallSuper
+    open fun setData(list: Collection<ItemT>) {
         val size = max(this.data.size, list.size)
         this.data.clear()
         this.data.addAll(list)
@@ -35,9 +38,16 @@ abstract class ArrayRecyclerAdapter<VB: ViewBinding, ItemT>(list: List<ItemT>? =
     }
     fun isEmpty() = data.isEmpty()
 
+    fun getItem(position: Int): ItemT = data[position]
+
     private var onClick: (ItemT) -> Unit = { }
-    fun setOnItemClickListener(onClick: (ItemT) -> Unit) {
+    open fun setOnItemClickListener(onClick: (ItemT) -> Unit) {
         this.onClick = onClick
+    }
+
+    private var onLongClick: (ItemT) -> Boolean = { false }
+    fun setOnItemLongClickListener(onLongClick: (ItemT) -> Boolean) {
+        this.onLongClick = onLongClick
     }
 
     final override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder<VB> {
@@ -49,16 +59,16 @@ abstract class ArrayRecyclerAdapter<VB: ViewBinding, ItemT>(list: List<ItemT>? =
     final override fun onBindViewHolder(holder: Holder<VB>, position: Int) {
         val data = data[position]
         onBindViewHolder(holder.binding.root.context, holder.binding, data)
-        if (!clickable) {
-            return
-        }
         getClickableView(holder.binding)?.setOnClickListener {
             onClick.invoke(data)
         }
+        getLongClickableView(holder.binding)?.setOnLongClickListener {
+            onLongClick.invoke(data)
+        }
     }
 
-    open val clickable: Boolean = true
     open fun getClickableView(ViewBinding: VB): View? = null
+    open fun getLongClickableView(ViewBinding: VB): View? = null
 
     abstract fun onCreateViewBinding(inflater: LayoutInflater, parent: ViewGroup): VB
     abstract fun onBindViewHolder(context: Context, ViewBinding: VB, data: ItemT)

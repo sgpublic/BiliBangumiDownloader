@@ -3,8 +3,12 @@ package io.github.sgpublic.bilidownload.app.fragment.player
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
+import com.google.android.exoplayer2.Player
 import com.lxj.xpopup.XPopup
+import io.github.sgpublic.bilidownload.R
+import io.github.sgpublic.bilidownload.app.dialog.EpisodeListDialog
 import io.github.sgpublic.bilidownload.app.dialog.SeasonInfoDialog
+import io.github.sgpublic.bilidownload.app.ui.recycler.SeasonEpisodeAdapter
 import io.github.sgpublic.bilidownload.app.ui.recycler.SeasonOnlinePageAdapter
 import io.github.sgpublic.bilidownload.app.viewmodel.OnlinePlayerModel
 import io.github.sgpublic.bilidownload.base.app.BaseViewModelFragment
@@ -22,7 +26,6 @@ class SeasonOnlinePage(activity: AppCompatActivity): BaseViewModelFragment<Fragm
     override fun onFragmentCreated(hasSavedInstanceState: Boolean) {
 
     }
-
     private val adapter: SeasonOnlinePageAdapter by lazy { SeasonOnlinePageAdapter() }
     override fun onViewSetup() {
         ViewBinding.root.adapter = adapter
@@ -45,13 +48,26 @@ class SeasonOnlinePage(activity: AppCompatActivity): BaseViewModelFragment<Fragm
             }
             adapter.setSeries(seriesList)
             adapter.setOnChoseEpisodeClick {
-
+                val dialog = EpisodeListDialog(
+                    context, ViewModel.EpisodeList.values,
+                    getString(R.string.text_player_dialog_episode, ViewModel.EpisodeList.size),
+                    ViewModel.EpisodeId, ViewModel.QualityData,
+                )
+                val popup = XPopup.Builder(context)
+                    .asCustom(dialog)
+                    .show()
+                dialog.setOnItemClickListener { epid, cid ->
+                    popup.dismiss()
+                    ViewModel.Player.stop()
+                    ViewModel.getPlayUrl(epid, cid)
+                }
             }
 
             adapter.setEpisode(ViewModel.EpisodeList.values)
-            adapter.setOnEpisodeItemClickListener { sid, epid ->
+            adapter.setOnRecommendEpisodeClick { sid, epid ->
                 if (sid != ViewModel.SID.value) {
-                    ViewModel.SID.postValue(epid)
+                    ViewModel.EpisodeId.postValue((epid ?: -1) to -1)
+                    ViewModel.SID.postValue(sid)
                 }
             }
             adapter.setOnResourceItemClickListener {
@@ -59,9 +75,16 @@ class SeasonOnlinePage(activity: AppCompatActivity): BaseViewModelFragment<Fragm
                     IntentUtil.openUrl(it)
                 }
             }
+            adapter.setOnEpisodeClick { epid, cid ->
+                ViewModel.Player.stop()
+                ViewModel.getPlayUrl(epid, cid)
+            }
         }
         ViewModel.SeasonRecommend.observe(this) {
             adapter.setRecommend(it.cards)
+        }
+        ViewModel.EpisodeId.observe(this) {
+            adapter.playEpisode(it.first)
         }
     }
 

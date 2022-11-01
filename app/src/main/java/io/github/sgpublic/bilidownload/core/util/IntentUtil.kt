@@ -16,7 +16,7 @@ object IntentUtil {
             url?.let { this.data = Uri.parse(it) }
             extra?.let { this.putExtras(it) }
         }.let {
-            Application.APPLICATION_CONTEXT.startActivity(it)
+            Application.ApplicationContext.startActivity(it)
         }
     }
 

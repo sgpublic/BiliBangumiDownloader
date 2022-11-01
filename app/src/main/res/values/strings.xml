@@ -81,6 +81,7 @@
     <string name="text_search_from">番剧：%1$s</string>
 
     <string name="title_season_unknown">未知番剧</string>
+    <string name="title_season_error">加载出错</string>
     <string name="title_season_info">详情</string>
     <string name="title_season_episode">剧集</string>
     <string name="text_season_placeholder" translatable="false">\n\n\n</string>

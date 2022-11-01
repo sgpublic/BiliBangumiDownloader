@@ -58,12 +58,12 @@ inline fun <reified T> ForestRequest<T>.enqueue(callback: RequestCallback<T>, vi
                 }
                 return@withContext
             }
-            try {
+//            try {
                 callback.onResponse(data)
-            } catch (e: Exception) {
-                log.error("资源处理出错", e)
-                callback.onFailure(RequestCallback.CODE_RESOURCE, e.requiredMessage())
-            }
+//            } catch (e: Exception) {
+//                log.error("资源处理出错", e)
+//                callback.onFailure(RequestCallback.CODE_RESOURCE, e.requiredMessage())
+//            }
         }
     }
 }

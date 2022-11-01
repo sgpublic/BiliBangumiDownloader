@@ -55,7 +55,7 @@ class About: BaseActivity<ActivityAboutBinding>() {
 //            override fun onUpToDate() {
                 Application.onToast(this@About, R.string.title_update_already)
 //                runOnUiThread {
-//                    ViewBinding.aboutProgress.visibility = View.GONE
+                    ViewBinding.aboutProgress.visibility = View.GONE
 //                }
 //            }
 //

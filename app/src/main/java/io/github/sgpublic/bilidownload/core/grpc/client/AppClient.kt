@@ -19,7 +19,7 @@ import org.chromium.net.ExperimentalCronetEngine
  */
 class AppClient : Closeable {
     private val Channel: ManagedChannel by lazy {
-        val engine = ExperimentalCronetEngine.Builder(Application.APPLICATION_CONTEXT).build()
+        val engine = ExperimentalCronetEngine.Builder(Application.ApplicationContext).build()
         CronetChannelBuilder.forAddress("app.bilibili.com", 443, engine)
             .intercept(GrpcModule.AuthInterceptor)
             .customBuild()

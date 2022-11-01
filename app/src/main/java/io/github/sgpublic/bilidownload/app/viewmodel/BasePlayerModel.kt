@@ -18,7 +18,7 @@ import java.util.*
  */
 abstract class BasePlayerModel: BaseViewModel(), Player.Listener {
     val Player: ExoPlayer by lazy {
-        val player = ExoPlayer.Builder(Application.APPLICATION_CONTEXT)
+        val player = ExoPlayer.Builder(Application.ApplicationContext)
             .build()
         player.addListener(this)
         player.playWhenReady = true
@@ -54,6 +54,7 @@ abstract class BasePlayerModel: BaseViewModel(), Player.Listener {
         }
     }
 
+    var isCoverVisible = true
     val PlayerDuration: MutableLiveData<Long> = MutableLiveData()
     val PlayerState: MutableLiveData<Int> = MutableLiveData()
     override fun onPlaybackStateChanged(playbackState: Int) {

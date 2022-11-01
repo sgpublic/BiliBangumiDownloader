@@ -11,6 +11,7 @@ import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.ui.SelectableArrayAdapter
 import io.github.sgpublic.bilidownload.core.exsp.BangumiPreference
 import io.github.sgpublic.bilidownload.core.exsp.UserPreference
+import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
 import io.github.sgpublic.bilidownload.core.util.take
 import io.github.sgpublic.bilidownload.databinding.ItemQualityListBinding
 import io.github.sgpublic.exsp.ExPreference
@@ -21,6 +22,15 @@ class QualityListAdapter : SelectableArrayAdapter<ItemQualityListBinding, Map.En
         parent: ViewGroup
     ) = ItemQualityListBinding.inflate(inflater, parent, false)
 
+    private val BangumiPreference: BangumiPreference by lazy { ExPreference.get() }
+    override fun setOnItemClickListener(onClick: (Map.Entry<Int, String>) -> Unit) {
+        super.setOnItemClickListener {
+            if (BangumiPreference.quality != it.key) {
+                onClick.invoke(it)
+            }
+        }
+    }
+
     override fun onBindViewHolder(
         context: Context,
         ViewBinding: ItemQualityListBinding,
@@ -29,7 +39,7 @@ class QualityListAdapter : SelectableArrayAdapter<ItemQualityListBinding, Map.En
         ViewBinding.root.text = data.value
         ViewBinding.root.gravity = Gravity.CENTER_HORIZONTAL
         ViewBinding.root.setTextColor(ContextCompat.getColor(
-            context, (getSelection() == data.key).take(selectedColor, normalColor)
+            context, (getSelection() == data.key).take(getSelectedColor(), getNormalColor())
         ))
     }
 

@@ -16,10 +16,8 @@ class PlayerPanel(context: Context) : DrawerPopupView(context) {
         return panelWidth
     }
 
-    private val binding: DialogPlayerPanelBinding
-
-    init {
-        binding = DialogPlayerPanelBinding.inflate(
+    private val binding: DialogPlayerPanelBinding by lazy {
+        DialogPlayerPanelBinding.inflate(
             LayoutInflater.from(context), drawerContentContainer, false
         )
     }

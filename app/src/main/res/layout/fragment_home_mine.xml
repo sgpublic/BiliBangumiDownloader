@@ -167,24 +167,26 @@
                     android:text="@string/title_mine_logout"
                     android:textSize="16sp"
                     android:textColor="@color/color_text_normal" />
-                <TextView
-                    android:id="@+id/mine_setting"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center_vertical"
-                    android:layout_marginTop="10dp"
-                    android:paddingStart="30dp"
-                    android:paddingEnd="30dp"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    android:background="@color/white"
-                    android:text="@string/title_mine_setting"
-                    android:textSize="16sp"
-                    android:textColor="@color/color_text_normal" />
+<!--                <TextView-->
+<!--                    android:id="@+id/mine_setting"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="60dp"-->
+<!--                    android:gravity="center_vertical"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:paddingStart="30dp"-->
+<!--                    android:paddingEnd="30dp"-->
+<!--                    android:foreground="?android:attr/selectableItemBackground"-->
+<!--                    android:background="@color/white"-->
+<!--                    android:visibility="gone"-->
+<!--                    android:text="@string/title_mine_setting"-->
+<!--                    android:textSize="16sp"-->
+<!--                    android:textColor="@color/color_text_normal" />-->
                 <TextView
                     android:id="@+id/mine_about"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:gravity="center_vertical"
+                    android:layout_marginTop="10dp"
                     android:paddingStart="30dp"
                     android:paddingEnd="30dp"
                     android:foreground="?android:attr/selectableItemBackground"

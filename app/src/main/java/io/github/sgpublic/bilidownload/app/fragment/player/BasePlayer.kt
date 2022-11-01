@@ -1,6 +1,5 @@
 package io.github.sgpublic.bilidownload.app.fragment.player
 
-import android.animation.Animator
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.os.Build
@@ -8,21 +7,12 @@ import android.view.*
 import android.widget.SeekBar
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModel
-import androidx.viewbinding.ViewBinding
-import com.google.common.primitives.UnsignedBytes.toInt
-import com.lxj.xpopup.XPopup
-import com.lxj.xpopup.enums.PopupPosition
+import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
-import io.github.sgpublic.bilidownload.app.dialog.PlayerPanel
 import io.github.sgpublic.bilidownload.app.ui.PlayerGestureDetector
-import io.github.sgpublic.bilidownload.app.ui.list.EpisodeListAdapter
 import io.github.sgpublic.bilidownload.app.viewmodel.BasePlayerModel
-import io.github.sgpublic.bilidownload.app.viewmodel.OnlinePlayerModel
 import io.github.sgpublic.bilidownload.base.app.BaseViewModelFragment
 import io.github.sgpublic.bilidownload.core.util.animate
-import io.github.sgpublic.bilidownload.core.util.newObserve
 import io.github.sgpublic.bilidownload.core.util.take
 import io.github.sgpublic.bilidownload.databinding.FragmentPlayerBinding
 import java.util.*
@@ -95,6 +85,9 @@ abstract class BasePlayer<VM: BasePlayerModel>(activity: AppCompatActivity)
 
     @CallSuper
     override fun onViewModelSetup() {
+        ViewModel.Exception.observe(this) {
+            Application.onToast(context, R.string.title_season_error, it.message, it.code)
+        }
         ViewModel.PlayerLoading.observe(this) {
             ViewBinding.playerControllerLoading.animate(it, 100)
         }
@@ -145,7 +138,7 @@ abstract class BasePlayer<VM: BasePlayerModel>(activity: AppCompatActivity)
                             ViewModel.PlayerCurrentDuration.postValue(ViewModel.Player.currentPosition)
                         }
                     }
-                }, 0, 1000)
+                }, 100, 1000)
             }
         } else if (!isListen && durationListener != null) {
             durationListener?.cancel()

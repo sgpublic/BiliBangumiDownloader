@@ -8,7 +8,7 @@ import java.io.IOException
 
 class ExternalLogFileDefiner: PropertyDefinerBase() {
     override fun getPropertyValue(): String {
-        val logDir = File(Application.APPLICATION_CONTEXT.externalCacheDir, "log")
+        val logDir = File(Application.ApplicationContext.externalCacheDir, "log")
         if (!logDir.exists() && !logDir.mkdirs()) {
             throw RuntimeException("日志目录创建失败")
         }

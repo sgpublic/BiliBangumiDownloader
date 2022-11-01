@@ -42,10 +42,6 @@ class SeasonOnlinePageAdapter: ViewBindingRecyclerAdapter() {
     fun setOnResourceItemClickListener(onClick: (String) -> Unit) {
         this.onResourceClick = onClick
     }
-    private var onEpisodeClick: (Long, Long?) -> Unit = { _, _ -> }
-    fun setOnEpisodeItemClickListener(onClick: (Long, Long?) -> Unit) {
-        this.onEpisodeClick = onClick
-    }
 
     override fun getItemViewType(position: Int): Int {
         if (position == 0) {
@@ -75,6 +71,19 @@ class SeasonOnlinePageAdapter: ViewBindingRecyclerAdapter() {
     private val episodeAdapter: SeasonEpisodeAdapter by lazy { SeasonEpisodeAdapter() }
     fun setEpisode(list: Collection<SeasonInfoData.Episodes.EpisodesData.EpisodesItem>) {
         episodeAdapter.setData(list)
+    }
+    fun setOnEpisodeClick(onClick: (Long, Long) -> Unit) {
+        episodeAdapter.setOnItemClickListener {
+            onClick.invoke(it.id, it.cid!!)
+        }
+    }
+    private var onRecommendEpisodeClick: (Long, Long?) -> Unit = { _, _ -> }
+    fun setOnRecommendEpisodeClick(onClick: (Long, Long?) -> Unit) {
+        onRecommendEpisodeClick = onClick
+    }
+    fun playEpisode(epid: Long) {
+        val position = episodeAdapter.getPosition(epid)
+        episodeAdapter.setSelection(position)
     }
     private var seasonDetailClick: () -> Unit = { }
     fun setOnSeasonDetailClick(onClick: () -> Unit) {
@@ -175,8 +184,11 @@ class SeasonOnlinePageAdapter: ViewBindingRecyclerAdapter() {
             ViewBinding.itemSeasonBadges.visibility = View.VISIBLE
             ViewBinding.itemSeasonBadges.text = data.badgeInfo!!.text
         }
+        ViewBinding.itemSearchEntry.setOnClickListener {
+            onRecommendEpisodeClick.invoke(data.seasonId ?: return@setOnClickListener, data.episodeId)
+        }
         ViewBinding.root.setOnClickListener {
-            onEpisodeClick.invoke(data.seasonId ?: return@setOnClickListener, data.episodeId)
+            onRecommendEpisodeClick.invoke(data.seasonId ?: return@setOnClickListener, data.episodeId)
         }
     }
 
