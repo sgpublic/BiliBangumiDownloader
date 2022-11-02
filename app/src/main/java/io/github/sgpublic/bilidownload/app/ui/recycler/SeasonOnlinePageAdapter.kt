@@ -10,6 +10,7 @@ import io.github.sgpublic.bilidownload.base.ui.ViewBindingHolder
 import io.github.sgpublic.bilidownload.base.ui.ViewBindingRecyclerAdapter
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp.SeasonInfoData
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonRecommendResp
+import io.github.sgpublic.bilidownload.core.room.entity.DownloadTaskEntity
 import io.github.sgpublic.bilidownload.core.util.*
 import io.github.sgpublic.bilidownload.databinding.ItemSearchEpisodeBinding
 import io.github.sgpublic.bilidownload.databinding.ItemSearchSeasonBinding
@@ -71,6 +72,9 @@ class SeasonOnlinePageAdapter: ViewBindingRecyclerAdapter() {
     private val episodeAdapter: SeasonEpisodeAdapter by lazy { SeasonEpisodeAdapter() }
     fun setEpisode(list: Collection<SeasonInfoData.Episodes.EpisodesData.EpisodesItem>) {
         episodeAdapter.setData(list)
+    }
+    fun setDownloadTask(list: Collection<DownloadTaskEntity>) {
+        episodeAdapter.setDownloadTasks(list)
     }
     fun setOnEpisodeClick(onClick: (Long, Long) -> Unit) {
         episodeAdapter.setOnItemClickListener {

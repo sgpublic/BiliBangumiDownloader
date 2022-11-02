@@ -6,15 +6,11 @@
 
     <color name="colorWindowBackground">#F8F9FB</color>
 
-    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimary">#219DFF</color>
+    <color name="colorPrimaryContainer">#C5E6FF</color>
     <color name="colorPrimaryVariant">#D5D5D5</color>
     <color name="colorPrimaryText">#000000</color>
     <color name="colorOnPrimary">#FFFFFF</color>
-
-    <color name="colorSecondary">#1D8AE1</color>
-    <color name="colorSecondaryVariant">#D5D5D5</color>
-    <color name="colorSecondaryText">#757575</color>
-    <color name="colorOnSecondary">#FFFFFF</color>
 
     <color name="colorAccent">#509CFF</color>
     <color name="colorOutline">#000000</color>

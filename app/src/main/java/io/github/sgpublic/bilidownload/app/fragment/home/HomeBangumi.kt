@@ -1,6 +1,5 @@
 package io.github.sgpublic.bilidownload.app.fragment.home
 
-import android.os.Handler
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
@@ -12,7 +11,6 @@ import io.github.sgpublic.bilidownload.base.app.BaseViewModelFragment
 import io.github.sgpublic.bilidownload.core.util.dp
 import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.bilidownload.databinding.FragmentHomeBangumiBinding
-import java.util.*
 
 class HomeBangumi(context: AppCompatActivity): BaseViewModelFragment<FragmentHomeBangumiBinding, HomeModel>(context) {
     override fun onFragmentCreated(hasSavedInstanceState: Boolean) {

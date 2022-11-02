@@ -3,13 +3,12 @@
 import com.android.build.api.dsl.VariantDimension
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import com.google.protobuf.gradle.proto
-import com.google.protobuf.gradle.remove
+import io.github.sgpublic.gradle.Dep
 import io.github.sgpublic.gradle.core.BuildTypes
 import io.github.sgpublic.gradle.core.SignConfig
 import io.github.sgpublic.gradle.core.VersionGen
 import io.github.sgpublic.gradle.util.ApkUtil
 import java.util.*
-import io.github.sgpublic.gradle.Dep
 
 plugins {
     id("bilidl-version")
@@ -84,12 +83,6 @@ android {
         }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        kapt {
-            arguments {
-                arg("room.schemaLocation", "$projectDir/schemas")
-            }
-        }
 
         "sgpublic/BiliBangumiDownloader_Kotlin".let {
             buildConfigField("GITHUB_REPO", it)
@@ -167,9 +160,6 @@ protobuf {
         register("grpc") {
             artifact = "io.grpc:protoc-gen-grpc-java:${Dep.GrpcJava}"
         }
-//        register("grpckt") {
-//            artifact = "io.grpc:protoc-gen-grpc-kotlin:1.3.0:jdk8@jar"
-//        }
     }
     generateProtoTasks {
         for(task in all()) {
@@ -177,17 +167,11 @@ protobuf {
                 register("java") {
                     option("lite")
                 }
-//                register("kotlin") {
-//                    option("lite")
-//                }
             }
             task.plugins {
                 register("grpc") {
                     option("lite")
                 }
-//                register("grpckt") {
-//                    option("lite")
-//                }
             }
         }
     }
@@ -214,7 +198,7 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
 
     /* https://github.com/zhpanvip/BannerViewPager */
-    implementation("com.github.zhpanvip:BannerViewPager:3.5.5")
+    implementation("com.github.zhpanvip:BannerViewPager:3.5.7")
     /* https://github.com/yanzhenjie/Sofia */
     implementation("com.yanzhenjie:sofia:1.0.5")
     /* https://github.com/scwang90/MultiWaveHeader */
@@ -238,25 +222,18 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:${Dep.Lombok}")
     annotationProcessor("org.projectlombok:lombok:${Dep.Lombok}")
-    androidTestCompileOnly("org.projectlombok:lombok:${Dep.Lombok}")
-    androidTestAnnotationProcessor("org.projectlombok:lombok:${Dep.Lombok}")
 
     implementation("androidx.room:room-runtime:${Dep.Room}")
-    implementation("androidx.room:room-ktx:${Dep.Room}")
-    kapt("androidx.room:room-compiler:${Dep.Room}")
-    testImplementation("androidx.room:room-testing:${Dep.Room}")
+    annotationProcessor("androidx.room:room-compiler:${Dep.Room}")
 
     /* https://github.com/google/protobuf-gradle-plugin */
     implementation("com.google.protobuf:protobuf-java:${Dep.Proto}")
-//    implementation("com.google.protobuf:protobuf-kotlin:${Dep.Proto}")
     // 阿b用的 cronet，如果用 okhttp 会导致 io.grpc.StatusRuntimeException: INTERNAL: Received unexpected EOS on DATA frame from server.
     implementation("io.grpc:grpc-cronet:${Dep.GrpcJava}")
     implementation("com.google.android.gms:play-services-cronet:18.0.1")
-//    implementation("io.grpc:grpc-okhttp:${Dep.GrpcJava}")
     implementation("io.grpc:grpc-android:${Dep.GrpcJava}")
     implementation("io.grpc:grpc-protobuf:${Dep.GrpcJava}")
     implementation("io.grpc:grpc-stub:${Dep.GrpcJava}")
-//    implementation("io.grpc:grpc-kotlin-stub:1.0.0")
     implementation("org.apache.tomcat:annotations-api:6.0.53")
 
     /* https://github.com/bumptech/glide */

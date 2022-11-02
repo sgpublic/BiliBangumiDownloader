@@ -37,7 +37,7 @@ interface MultiSelectableAdapter<T> {
     fun addSelection(pos: Int)
     fun removeSelection(pos: Int)
     fun toggleSelection(pos: Int)
-    fun entrySelectMode(initPos: Int)
+    fun entrySelectMode(initPos: Int = -1)
     fun exitSelectMode(): List<T>
     fun cancelSelectMode()
     fun selectAll()

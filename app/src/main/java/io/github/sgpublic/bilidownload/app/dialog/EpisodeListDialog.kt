@@ -2,18 +2,22 @@ package io.github.sgpublic.bilidownload.app.dialog
 
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lxj.xpopup.core.BottomPopupView
+import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.app.ui.recycler.SeasonEpisodeDialogAdapter
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
+import io.github.sgpublic.bilidownload.core.room.entity.DownloadTaskEntity
 import io.github.sgpublic.bilidownload.databinding.DialogEpisodeListBinding
 
 @SuppressLint("ViewConstructor")
 class EpisodeListDialog(
-    context: AppCompatActivity,
+    context: AppCompatActivity, private val seasonCover: String,
     private val data: Collection<SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem>,
-    private val title: String,
+    private val tasks: LiveData<List<DownloadTaskEntity>>,
+    private val title: String, private val sid: Long,
     private val currentEpid: MutableLiveData<Pair<Long, Long>>,
     private val qn: Map<Int, String>
 ) : BottomPopupView(context) {
@@ -28,17 +32,50 @@ class EpisodeListDialog(
                     onItemClick.invoke(it.id, it.cid!!)
                 }
             }
+            tasks.observe(this) {
+                adapter.setDownloadTasks(it)
+            }
             currentEpid.observe(this) {
                 adapter.setSelectedEpid(it.first)
+            }
+            adapter.setOnChangeSelectModeListener {
+                if (it) {
+                    ViewBinding.dialogEpisodeDownload.hide()
+                    ViewBinding.dialogEpisodeConfirm.show()
+                } else {
+                    ViewBinding.dialogEpisodeDownload.show()
+                    ViewBinding.dialogEpisodeConfirm.hide()
+                }
             }
         }
     }
 
+    private val ViewBinding: DialogEpisodeListBinding by lazy { DialogEpisodeListBinding.bind(popupImplView) }
     override fun onCreate() {
-        val binding: DialogEpisodeListBinding = DialogEpisodeListBinding.bind(popupImplView)
-        binding.dialogEpisodeConfirm.hide()
-        binding.dialogEpisodeListTitle.text = title
-        binding.dialogEpisodeList.adapter = adapter
+        ViewBinding.dialogEpisodeConfirm.hide()
+        ViewBinding.dialogEpisodeListTitle.text = title
+        ViewBinding.dialogEpisodeList.adapter = adapter
+        ViewBinding.dialogEpisodeDownload.setOnClickListener {
+            adapter.entrySelectMode()
+        }
+        ViewBinding.dialogEpisodeConfirm.setOnClickListener {
+            val list = adapter.exitSelectMode()
+            if (list.isEmpty()) {
+                return@setOnClickListener
+            }
+            val tasks = ArrayList<DownloadTaskEntity>(list.size)
+            for (item in list) {
+                DownloadTaskEntity().let { entity ->
+                    entity.epid = item.id
+                    entity.cid = item.cid!!
+                    entity.sid = sid
+                    entity.seasonCover = seasonCover
+                    entity.episodeCover = item.cover
+                    tasks.add(entity)
+                }
+            }
+            Application.Database.DownloadTaskDao().save(tasks)
+        }
     }
 
     private var onItemClick: (Long, Long) -> Unit = { _, _ -> }
@@ -51,7 +88,7 @@ class EpisodeListDialog(
         if (!adapter.isSelectMode()) {
             return super.onBackPressed()
         }
-        adapter.exitSelectMode()
+        adapter.cancelSelectMode()
         return true
     }
 

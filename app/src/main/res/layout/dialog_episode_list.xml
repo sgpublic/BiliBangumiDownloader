@@ -56,23 +56,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
-        app:fabCustomSize="64dp"
         app:fabSize="normal"
+        tools:visibility="gone"
         android:src="@drawable/ic_confirm"
         android:tint="@color/colorOnPrimary"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintBottom_toBottomOf="parent" />
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/dialog_episode_download"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
-        app:fabCustomSize="64dp"
         app:fabSize="normal"
         android:src="@drawable/ic_download"
         android:tint="@color/colorOnPrimary"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

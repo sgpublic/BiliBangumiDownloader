@@ -8,6 +8,7 @@ import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.RecyclerView
 import io.github.sgpublic.bilidownload.base.ui.MultiSelectableAdapter
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
+import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.bilidownload.core.util.take
 import io.github.sgpublic.bilidownload.databinding.ItemSeasonEpisodeBinding
 
@@ -20,6 +21,11 @@ class SeasonEpisodeDialogAdapter: SeasonEpisodeAdapter(), MultiSelectableAdapter
         param.height = RecyclerView.LayoutParams.WRAP_CONTENT
         param.width = RecyclerView.LayoutParams.MATCH_PARENT
         it.root.layoutParams = param
+    }
+
+    private var onChangeSelectMode: (Boolean) -> Unit = { }
+    fun setOnChangeSelectModeListener(listener: (Boolean) -> Unit) {
+        onChangeSelectMode = listener
     }
 
     private var selectable = true
@@ -97,11 +103,13 @@ class SeasonEpisodeDialogAdapter: SeasonEpisodeAdapter(), MultiSelectableAdapter
         }
         selectMode = true
         addSelection(initPos.takeIf { it >= 0 } ?: return)
+        onChangeSelectMode.invoke(true)
     }
 
     override fun exitSelectMode(): List<SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem> {
         if (!selectMode) {
-            throw IllegalStateException("not in select mode")
+            log.warn("not in select mode")
+            return emptyList()
         }
         selectMode = false
         val selected = ArrayList<SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem>(selection.size)
@@ -112,6 +120,7 @@ class SeasonEpisodeDialogAdapter: SeasonEpisodeAdapter(), MultiSelectableAdapter
             notifyItemChanged(select)
         }
         tmpSelect.clear()
+        onChangeSelectMode.invoke(false)
         return selected
     }
 
@@ -126,6 +135,7 @@ class SeasonEpisodeDialogAdapter: SeasonEpisodeAdapter(), MultiSelectableAdapter
             notifyItemChanged(select)
         }
         tmpSelect.clear()
+        onChangeSelectMode.invoke(false)
     }
 
     override fun selectAll() {

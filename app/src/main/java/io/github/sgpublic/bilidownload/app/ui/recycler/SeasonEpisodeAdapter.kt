@@ -6,23 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.Glide
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
-import io.github.sgpublic.bilidownload.base.ui.ArrayRecyclerAdapter
-import io.github.sgpublic.bilidownload.base.ui.MultiSelectableAdapter
 import io.github.sgpublic.bilidownload.base.ui.SelectableArrayAdapter
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
+import io.github.sgpublic.bilidownload.core.room.entity.DownloadTaskEntity
 import io.github.sgpublic.bilidownload.core.util.*
 import io.github.sgpublic.bilidownload.databinding.ItemSeasonEpisodeBinding
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 open class SeasonEpisodeAdapter: SelectableArrayAdapter<ItemSeasonEpisodeBinding, SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem>() {
     override fun onCreateViewBinding(
@@ -33,6 +27,25 @@ open class SeasonEpisodeAdapter: SelectableArrayAdapter<ItemSeasonEpisodeBinding
         param.height = RecyclerView.LayoutParams.MATCH_PARENT
         param.width = RecyclerView.LayoutParams.WRAP_CONTENT
         it.root.layoutParams = param
+    }
+
+    private val tasks: HashMap<Long, DownloadTaskEntity.Status> = HashMap()
+    fun setDownloadTasks(tasks: Collection<DownloadTaskEntity>) {
+        val tmp: HashMap<Long, DownloadTaskEntity.Status> = HashMap()
+        tmp.putAll(this.tasks)
+        for (item in tasks) {
+            tmp.remove(item.epid)
+            if (this.tasks[item.epid] == item.status) {
+                continue
+            }
+            this.tasks[item.epid] = item.status
+            notifyItemChanged(getPosition(item.epid))
+        }
+        for ((key, _) in tmp) {
+            this.tasks.remove(key)
+            notifyItemChanged(getPosition(key))
+        }
+        tmp.clear()
     }
 
     /** epid */
@@ -77,8 +90,12 @@ open class SeasonEpisodeAdapter: SelectableArrayAdapter<ItemSeasonEpisodeBinding
         if (getSelectedItem().id == data.id) {
             ViewBinding.episodeState.visibility = View.VISIBLE
             ViewBinding.episodeState.setImageResource(R.drawable.ic_episode_playing)
+        } else if (tasks.contains(data.id)) {
+            ViewBinding.episodeState.visibility = View.VISIBLE
+            ViewBinding.episodeState.setImageResource((tasks[data.id] == DownloadTaskEntity.Status.Finished).take(
+                R.drawable.ic_episode_finish, R.drawable.ic_episode_downloading
+            ))
         } else {
-            // TODO 显示下载状态
             ViewBinding.episodeState.visibility = View.GONE
         }
     }

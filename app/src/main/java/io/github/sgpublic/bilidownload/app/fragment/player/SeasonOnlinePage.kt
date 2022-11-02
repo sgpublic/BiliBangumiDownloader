@@ -3,18 +3,17 @@ package io.github.sgpublic.bilidownload.app.fragment.player
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
-import com.google.android.exoplayer2.Player
 import com.lxj.xpopup.XPopup
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.app.dialog.EpisodeListDialog
 import io.github.sgpublic.bilidownload.app.dialog.SeasonInfoDialog
-import io.github.sgpublic.bilidownload.app.ui.recycler.SeasonEpisodeAdapter
 import io.github.sgpublic.bilidownload.app.ui.recycler.SeasonOnlinePageAdapter
 import io.github.sgpublic.bilidownload.app.viewmodel.OnlinePlayerModel
 import io.github.sgpublic.bilidownload.base.app.BaseViewModelFragment
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
 import io.github.sgpublic.bilidownload.core.forest.find
-import io.github.sgpublic.bilidownload.core.util.*
+import io.github.sgpublic.bilidownload.core.util.IntentUtil
+import io.github.sgpublic.bilidownload.core.util.showAsOutsideConfirm
 import io.github.sgpublic.bilidownload.databinding.FragmentSeasonOnlineBinding
 
 /**
@@ -49,9 +48,9 @@ class SeasonOnlinePage(activity: AppCompatActivity): BaseViewModelFragment<Fragm
             adapter.setSeries(seriesList)
             adapter.setOnChoseEpisodeClick {
                 val dialog = EpisodeListDialog(
-                    context, ViewModel.EpisodeList.values,
+                    context, season.refineCover, ViewModel.EpisodeList.values, ViewModel.DownloadTasks,
                     getString(R.string.text_player_dialog_episode, ViewModel.EpisodeList.size),
-                    ViewModel.EpisodeId, ViewModel.QualityData,
+                    season.seasonId, ViewModel.EpisodeId, ViewModel.QualityData,
                 )
                 val popup = XPopup.Builder(context)
                     .asCustom(dialog)
@@ -85,6 +84,9 @@ class SeasonOnlinePage(activity: AppCompatActivity): BaseViewModelFragment<Fragm
         }
         ViewModel.EpisodeId.observe(this) {
             adapter.playEpisode(it.first)
+        }
+        ViewModel.DownloadTasks.observe(this) {
+            adapter.setDownloadTask(it)
         }
     }
 

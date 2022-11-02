@@ -1,25 +1,22 @@
 package io.github.sgpublic.bilidownload.app.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.viewbinding.ViewBinding
 import bilibili.pgc.gateway.player.v2.Playurl.PlayViewReply
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.MergingMediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import io.github.sgpublic.bilidownload.Application
-import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.app.postValue
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonRecommendResp
 import io.github.sgpublic.bilidownload.core.forest.find
 import io.github.sgpublic.bilidownload.core.grpc.client.AppClient
+import io.github.sgpublic.bilidownload.core.room.entity.DownloadTaskEntity
 import io.github.sgpublic.bilidownload.core.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.internal.closeQuietly
-import java.util.PriorityQueue
+import java.util.*
 
 class OnlinePlayerModel(sid: Long, epid: Long): BasePlayerModel() {
     val SID: MutableLiveData<Long> by lazy {
@@ -84,7 +81,11 @@ class OnlinePlayerModel(sid: Long, epid: Long): BasePlayerModel() {
                 for (stream in data.videoInfo.streamListList) {
                     QualityData[stream.info.quality] = stream.info.newDescription
                 }
-                onResolvePlayData.invoke(data)
+                viewModelScope.launch {
+                    withContext(Dispatchers.Main) {
+                        onResolvePlayData.invoke(data)
+                    }
+                }
             }
         }, viewModelScope)
     }
@@ -98,6 +99,10 @@ class OnlinePlayerModel(sid: Long, epid: Long): BasePlayerModel() {
         return pq.peek()?.also {
             pq.clear()
         } ?: 80
+    }
+
+    val DownloadTasks: LiveData<List<DownloadTaskEntity>> by lazy {
+        Application.Database.DownloadTaskDao().observeBySid(sid)
     }
 
     override fun onCleared() {
