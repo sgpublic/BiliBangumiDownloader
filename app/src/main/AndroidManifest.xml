@@ -8,10 +8,6 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" />
-
     <application
         android:name=".Application"
         android:icon="@mipmap/ic_launcher"
@@ -23,7 +19,6 @@
         android:theme="@style/AppTheme"
         android:requestLegacyExternalStorage="true"
         android:screenOrientation="portrait"
-        tools:ignore="AllowBackup,GoogleAppIndexingWarning,InnerclassSeparator,LockedOrientationActivity"
         tools:replace="android:supportsRtl">
         <activity android:name=".app.activity.License"/>
         <activity android:name=".app.activity.Search" />

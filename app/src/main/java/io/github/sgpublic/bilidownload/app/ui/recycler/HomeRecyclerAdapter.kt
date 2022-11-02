@@ -80,8 +80,6 @@ class HomeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private fun onBindBannerViewHolder(holder: BannerViewHolder) {
         holder.ViewBinding.bangumiBanner.let {
-            val param = it.layoutParams as GridLayoutManager.LayoutParams
-            param.topMargin = 110.dp
             if (canLoop) {
                 it.startLoop()
             } else {
