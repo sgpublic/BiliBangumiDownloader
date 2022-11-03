@@ -2,6 +2,7 @@ package io.github.sgpublic.bilidownload.app.activity
 
 import android.content.Context
 import android.content.Intent
+import android.view.View.OnFocusChangeListener
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.viewModels
 import androidx.lifecycle.viewModelScope
@@ -166,6 +167,15 @@ class LoginPwd: BaseViewModelActivity<ActivityLoginPwdBinding, LoginPwdModel>() 
             ViewModel.Loading.postValue(true)
             ViewModel.startAction(username, password, ::validatePhone)
         }
+        ViewBinding.loginPasswordContent.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    ViewBinding.loginBannerLeft.setImageResource(R.drawable.pic_login_banner_left_hide)
+                    ViewBinding.loginBannerRight.setImageResource(R.drawable.pic_login_banner_right_hide)
+                } else {
+                    ViewBinding.loginBannerLeft.setImageResource(R.drawable.pic_login_banner_left_show)
+                    ViewBinding.loginBannerRight.setImageResource(R.drawable.pic_login_banner_right_show)
+                }
+            }
     }
 
     override fun onDestroy() {

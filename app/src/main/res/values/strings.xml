@@ -14,7 +14,7 @@
     <string name="title_login_welcome">欢迎使用哔哩番剧</string>
     <string name="text_login_welcome_qrcode">请使用哔哩哔哩 APP 扫码登录</string>
     <string name="text_login_welcome_pwd">请使用哔哩哔哩账号登录</string>
-    <string name="text_login_username">请输入手机号</string>
+    <string name="text_login_username">请输入手机号/邮箱</string>
     <string name="text_login_password">请输入密码</string>
     <string name="text_login_action">登录</string>
     <string name="text_login_action_doing">正在登录</string>
@@ -27,6 +27,7 @@
     <string name="text_login_failed">登录失败</string>
     <string name="text_login_error_empty">账号或密码为空</string>
     <string name="text_login_phone_validate">验证手机号</string>
+    <string name="text_login_phone_validate_invalid">未知校验链接</string>
     <string name="text_login_phone_validate_failed">手机号验证逻辑失效啦，请联系开发者反馈</string>
 
     <string name="title_login_web">网页登录</string>

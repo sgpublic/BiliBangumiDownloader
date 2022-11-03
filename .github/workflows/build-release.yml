@@ -12,7 +12,7 @@ jobs:
       uses: actions/checkout@main
       with:
         token: ${{ secrets.TOKEN }}
-        submodules: true
+        submodules: 'recursive'
 
     - name: Initialization environment
       env:

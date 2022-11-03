@@ -44,8 +44,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:maxLength="11"
-            android:inputType="phone|textEmailAddress"
             android:imeOptions="actionNext"
             android:imeActionLabel="@string/ime_label_next" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -59,12 +57,13 @@
         android:hint="@string/text_login_password"
         app:layout_constraintTop_toBottomOf="@id/login_username">
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/login_password_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:inputType="textPassword"
             android:imeOptions="actionDone"
-            android:imeActionLabel="@string/text_login_password" />
+            android:imeActionLabel="@string/text_login_action" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button

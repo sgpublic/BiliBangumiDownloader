@@ -121,7 +121,7 @@ abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity() {
         }
     }
 
-    inline fun <reified VB: ViewBinding> viewBinding(): Lazy<VB> = lazy {
+    protected inline fun <reified VB: ViewBinding> viewBinding(): Lazy<VB> = lazy {
         VB::class.java.getMethod("inflate", LayoutInflater::class.java)
             .invoke(null, layoutInflater) as VB
     }

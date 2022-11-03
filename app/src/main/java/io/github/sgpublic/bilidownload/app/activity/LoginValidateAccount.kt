@@ -1,12 +1,10 @@
 package io.github.sgpublic.bilidownload.app.activity
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.view.MenuItem
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import androidx.activity.result.contract.ActivityResultContract
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.BuildConfig
@@ -27,7 +25,22 @@ class LoginValidateAccount: BaseActivity<ActivityWebviewBinding>() {
     private val url: String by lazy { return@lazy intent.getStringExtra("url") ?: "" }
 
     override fun onActivityCreated(hasSavedInstanceState: Boolean) {
-        ViewBinding.webviewTarget.loadUrl(url)
+        if (url.isBlank()) {
+            Application.onToast(this, R.string.text_login_phone_validate_invalid)
+            finish()
+            return
+        }
+        CookieManager.getInstance().removeAllCookies(null)
+        CookieManager.getInstance().flush()
+        ViewBinding.webviewTarget.let { webview ->
+            webview.settings.let { setting ->
+                @SuppressLint("SetJavaScriptEnabled")
+                setting.javaScriptEnabled = true
+                setting.domStorageEnabled = true
+                setting.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            }
+            webview.loadUrl(url)
+        }
     }
 
     override fun onViewSetup() {
@@ -46,6 +59,19 @@ class LoginValidateAccount: BaseActivity<ActivityWebviewBinding>() {
             })
             finish()
         })
+        ViewBinding.webviewTarget.webChromeClient = object : WebChromeClient() {
+            private var shown = false
+            override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                ViewBinding.webviewProcess.progress = newProgress
+                if (newProgress == 100) {
+                    shown = false
+                    ViewBinding.webviewProcess.animate(false, 100)
+                } else if (!shown) {
+                    shown = true
+                    ViewBinding.webviewProcess.animate(true, 100)
+                }
+            }
+        }
     }
 
     @Deprecated("Deprecated in Java")
