@@ -231,6 +231,7 @@ dependencies {
     // 阿b用的 cronet，如果用 okhttp 会导致 io.grpc.StatusRuntimeException: INTERNAL: Received unexpected EOS on DATA frame from server.
     implementation("io.grpc:grpc-cronet:${Dep.GrpcJava}")
     implementation("com.google.android.gms:play-services-cronet:18.0.1")
+    implementation("org.chromium.net:cronet-fallback:106.5249.126")
     implementation("io.grpc:grpc-android:${Dep.GrpcJava}")
     implementation("io.grpc:grpc-protobuf:${Dep.GrpcJava}")
     implementation("io.grpc:grpc-stub:${Dep.GrpcJava}")

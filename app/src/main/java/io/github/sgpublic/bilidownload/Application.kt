@@ -17,6 +17,7 @@ import ch.qos.logback.classic.joran.JoranConfigurator
 import ch.qos.logback.core.util.StatusPrinter
 import com.arialyy.aria.core.Aria
 import com.dtflys.forest.Forest
+import com.google.android.gms.net.CronetProviderInstaller
 import io.github.sgpublic.bilidownload.base.forest.GsonConverter
 import io.github.sgpublic.bilidownload.core.forest.core.BiliApiInterceptor
 import io.github.sgpublic.bilidownload.core.forest.core.UrlEncodedInterceptor
@@ -35,7 +36,8 @@ class Application : Application() {
         application = this
         loadLogbackConfig()
         startListenException()
-        log.info("APP启动")
+        log.info("APP启动：${BuildConfig.VERSION_NAME}")
+        CronetProviderInstaller.installProvider(this)
         room = Room.databaseBuilder(this, AppDatabase::class.java, BuildConfig.PROJECT_NAME)
             .fallbackToDestructiveMigration()
             .allowMainThreadQueries()
@@ -82,7 +84,7 @@ class Application : Application() {
     }
 
     override fun onTerminate() {
-        log.info("APP结束")
+        log.info("APP结束：${BuildConfig.VERSION_NAME}")
         if (Database.isOpen) {
             Database.close()
         }
