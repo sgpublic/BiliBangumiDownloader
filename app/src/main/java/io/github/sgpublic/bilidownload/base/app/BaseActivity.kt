@@ -24,10 +24,9 @@ abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity() {
     private var rootViewBottom: Int = 0
 
     final override fun onCreate(savedInstanceState: Bundle?) {
+        register()
         beforeCreate()
         super.onCreate(savedInstanceState)
-
-        register()
 
         setupContentView()
         if (savedInstanceState != null) {
@@ -88,8 +87,8 @@ abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity() {
 
     override fun onDestroy() {
         STATE.clear()
-        unregister()
         super.onDestroy()
+        unregister()
     }
 
     protected open fun isActivityAtBottom(): Boolean = false
@@ -113,7 +112,7 @@ abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity() {
             last = now
         } else {
             if (now - last < 2000) {
-                finishAll()
+                Application.finishAll()
             } else {
                 last = now
                 Application.onToast(this, R.string.text_back_exit_notice)

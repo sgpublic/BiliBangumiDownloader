@@ -85,9 +85,7 @@ class Application : Application() {
 
     override fun onTerminate() {
         log.info("APP结束：${BuildConfig.VERSION_NAME}")
-        if (Database.isOpen) {
-            Database.close()
-        }
+        Database.close()
         super.onTerminate()
     }
 
@@ -96,6 +94,9 @@ class Application : Application() {
         private lateinit var application: Application
         private lateinit var room: AppDatabase
 
+        fun onTerminate() {
+            application.onTerminate()
+        }
         val ApplicationContext: Context get() = application.applicationContext
         val ContentResolver: ContentResolver get() = ApplicationContext.contentResolver
         val Database: AppDatabase get() = room
