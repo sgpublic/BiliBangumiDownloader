@@ -31,6 +31,7 @@ interface PassportClient {
         @Body("username") username: String,
         @Body("password") pwdEncrypted: String,
         @Body("from_pv") fromPv: String = "main.homepage.avatar-nologin.all.click",
+        @Header("app-ket") appKey: String = "android64",
     ) : ForestRequest<LoginResp>
 
     @BiliSign(
@@ -45,8 +46,10 @@ interface PassportClient {
         @Body("gee_seccode") seccode: String,
         @Body("username") username: String,
         @Body("password") pwdEncrypted: String,
-        @Body("from_pv") fromPv: String = "main.homepage.avatar-nologin.all.click",
-        @Body("spm_id") spmId: String = "main.homepage.avatar-nologin.all.click",
+        @Body("from_pv") fromPv: String = "main.my-information.my-login.0.click",
+        @Body("spm_id") spmId: String = "main.my-information.my-login.0",
+        @Body("device_name") deviceName: String = "Android",
+        @Header("app-ket") appKey: String = "android64",
     ) : ForestRequest<LoginResp>
 
     @BiliSign(

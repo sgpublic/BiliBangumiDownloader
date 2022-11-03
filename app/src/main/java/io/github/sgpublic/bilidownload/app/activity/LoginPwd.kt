@@ -14,11 +14,13 @@ import com.google.gson.JsonObject
 import com.lxj.xpopup.XPopup
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
+import io.github.sgpublic.bilidownload.app.dialog.GeetestDialog
 import io.github.sgpublic.bilidownload.app.viewmodel.LoginPwdModel
 import io.github.sgpublic.bilidownload.base.app.BaseViewModelActivity
 import io.github.sgpublic.bilidownload.core.exsp.TokenPreference
 import io.github.sgpublic.bilidownload.core.exsp.UserPreference
 import io.github.sgpublic.bilidownload.core.util.fromGson
+import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.bilidownload.core.util.take
 import io.github.sgpublic.bilidownload.core.util.takeOr
 import io.github.sgpublic.bilidownload.databinding.ActivityLoginPwdBinding
@@ -26,7 +28,6 @@ import io.github.sgpublic.exsp.ExPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 
 class LoginPwd: BaseViewModelActivity<ActivityLoginPwdBinding, LoginPwdModel>() {
     private val Token: TokenPreference by lazy { ExPreference.get() }
@@ -76,7 +77,7 @@ class LoginPwd: BaseViewModelActivity<ActivityLoginPwdBinding, LoginPwdModel>() 
                     )
                 }
                 override fun onButtonClick() {
-                    ViewModel.getCaptcha()
+                    geetest.getGeetest()
                 }
             }
         }
@@ -94,26 +95,26 @@ class LoginPwd: BaseViewModelActivity<ActivityLoginPwdBinding, LoginPwdModel>() 
         }
         ViewModel.CaptchaData.observe(this) { data ->
             ViewModel.Loading.postValue(false)
-            geetestBean.api1Json = JSONObject().also {
-                it.put("success", 1)
-                it.put("challenge", data.geetest.challenge)
-                it.put("gt", data.geetest.gt)
-                it.put("token", data.token)
-            }
-            geetest.getGeetest()
-//            XPopup.Builder(this)
-//                .asCustom(GeetestDialog(this, data.url, {
-//                    ViewModel.LOADING.postValue(false)
-//                }, { validate ->
-//                    ViewModel.startGeetestAction(
-//                        data.token, data.geetest.challenge,
-//                        validate, "$validate|jordan",
-//                        ViewBinding.loginUsername.editText!!.text.takeOr(""),
-//                        ViewBinding.loginPassword.editText!!.text.takeOr(""),
-//                        ::validatePhone
-//                    )
-//                }))
-//                .show()
+//            geetestBean.api1Json = JSONObject().also {
+//                it.put("success", 1)
+//                it.put("challenge", data.geetest.challenge)
+//                it.put("gt", data.geetest.gt)
+//                it.put("token", data.token)
+//            }
+//            geetest.startCustomFlow()
+            XPopup.Builder(this)
+                .asCustom(GeetestDialog(this, data.url, {
+                    ViewModel.Loading.postValue(false)
+                }, { validate ->
+                    ViewModel.startGeetestAction(
+                        data.token, data.geetest.challenge,
+                        validate, "$validate|jordan",
+                        ViewBinding.loginUsername.editText!!.text.takeOr(""),
+                        ViewBinding.loginPassword.editText!!.text.takeOr(""),
+                        ::validatePhone
+                    )
+                }))
+                .show()
         }
         ViewModel.LoginData.observe(this) { data ->
             Token.accessToken = data.tokenInfo.accessToken
@@ -153,7 +154,18 @@ class LoginPwd: BaseViewModelActivity<ActivityLoginPwdBinding, LoginPwdModel>() 
     }
 
     private fun validatePhone(url: String) {
-        phoneValidate.launch(url)
+        log.debug("校验手机号：$url")
+        val realUrl = when {
+            url.contains("/h5-app/passport/risk/verify") -> {
+                // TODO 这里只是简单做替换，新的验证页需要拦截 POST 请求，未完待续
+                url.replace(
+                    "/h5-app/passport/risk/verify",
+                    "/account/mobile/security/managephone/phone/verify",
+                )
+            }
+            else -> url
+        }
+        phoneValidate.launch(realUrl)
     }
 
     override fun onViewSetup() {

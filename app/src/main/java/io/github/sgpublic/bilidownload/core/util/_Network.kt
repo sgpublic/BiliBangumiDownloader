@@ -3,7 +3,6 @@ package io.github.sgpublic.bilidownload.core.util
 import com.dtflys.forest.Forest
 import com.dtflys.forest.exceptions.ForestNetworkException
 import com.dtflys.forest.http.ForestRequest
-import com.google.common.util.concurrent.ListenableFuture
 import com.google.protobuf.GeneratedMessageLite
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
@@ -80,7 +79,7 @@ abstract class RequestCallback<Data> {
         const val CODE_NETWORK_ERROR = -1001
         const val CODE_NETWORK_UNKNOWN = -1002
         const val CODE_RESOURCE = -1003
-        const val CODE_ACCOUNT_VALIDATE = -1004
+        const val CODE_ACCOUNT_CAPTCHA = -1004
         const val CODE_GRPC = -1005
         const val CODE_PLAYER_QUALITY = -1011
     }
