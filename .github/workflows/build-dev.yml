@@ -10,6 +10,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@main
+      with:
+        token: ${{ secrets.TOKEN }}
+        submodules: true
+
 
     - name: Initialization environment
       env:
@@ -35,13 +39,6 @@ jobs:
     - name: Setup aapt
       run: |
         sudo apt install aapt -y
-
-    - name: Get sign key
-      uses: actions/checkout@v2
-      with:
-        repository: sgpublic/private-key
-        token: ${{ secrets.TOKEN }}
-        path: ./app/sign
 
     - name: Build with Gradle
       run: |
