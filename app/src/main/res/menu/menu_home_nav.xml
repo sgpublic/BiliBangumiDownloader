@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/home_nav_bangumi"
+        android:title="@string/title_bangumi"
+        android:icon="@drawable/ic_bangumi" />
+    <item android:id="@+id/home_nav_mine"
+        android:title="@string/title_mine"
+        android:icon="@drawable/ic_mine" />
+</menu>

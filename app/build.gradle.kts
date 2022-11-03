@@ -1,88 +1,57 @@
 @file:Suppress("PropertyName")
 
-import android.databinding.tool.util.StringUtils
+import com.android.build.api.dsl.VariantDimension
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
-import org.gradle.internal.os.OperatingSystem
-import java.security.MessageDigest
-import java.text.SimpleDateFormat
+import com.google.protobuf.gradle.proto
+import io.github.sgpublic.gradle.Dep
+import io.github.sgpublic.gradle.core.BuildTypes
+import io.github.sgpublic.gradle.core.SignConfig
+import io.github.sgpublic.gradle.core.VersionGen
+import io.github.sgpublic.gradle.util.ApkUtil
 import java.util.*
-import java.util.regex.Pattern
 
 plugins {
+    id("bilidl-version")
+
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.parcelize")
     id("org.jetbrains.kotlin.kapt")
+
+    id("org.jetbrains.kotlin.plugin.lombok")
+    id("io.freefair.lombok") version "5.3.0"
+
+    id("com.google.protobuf")
 }
 
-val GIT_HEAD: String get() = Runtime.getRuntime()
-    .exec("git rev-parse --short HEAD")
-    .inputStream.reader().readLines()[0]
-
-val GITHUB_REPO: String get() {
-    val remote = Runtime.getRuntime()
-        .exec("git remote get-url origin")
-        .inputStream.reader().readText()
-    val repo = Pattern.compile("github.com/(.*?).git")
-    val matcher = repo.matcher(remote)
-    if (!matcher.find()) {
-        throw IllegalStateException()
-    }
-    val result = matcher.group(0)
-    return result.substring(11, result.length - 4)
+fun VariantDimension.buildConfigField(name: String, value: String) {
+    buildConfigField("String", name, "\"$value\"")
 }
-
-val DATED_VERSION: Int get() = Integer.parseInt(
-    SimpleDateFormat("yyMMdd").format(Date())
-)
-
-val COMMIT_VERSION: Int get() {
-    return Runtime.getRuntime()
-        .exec("git log -n 1 --pretty=format:%cd --date=format:%y%m%d")
-        .inputStream.reader().readLines()[0]
-        .toInt()
+fun VariantDimension.buildConfigField(name: String, value: Int) {
+    buildConfigField("int", name, value.toString())
 }
-
-val TIME_MD5: String get() {
-    val md5 = MessageDigest.getInstance("MD5")
-    val digest = md5.digest(System.currentTimeMillis().toString().toByteArray())
-    val pre = BigInteger(1, digest)
-    return pre.toString(16)
-        .padStart(32, '0')
-        .substring(8, 18)
-}
-
-val TYPE_RELEASE: String = "release"
-val TYPE_DEBUG: String = "debug"
-val TYPE_DEV: String = "dev"
-val TYPE_SNAPSHOT: String = "snapshot"
-val SIGN_CONFIG: String = "sign"
-
-val VERSION_PROPERTIES get() =
-    File(rootDir, "version.properties").apply {
-        if (!exists()) {
-            createNewFile()
-        }
-    }
 
 android {
-    compileSdk = 32
-    buildToolsVersion = "32.1.0-rc1"
+    compileSdk = 33
+    buildToolsVersion = "33.0.0"
+    namespace = "io.github.sgpublic.bilidownload"
 
-    val signInfoExit: Boolean = file("./gradle.properties").exists()
+    val properties = file("./sign/sign.properties")
+    val signInfoExit: Boolean = properties.exists()
 
     if (signInfoExit){
+        val keyProps = Properties()
+        keyProps.load(properties.inputStream())
         signingConfigs {
-            @Suppress("LocalVariableName")
-            create(SIGN_CONFIG) {
-                val SIGN_DIR: String by project
-                val SIGN_PASSWORD_STORE: String by project
-                val SIGN_ALIAS: String by project
-                val SIGN_PASSWORD_KEY: String by project
+            create(SignConfig.NAME) {
+                val SIGN_DIR: String by keyProps
+                val SIGN_PASSWORD_STORE: String by keyProps
+                val SIGN_ALIAS: String by keyProps
+                val SIGN_PASSWORD_KEY: String by keyProps
+                keyPassword = SIGN_PASSWORD_KEY
+                keyAlias = SIGN_ALIAS
                 storeFile = file(SIGN_DIR)
                 storePassword = SIGN_PASSWORD_STORE
-                keyAlias = SIGN_ALIAS
-                keyPassword = SIGN_PASSWORD_KEY
             }
         }
     }
@@ -91,83 +60,79 @@ android {
         viewBinding = true
     }
 
+    sourceSets {
+        named("main") {
+            proto {
+                srcDir("src/main/java")
+            }
+        }
+        named("test") {
+            proto {
+                srcDir("src/test/java")
+            }
+        }
+    }
+
     defaultConfig {
         applicationId = "io.github.sgpublic.bilidownload"
         minSdk = 26
-        targetSdk = 31
-        versionCode = COMMIT_VERSION
-        versionName = "3.4.0"
-
-        renderscriptTargetApi = 26
-        renderscriptSupportModeEnabled = true
+        targetSdk = 33
+        versionCode = VersionGen.COMMIT_VERSION
+        versionName = "3.5.0".also {
+            buildConfigField("ORIGIN_VERSION_NAME", it)
+        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        if (file("./gradle.properties").exists()) {
-            signingConfig = signingConfigs.getByName("sign")
-        }
 
-        kapt {
-            arguments {
-                arg("room.schemaLocation", "$rootDir/schemas")
-            }
-        }
-
-        fun buildConfigStringField(name: String, value: String) {
-            buildConfigField("String", name, "\"$value\"")
-        }
-        GITHUB_REPO.let {
-            buildConfigStringField("GITHUB_REPO", it)
+        "sgpublic/BiliBangumiDownloader_Kotlin".let {
+            buildConfigField("GITHUB_REPO", it)
             val repo = it.split("/")
-            buildConfigStringField("GITHUB_AUTHOR", repo[0])
-            buildConfigStringField("GITHUB_REPO_NAME", repo[1])
+            buildConfigField("GITHUB_AUTHOR", repo[0])
+            buildConfigField("GITHUB_REPO_NAME", repo[1])
         }
-        buildConfigStringField("PROJECT_NAME", rootProject.name)
-        buildConfigStringField("TYPE_RELEASE", TYPE_RELEASE)
-        buildConfigStringField("TYPE_DEV", TYPE_DEV)
-        buildConfigStringField("TYPE_SNAPSHOT", TYPE_SNAPSHOT)
+        buildConfigField("PROJECT_NAME", rootProject.name)
+        buildConfigField("TYPE_RELEASE", BuildTypes.TYPE_RELEASE)
+        buildConfigField("LEVEL_RELEASE", BuildTypes.LEVEL_RELEASE)
+        buildConfigField("TYPE_DEV", BuildTypes.TYPE_DEV)
+        buildConfigField("LEVEL_DEV", BuildTypes.LEVEL_DEV)
+        buildConfigField("TYPE_SNAPSHOT", BuildTypes.TYPE_SNAPSHOT)
+        buildConfigField("LEVEL_SNAPSHOT", BuildTypes.LEVEL_SNAPSHOT)
+        buildConfigField("TYPE_DEBUG", BuildTypes.TYPE_DEBUG)
+        buildConfigField("LEVEL_DEBUG", BuildTypes.LEVEL_DEBUG)
     }
 
     buildTypes {
-        val versionProps = Properties().apply {
-            load(VERSION_PROPERTIES.inputStream())
-        }
-
         all {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName(SIGN_CONFIG)
+            if (signInfoExit) {
+                signingConfig = signingConfigs.getByName(SignConfig.NAME)
+            }
         }
 
         /** 自动化版本命名 */
-        named(TYPE_RELEASE) {
+        named(BuildTypes.TYPE_RELEASE) {
             versionNameSuffix = "-$name"
-            versionProps[TYPE_RELEASE] = "${rootProject.name} V${
-                defaultConfig.versionName
-            }(${defaultConfig.versionCode})"
+            buildConfigField( "BUILD_LEVEL", BuildTypes.LEVEL_RELEASE)
         }
-        named(TYPE_DEBUG) {
-            defaultConfig.versionCode = DATED_VERSION
+        named(BuildTypes.TYPE_DEBUG) {
+            defaultConfig.versionCode = VersionGen.DATED_VERSION
             isDebuggable = true
-            versionNameSuffix = "-$TIME_MD5-$name"
+            versionNameSuffix = "-${VersionGen.TIME_MD5}-$name"
+            buildConfigField( "BUILD_LEVEL", BuildTypes.LEVEL_DEBUG)
         }
-        register(TYPE_DEV) {
-            versionNameSuffix = "-$GIT_HEAD-$name"
-            isDebuggable = true
-            isTestCoverageEnabled = true
-            versionProps[TYPE_DEV] = "${rootProject.name}_${
-                defaultConfig.versionName
-            }_$GIT_HEAD"
+        if (signInfoExit) {
+            register(BuildTypes.TYPE_DEV) {
+                versionNameSuffix = "-${VersionGen.GIT_HEAD}-$name"
+                isDebuggable = true
+                buildConfigField( "BUILD_LEVEL", BuildTypes.LEVEL_DEV)
+            }
+            register(BuildTypes.TYPE_SNAPSHOT) {
+                defaultConfig.versionCode = VersionGen.DATED_VERSION
+                isDebuggable = true
+                versionNameSuffix = "-${VersionGen.TIME_MD5}-$name"
+                buildConfigField( "BUILD_LEVEL", BuildTypes.LEVEL_SNAPSHOT)
+            }
         }
-        register(TYPE_SNAPSHOT) {
-            defaultConfig.versionCode = DATED_VERSION
-            isDebuggable = true
-            val suffix = TIME_MD5
-            versionNameSuffix = "-$suffix-$name"
-            versionProps[TYPE_SNAPSHOT] = "${rootProject.name}_${
-                defaultConfig.versionName
-            }_$suffix"
-        }
-
-        versionProps.store(VERSION_PROPERTIES.writer(), null)
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -176,6 +141,44 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    packagingOptions {
+        resources.excludes.addAll(listOf(
+            "META-INF/DEPENDENCIES",
+            "META-INF/NOTICE",
+            "META-INF/LICENSE",
+            "META-INF/LICENSE.txt",
+            "META-INF/NOTICE.txt",
+        ))
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${Dep.Proto}"
+    }
+    plugins {
+        register("grpc") {
+            artifact = "io.grpc:protoc-gen-grpc-java:${Dep.GrpcJava}"
+        }
+    }
+    generateProtoTasks {
+        for(task in all()) {
+            task.builtins {
+                register("java") {
+                    option("lite")
+                }
+            }
+            task.plugins {
+                register("grpc") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
+
+kapt {
+    keepJavacAnnotationProcessors = true
 }
 
 dependencies {
@@ -185,85 +188,91 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     androidTestImplementation("androidx.test:runner:1.4.0")
     androidTestImplementation("androidx.test:rules:1.4.0")
+    implementation(kotlin("reflect"))
 
-    implementation("androidx.core:core-ktx:1.8.0")
-    implementation("androidx.appcompat:appcompat:1.4.2")
-    implementation("com.google.android.material:material:1.6.1")
+    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.appcompat:appcompat:1.5.1")
+    implementation("com.google.android.material:material:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.5.0")
-
-    val roomVer = "2.4.2"
-    implementation("androidx.room:room-runtime:$roomVer")
-    implementation("androidx.room:room-ktx:$roomVer")
-    annotationProcessor("androidx.room:room-compiler:$roomVer")
-    kapt("androidx.room:room-compiler:$roomVer")
-    testImplementation("androidx.room:room-testing:$roomVer")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
 
     /* https://github.com/zhpanvip/BannerViewPager */
-    implementation("com.github.zhpanvip:BannerViewPager:3.5.5")
-    /* https://github.com/square/okhttp */
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.7")
+    implementation("com.github.zhpanvip:BannerViewPager:3.5.7")
     /* https://github.com/yanzhenjie/Sofia */
     implementation("com.yanzhenjie:sofia:1.0.5")
-    /* https://github.com/sgpublic/Blur-Fix-AndroidX */
-    implementation("com.github.SGPublic:Blur-Fix-AndroidX:1.1.2")
     /* https://github.com/scwang90/MultiWaveHeader */
     implementation("com.scwang.wave:MultiWaveHeader:1.0.0")
     /* https://github.com/li-xiaojun/XPopup */
-    implementation("com.github.li-xiaojun:XPopup:2.7.7")
+    implementation("com.github.li-xiaojun:XPopup:2.9.1")
     /* https://github.com/zxing/zxing qrcode */
     implementation("com.google.zxing:core:3.5.0")
-    /* https://github.com/google/gson */
-    implementation("com.google.code.gson:gson:2.9.0")
     /* https://github.com/KwaiAppTeam/AkDanmaku */
     implementation("com.kuaishou:akdanmaku:1.0.3")
     /* https://github.com/AnJiaoDe/TabLayoutNiubility */
     implementation("com.github.AnJiaoDe:TabLayoutNiubility:V1.3.0")
     /* https://github.com/lihangleo2/ShadowLayout */
     implementation("com.github.lihangleo2:ShadowLayout:3.2.4")
+    /* https://docs.geetest.com/sensebot/deploy/client/android */
+    implementation("com.geetest.sensebot:sensebot:4.3.7")
+
+    /* https://github.com/sgpublic/ExSharedPreference */
+    implementation("io.github.sgpublic:exsp-runtime:${Dep.EXSP}")
+    kapt("io.github.sgpublic:exsp-compiler:${Dep.EXSP}")
+
+    compileOnly("org.projectlombok:lombok:${Dep.Lombok}")
+    annotationProcessor("org.projectlombok:lombok:${Dep.Lombok}")
+
+    implementation("androidx.room:room-runtime:${Dep.Room}")
+    annotationProcessor("androidx.room:room-compiler:${Dep.Room}")
+
+    /* https://github.com/google/protobuf-gradle-plugin */
+    implementation("com.google.protobuf:protobuf-java:${Dep.Proto}")
+    // 阿b用的 cronet，如果用 okhttp 会导致 io.grpc.StatusRuntimeException: INTERNAL: Received unexpected EOS on DATA frame from server.
+    implementation("io.grpc:grpc-cronet:${Dep.GrpcJava}")
+    implementation("com.google.android.gms:play-services-cronet:18.0.1")
+    implementation("io.grpc:grpc-android:${Dep.GrpcJava}")
+    implementation("io.grpc:grpc-protobuf:${Dep.GrpcJava}")
+    implementation("io.grpc:grpc-stub:${Dep.GrpcJava}")
+    implementation("org.apache.tomcat:annotations-api:6.0.53")
 
     /* https://github.com/bumptech/glide */
-    val glideVer = "4.13.2"
-    implementation("com.github.bumptech.glide:glide:$glideVer")
-    annotationProcessor("com.github.bumptech.glide:compiler:$glideVer")
-    kapt("com.github.bumptech.glide:compiler:$glideVer")
+    implementation("com.github.bumptech.glide:glide:${Dep.Glide}")
+    kapt("com.github.bumptech.glide:compiler:${Dep.Glide}")
     implementation("jp.wasabeef:glide-transformations:4.3.0")
 
     /* https://github.com/google/ExoPlayer */
-    val exoVer = "2.17.1"
-    implementation("com.google.android.exoplayer:exoplayer-core:$exoVer")
-    implementation("com.google.android.exoplayer:exoplayer-dash:$exoVer")
-    implementation("com.google.android.exoplayer:exoplayer-ui:$exoVer")
+    implementation("com.google.android.exoplayer:exoplayer-core:${Dep.ExoPlayer}")
+    implementation("com.google.android.exoplayer:exoplayer-dash:${Dep.ExoPlayer}")
+    implementation("com.google.android.exoplayer:exoplayer-ui:${Dep.ExoPlayer}")
 
     /* https://github.com/AriaLyy/Aria */
-    val ariaVer = "3.8.16"
-    implementation("me.laoyuyu.aria:core:$ariaVer")
-    annotationProcessor("me.laoyuyu.aria:compiler:$ariaVer")
-    kapt("me.laoyuyu.aria:compiler:$ariaVer")
+    implementation("me.laoyuyu.aria:core:${Dep.Aria}")
+    kapt("me.laoyuyu.aria:compiler:${Dep.Aria}")
+
+    /* https://github.com/tony19/logback-android */
+    implementation("com.github.tony19:logback-android:2.0.0")
+    implementation("org.slf4j:slf4j-api:1.7.36")
+
+    /* https://github.com/dromara/forest */
+    implementation("com.dtflys.forest:forest-core:1.5.26")
+    implementation("com.google.code.gson:gson:2.9.1")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
 }
 
 /** 自动修改输出文件名并定位文件 */
 android.applicationVariants.all {
-    outputs.forEach {
-        if (it.name == "debug") {
-            return@forEach
+    for (output in outputs) {
+        if (output !is BaseVariantOutputImpl) {
+            continue
         }
-        (it as BaseVariantOutputImpl).outputFileName = "${Properties().apply {
-            load(VERSION_PROPERTIES.inputStream())
-        }[it.name] as String}.apk"
-        val name = StringUtils.capitalize(it.name)
-        tasks.create("package${name}AndLocate") {
-            dependsOn("assemble$name")
+        val name = output.name.split("-")
+            .joinToString("") { it.capitalize() }
+        val taskName = "assemble${name}AndLocate"
+        tasks.register(taskName) {
+            dependsOn("assemble${name}")
             doLast {
-                val path = it.outputFile.absolutePath
-                if (!File(path).exists()) {
-                    return@doLast
-                }
-                when (true) {
-                    OperatingSystem.current().isWindows ->
-                        Runtime.getRuntime().exec("explorer.exe /select, $path")
-                }
+                ApkUtil.assembleAndLocate(output.name, output.outputFile, "./build/assemble")
             }
         }
     }

@@ -1,32 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/follows_refresh"
+    <io.github.sgpublic.bilidownload.app.widget.NestedRecyclerView
+        android:id="@+id/follows_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="3dp"
-        android:paddingTop="3dp">
-        <io.github.sgpublic.bilidownload.widget.NestedRecyclerView
-            android:id="@+id/follows_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingHorizontal="4dp"
-            android:clipToPadding="false"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:spanCount="3"/>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <io.github.sgpublic.bilidownload.widget.LoadingImageView
-        android:id="@+id/follows_load_state"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_marginTop="80dp"
-        android:scaleType="fitCenter"
-        tools:ignore="ContentDescription" />
-</FrameLayout>
+        android:paddingHorizontal="4dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="3"
+        tools:listitem="@layout/item_bangumi_follow"/>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

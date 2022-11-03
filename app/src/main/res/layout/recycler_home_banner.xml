@@ -5,7 +5,7 @@
     android:id="@+id/bangumi_banner"
     android:layout_width="match_parent"
     android:layout_height="207dp"
-    android:layout_marginTop="75dp"
+    android:layout_marginTop="120dp"
     app:bvp_auto_play="true"
     app:bvp_can_loop="true"
     app:bvp_interval="5000"

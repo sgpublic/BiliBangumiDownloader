@@ -3,22 +3,24 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
-    <androidx.appcompat.widget.AppCompatImageView
+    <ImageView
         android:id="@+id/episode_state"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="end|bottom"
-        android:translationZ="3dp"/>
-    <androidx.cardview.widget.CardView
+        android:translationZ="5dp"/>
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/item_episode_base"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
+        style="?materialCardViewFilledStyle"
+        app:cardElevation="4dp"
         app:cardCornerRadius="8dp"
-        android:foreground="?android:attr/selectableItemBackground">
+        app:cardBackgroundColor="@color/white"
+        android:clickable="true">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -27,9 +29,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginBottom="4dp"
-                android:scaleType="centerCrop"
                 android:layout_gravity="top"
-                tools:ignore="ContentDescription"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/episode_title"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -41,7 +41,7 @@
                 android:layout_gravity="top|start"
                 android:layout_marginTop="5dp"
                 android:layout_marginStart="5dp"
-                app:cardBackgroundColor="@color/color_random_2"
+                app:cardBackgroundColor="@color/colorPrimary"
                 app:cardElevation="0dp"
                 app:cardCornerRadius="2dp"
                 app:layout_constraintTop_toTopOf="parent"
@@ -51,7 +51,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="1dp"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/colorOnPrimary"
                     android:textSize="10sp"
                     tools:ignore="SmallSp" />
             </androidx.cardview.widget.CardView>
@@ -71,7 +71,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="1dp"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/colorOnPrimary"
                     android:textSize="10sp"
                     tools:ignore="SmallSp" />
             </androidx.cardview.widget.CardView>
@@ -85,7 +85,7 @@
                 android:lines="1"
                 android:ellipsize="end"
                 android:textSize="14sp"
-                android:textColor="@color/color_text_dark"
+                android:textColor="@color/color_text_normal"
                 app:layout_constraintBottom_toTopOf="@id/episode_public_time"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"/>
@@ -99,7 +99,7 @@
                 android:lines="1"
                 android:ellipsize="end"
                 android:textSize="12sp"
-                android:textColor="@color/color_text_light"
+                android:textColor="@color/color_text_dark"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"/>
@@ -109,6 +109,7 @@
                 android:layout_height="0dp"
                 android:paddingVertical="30dp"
                 android:background="@color/color_episode_selected_background"
+                android:visibility="gone"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -121,5 +122,5 @@
                     tools:ignore="ContentDescription" />
             </FrameLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

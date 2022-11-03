@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="io.github.sgpublic.bilidownload">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" />
 
     <application
         android:name=".Application"
@@ -24,23 +19,25 @@
         android:theme="@style/AppTheme"
         android:requestLegacyExternalStorage="true"
         android:screenOrientation="portrait"
-        tools:ignore="AllowBackup,GoogleAppIndexingWarning,InnerclassSeparator,LockedOrientationActivity"
         tools:replace="android:supportsRtl">
-        <activity android:name=".activity.License"/>
-        <activity android:name=".activity.Search" />
-        <activity android:name=".activity.Setting" />
-        <activity android:name=".activity.About" />
-        <activity android:name=".activity.MyFollows" />
-        <activity android:name=".activity.SeasonPlayer" />
-        <activity android:name=".activity.TaskList" />
+        <activity android:name=".app.activity.License"/>
+        <activity android:name=".app.activity.Search" />
+        <activity android:name=".app.activity.Setting" />
+        <activity android:name=".app.activity.About" />
+        <activity android:name=".app.activity.MyFollows" />
+        <activity android:name=".app.activity.SeasonPlayer" />
         <activity
-            android:name=".activity.Home"
+            android:name=".app.activity.Home"
             android:launchMode="singleTop" />
         <activity
-            android:name=".activity.Login"
-            android:launchMode="singleTop" />
+            android:name=".app.activity.LoginPwd"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize"/>
         <activity
-            android:name=".activity.Welcome"
+            android:name=".app.activity.LoginValidateAccount"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".app.activity.Welcome"
             android:launchMode="singleTop"
             android:exported="true">
             <intent-filter>
@@ -54,10 +51,5 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-
-        <service
-            android:name=".service.DownloadService"
-            android:exported="false">
-        </service>
     </application>
 </manifest>

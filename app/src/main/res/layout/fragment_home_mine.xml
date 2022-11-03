@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWindowBackgroundDark"
+    android:background="@color/colorWindowBackground"
     android:orientation="vertical">
     <ScrollView
         android:layout_width="match_parent"
@@ -124,7 +124,8 @@
                                 android:layout_height="wrap_content"
                                 android:lines="1"
                                 android:ellipsize="end"
-                                android:textColor="@color/colorBlurAlphaStart"
+                                android:textColor="@color/colorOnPrimary"
+                                android:alpha="0.7"
                                 android:textSize="13sp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -138,7 +139,7 @@
                     android:paddingStart="30dp"
                     android:paddingEnd="30dp"
                     android:foreground="?android:attr/selectableItemBackground"
-                    android:background="@color/colorWindowBackground"
+                    android:background="@color/white"
                     android:text="@string/title_mine_my_follows"
                     android:textSize="16sp"
                     android:textColor="@color/color_text_normal"/>
@@ -150,7 +151,7 @@
                     android:paddingStart="30dp"
                     android:paddingEnd="30dp"
                     android:foreground="?android:attr/selectableItemBackground"
-                    android:background="@color/colorWindowBackground"
+                    android:background="@color/white"
                     android:text="@string/title_mine_download"
                     android:textSize="16sp"
                     android:textColor="@color/color_text_normal"/>
@@ -162,12 +163,26 @@
                     android:paddingStart="30dp"
                     android:paddingEnd="30dp"
                     android:foreground="?android:attr/selectableItemBackground"
-                    android:background="@color/colorWindowBackground"
+                    android:background="@color/white"
                     android:text="@string/title_mine_logout"
                     android:textSize="16sp"
                     android:textColor="@color/color_text_normal" />
+<!--                <TextView-->
+<!--                    android:id="@+id/mine_setting"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="60dp"-->
+<!--                    android:gravity="center_vertical"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:paddingStart="30dp"-->
+<!--                    android:paddingEnd="30dp"-->
+<!--                    android:foreground="?android:attr/selectableItemBackground"-->
+<!--                    android:background="@color/white"-->
+<!--                    android:visibility="gone"-->
+<!--                    android:text="@string/title_mine_setting"-->
+<!--                    android:textSize="16sp"-->
+<!--                    android:textColor="@color/color_text_normal" />-->
                 <TextView
-                    android:id="@+id/mine_setting"
+                    android:id="@+id/mine_about"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:gravity="center_vertical"
@@ -175,19 +190,7 @@
                     android:paddingStart="30dp"
                     android:paddingEnd="30dp"
                     android:foreground="?android:attr/selectableItemBackground"
-                    android:background="@color/colorWindowBackground"
-                    android:text="@string/title_mine_setting"
-                    android:textSize="16sp"
-                    android:textColor="@color/color_text_normal" />
-                <TextView
-                    android:id="@+id/mine_about"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center_vertical"
-                    android:paddingStart="30dp"
-                    android:paddingEnd="30dp"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    android:background="@color/colorWindowBackground"
+                    android:background="@color/white"
                     android:text="@string/title_mine_about"
                     android:textSize="16sp"
                     android:textColor="@color/color_text_normal" />
@@ -198,7 +201,6 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="56dp"
         android:src="@drawable/pic_banner"
         android:scaleType="fitCenter"
         tools:ignore="ContentDescription" />
