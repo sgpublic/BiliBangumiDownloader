@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@main
+      uses: actions/checkout@v3.1.0
       with:
         token: ${{ secrets.TOKEN }}
         submodules: 'recursive'
@@ -42,7 +42,7 @@ jobs:
 
     - name: Build with Gradle
       run: |
-        bash ./gradlew packageDevAndLocate
+        bash ./gradlew assembleDevAndLocate
 
     - name: Organize files
       run: |

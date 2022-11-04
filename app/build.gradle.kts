@@ -209,10 +209,6 @@ dependencies {
     implementation("com.google.zxing:core:3.5.0")
     /* https://github.com/KwaiAppTeam/AkDanmaku */
     implementation("com.kuaishou:akdanmaku:1.0.3")
-    /* https://github.com/AnJiaoDe/TabLayoutNiubility */
-    implementation("com.github.AnJiaoDe:TabLayoutNiubility:V1.3.0")
-    /* https://github.com/lihangleo2/ShadowLayout */
-    implementation("com.github.lihangleo2:ShadowLayout:3.2.4")
     /* https://docs.geetest.com/sensebot/deploy/client/android */
     implementation("com.geetest.sensebot:sensebot:4.3.7")
 
