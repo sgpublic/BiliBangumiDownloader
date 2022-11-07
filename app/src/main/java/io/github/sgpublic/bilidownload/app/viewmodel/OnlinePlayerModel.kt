@@ -11,7 +11,10 @@ import io.github.sgpublic.bilidownload.core.forest.data.SeasonRecommendResp
 import io.github.sgpublic.bilidownload.core.forest.find
 import io.github.sgpublic.bilidownload.core.grpc.client.AppClient
 import io.github.sgpublic.bilidownload.core.room.entity.DownloadTaskEntity
-import io.github.sgpublic.bilidownload.core.util.*
+import io.github.sgpublic.bilidownload.core.util.ForestClients
+import io.github.sgpublic.bilidownload.core.util.RequestCallback
+import io.github.sgpublic.bilidownload.core.util.biliapi
+import io.github.sgpublic.bilidownload.core.util.log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -93,12 +96,20 @@ class OnlinePlayerModel(sid: Long, epid: Long): BasePlayerModel() {
     val FittedQuality: Int get() {
         val pq = PriorityQueue<Int> { o1, o2 ->
             o2 - o1
-        }.addIf(QualityData.keys) {
-            it <= BangumiPreference.quality
         }
-        return pq.peek()?.also {
-            pq.clear()
-        } ?: 80
+        if (QualityData.keys.isEmpty()) {
+            return 80
+        }
+        var min: Int? = null
+        for (key in QualityData.keys) {
+            if (key <= BangumiPreference.quality) {
+                pq.add(key)
+            }
+            if (min == null || min > key) {
+                min = key
+            }
+        }
+        return pq.peek()?.also { pq.clear() } ?: min!!
     }
 
     val DownloadTasks: LiveData<List<DownloadTaskEntity>> by lazy {

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lxj.xpopup.core.BottomPopupView
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
+import io.github.sgpublic.bilidownload.app.service.DownloadService
 import io.github.sgpublic.bilidownload.app.ui.recycler.SeasonEpisodeDialogAdapter
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
 import io.github.sgpublic.bilidownload.core.room.entity.DownloadTaskEntity
@@ -75,6 +76,7 @@ class EpisodeListDialog(
                 }
             }
             Application.Database.DownloadTaskDao().save(tasks)
+            DownloadService.startService(context)
         }
     }
 

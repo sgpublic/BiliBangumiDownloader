@@ -1,5 +1,6 @@
 package io.github.sgpublic.bilidownload.core.room.dao;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
@@ -18,10 +19,19 @@ import io.github.sgpublic.bilidownload.core.room.entity.DownloadTaskEntity;
 public interface DownloadTaskDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void save(List<DownloadTaskEntity> list);
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void save(DownloadTaskEntity list);
 
     @Query("select * from download_task where sid=:sid")
     LiveData<List<DownloadTaskEntity>> observeBySid(long sid);
 
-    @Query("select * from download_task where status != 'Finished'")
-    LiveData<List<DownloadTaskEntity>> observeAll();
+    @Query("select * from download_task where status == 'Processing'")
+    LiveData<List<DownloadTaskEntity>> observeProcessing();
+
+    @Nullable
+    @Query("select * from download_task where status == 'Waiting' limit 1")
+    DownloadTaskEntity getOneWaiting();
+
+    @Query("update download_task set status='Waiting' where status == 'Processing'")
+    void resetProcessing();
 }

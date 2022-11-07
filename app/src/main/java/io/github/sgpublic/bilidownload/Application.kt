@@ -18,6 +18,7 @@ import ch.qos.logback.core.util.StatusPrinter
 import com.arialyy.aria.core.Aria
 import com.dtflys.forest.Forest
 import com.google.android.gms.net.CronetProviderInstaller
+import io.github.sgpublic.bilidownload.app.service.DownloadService
 import io.github.sgpublic.bilidownload.base.forest.GsonConverter
 import io.github.sgpublic.bilidownload.core.forest.core.BiliApiInterceptor
 import io.github.sgpublic.bilidownload.core.forest.core.UrlEncodedInterceptor
@@ -38,11 +39,8 @@ class Application : Application() {
         startListenException()
         log.info("APP启动：${BuildConfig.VERSION_NAME}")
         CronetProviderInstaller.installProvider(this)
-        room = Room.databaseBuilder(this, AppDatabase::class.java, BuildConfig.PROJECT_NAME)
-            .fallbackToDestructiveMigration()
-            .allowMainThreadQueries()
-            .build()
-        Aria.init(this)
+        configRoom()
+        configAria()
         ExPreference.init(this)
         configForest()
     }
@@ -58,6 +56,21 @@ class Application : Application() {
                 }
             }
         }
+    }
+
+    private fun configRoom() {
+        room = Room.databaseBuilder(this, AppDatabase::class.java, BuildConfig.PROJECT_NAME)
+            .fallbackToDestructiveMigration()
+            .allowMainThreadQueries()
+            .build()
+        room.DownloadTaskDao().resetProcessing()
+        if (room.DownloadTaskDao().oneWaiting != null) {
+            DownloadService.startService(this)
+        }
+    }
+
+    private fun configAria() {
+        Aria.init(this)
     }
 
     private fun configForest() {
@@ -101,8 +114,8 @@ class Application : Application() {
         val ContentResolver: ContentResolver get() = ApplicationContext.contentResolver
         val Database: AppDatabase get() = room
 
-        val IsNightMode: Boolean get() = ApplicationContext.resources.configuration.uiMode and
-                Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+        val IsNightMode: Boolean get() = (ApplicationContext.resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
         fun onToast(context: AppCompatActivity, content: String?) {
             context.runOnUiThread {

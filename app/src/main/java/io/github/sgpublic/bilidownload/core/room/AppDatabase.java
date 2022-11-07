@@ -13,11 +13,10 @@ import io.github.sgpublic.bilidownload.core.room.entity.DownloadTaskEntity;
  */
 @Database(
         entities = { DownloadTaskEntity.class },
-        version = 4, exportSchema = false
+        version = 6, exportSchema = false
 )
 @TypeConverters({
-        DownloadTaskEntity.Status.Converter.class,
-        DownloadTaskEntity.TaskIdsConverter.class
+        DownloadTaskEntity.Status.Converter.class
 })
 public abstract class AppDatabase extends RoomDatabase {
     public abstract DownloadTaskDao DownloadTaskDao();
