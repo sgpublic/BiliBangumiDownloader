@@ -1,5 +1,6 @@
 package io.github.sgpublic.bilidownload.core.room.dao;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -17,13 +18,26 @@ import io.github.sgpublic.bilidownload.core.room.entity.DownloadTaskEntity;
  */
 @Dao
 public interface DownloadTaskDao {
+    /**
+     * 仅用于添加任务
+     * @param list 待添加的任务列表
+     */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void save(List<DownloadTaskEntity> list);
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void save(DownloadTaskEntity list);
+    void add(List<DownloadTaskEntity> list);
+
+    /**
+     * 仅用于修改任务状态
+     * @param task 修改后的任务 Entity
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void set(DownloadTaskEntity task);
 
     @Query("select * from download_task where sid=:sid")
     LiveData<List<DownloadTaskEntity>> observeBySid(long sid);
+
+    @NonNull
+    @Query("select * from download_task where task_id=:taskId")
+    DownloadTaskEntity getByTaskId(long taskId);
 
     @Query("select * from download_task where status == 'Processing'")
     LiveData<List<DownloadTaskEntity>> observeProcessing();

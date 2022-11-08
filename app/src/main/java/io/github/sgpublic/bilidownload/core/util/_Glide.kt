@@ -24,7 +24,7 @@ import java.security.MessageDigest
 
 fun RequestManager.customLoad(url: String): RequestBuilder<Drawable> {
     val option = RequestOptions()
-        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+        .diskCacheStrategy(DiskCacheStrategy.DATA)
         .centerCrop()
     return load(url).apply(option)
 }

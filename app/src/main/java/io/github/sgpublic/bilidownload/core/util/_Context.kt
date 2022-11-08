@@ -6,16 +6,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import io.github.sgpublic.bilidownload.Application
 
-private val activities = LinkedHashSet<AppCompatActivity>()
 private val contexts = LinkedHashSet<Context>()
 
 fun AppCompatActivity.register() {
-    activities.add(this)
     (this as Context).register()
 }
 
 fun AppCompatActivity.unregister() {
-    activities.remove(this)
     (this as Context).unregister()
 }
 
@@ -25,18 +22,20 @@ fun Context.register() {
 
 fun Context.unregister() {
     contexts.remove(this)
-    if (activities.isEmpty()) {
+    if (contexts.isEmpty()) {
         Application.onTerminate()
         android.os.Process.killProcess(android.os.Process.myPid())
     }
 }
 
-@Suppress("unused")
 fun Application.Companion.finishAll() {
-    val tmp = ArrayList(activities)
-    for (activity in tmp){
-        if (activity.lifecycle.currentState != Lifecycle.State.DESTROYED){
-            activity.finish()
+    val tmp = ArrayList(contexts)
+    for (context in tmp){
+        if (context !is AppCompatActivity) {
+            continue
+        }
+        if (context.lifecycle.currentState != Lifecycle.State.DESTROYED){
+            context.finish()
         }
     }
     tmp.clear()

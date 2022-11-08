@@ -18,12 +18,14 @@ import ch.qos.logback.core.util.StatusPrinter
 import com.arialyy.aria.core.Aria
 import com.dtflys.forest.Forest
 import com.google.android.gms.net.CronetProviderInstaller
+import io.github.sgpublic.bilidownload.app.notifacation.NotifyChannel
 import io.github.sgpublic.bilidownload.app.service.DownloadService
 import io.github.sgpublic.bilidownload.base.forest.GsonConverter
 import io.github.sgpublic.bilidownload.core.forest.core.BiliApiInterceptor
 import io.github.sgpublic.bilidownload.core.forest.core.UrlEncodedInterceptor
 import io.github.sgpublic.bilidownload.core.logback.PkgNameConverter
 import io.github.sgpublic.bilidownload.core.logback.TraceConverter
+import io.github.sgpublic.bilidownload.core.room.AppDao
 import io.github.sgpublic.bilidownload.core.room.AppDatabase
 import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.exsp.ExPreference
@@ -39,10 +41,11 @@ class Application : Application() {
         startListenException()
         log.info("APP启动：${BuildConfig.VERSION_NAME}")
         CronetProviderInstaller.installProvider(this)
-        configRoom()
         configAria()
+        configRoom()
         ExPreference.init(this)
         configForest()
+        NotifyChannel.init(this)
     }
 
     private fun startListenException() {
@@ -59,18 +62,29 @@ class Application : Application() {
     }
 
     private fun configRoom() {
-        room = Room.databaseBuilder(this, AppDatabase::class.java, BuildConfig.PROJECT_NAME)
+        val database = Room.databaseBuilder(this, AppDatabase::class.java, BuildConfig.PROJECT_NAME)
             .fallbackToDestructiveMigration()
             .allowMainThreadQueries()
             .build()
-        room.DownloadTaskDao().resetProcessing()
-        if (room.DownloadTaskDao().oneWaiting != null) {
+        database.DownloadTaskDao().resetProcessing()
+        if (database.DownloadTaskDao().oneWaiting != null) {
             DownloadService.startService(this)
+        } else {
+            log.debug("No waiting task, cancel auto start.")
         }
+        room = database
     }
 
     private fun configAria() {
-        Aria.init(this)
+        Aria.init(this).run {
+            appConfig.let {
+                it.isUseBroadcast = true
+                it.logLevel = 2
+            }
+            dGroupConfig.let {
+
+            }
+        }
     }
 
     private fun configForest() {
@@ -98,7 +112,7 @@ class Application : Application() {
 
     override fun onTerminate() {
         log.info("APP结束：${BuildConfig.VERSION_NAME}")
-        Database.close()
+        room.close()
         super.onTerminate()
     }
 
@@ -110,8 +124,7 @@ class Application : Application() {
         fun onTerminate() {
             application.onTerminate()
         }
-        val ApplicationContext: Context get() = application.applicationContext
-        val ContentResolver: ContentResolver get() = ApplicationContext.contentResolver
+        val ApplicationContext: Context get() = application
         val Database: AppDatabase get() = room
 
         val IsNightMode: Boolean get() = (ApplicationContext.resources.configuration.uiMode and

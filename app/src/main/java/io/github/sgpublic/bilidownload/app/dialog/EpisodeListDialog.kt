@@ -75,7 +75,7 @@ class EpisodeListDialog(
                     tasks.add(entity)
                 }
             }
-            Application.Database.DownloadTaskDao().save(tasks)
+            Application.Database.DownloadTaskDao().add(tasks)
             DownloadService.startService(context)
         }
     }

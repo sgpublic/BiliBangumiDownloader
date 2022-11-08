@@ -11,13 +11,9 @@ import io.github.sgpublic.bilidownload.core.util.unregister
  * @date 2022/11/3 17:17
  */
 abstract class BaseService: Service() {
-    final override fun onCreate() {
+    @CallSuper
+    override fun onCreate() {
         register()
-        onServiceCreated()
-    }
-
-    open fun onServiceCreated() {
-
     }
 
     @CallSuper

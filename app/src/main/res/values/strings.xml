@@ -132,6 +132,11 @@
     <string name="text_download_task_pausing">正在暂停</string>
     <string name="text_download_task_paused">已暂停</string>
 
+    <string name="title_download_service">哔哩番剧下载服务</string>
+
+    <string name="title_chanel_download">下载服务消息</string>
+    <string name="text_chanel_download">用于展示下载任务状态</string>
+
     <string name="title_about_update">检查更新</string>
     <string name="title_about_opensource">开源地址</string>
     <string name="title_about_feedback">问题反馈</string>

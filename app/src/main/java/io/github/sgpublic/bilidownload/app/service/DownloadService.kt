@@ -1,20 +1,34 @@
 package io.github.sgpublic.bilidownload.app.service
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Environment
 import android.os.IBinder
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import bilibili.pgc.gateway.player.v2.Playurl.Stream
+import com.arialyy.annotations.Download
+import com.arialyy.annotations.DownloadGroup
 import com.arialyy.aria.core.Aria
 import com.arialyy.aria.core.common.HttpOption
+import com.arialyy.aria.core.download.DownloadGroupEntity
+import com.arialyy.aria.core.inf.IEntity
+import com.arialyy.aria.core.listener.ISchedulers
+import com.arialyy.aria.core.task.DownloadGroupTask
+import com.arialyy.aria.exception.AriaGroupException
 import io.github.sgpublic.bilidownload.Application
+import io.github.sgpublic.bilidownload.BuildConfig
+import io.github.sgpublic.bilidownload.R
+import io.github.sgpublic.bilidownload.app.notifacation.NotifyChannel
 import io.github.sgpublic.bilidownload.base.app.BaseService
 import io.github.sgpublic.bilidownload.core.exsp.BangumiPreference
+import io.github.sgpublic.bilidownload.core.forest.core.UrlEncodedInterceptor
 import io.github.sgpublic.bilidownload.core.grpc.client.AppClient
 import io.github.sgpublic.bilidownload.core.room.dao.DownloadTaskDao
 import io.github.sgpublic.bilidownload.core.room.entity.DownloadTaskEntity
+import io.github.sgpublic.bilidownload.core.util.customs
 import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.bilidownload.core.util.requiredMessage
 import io.github.sgpublic.exsp.ExPreference
@@ -38,23 +52,44 @@ class DownloadService: BaseService(), Observer<List<DownloadTaskEntity>> {
 
     private val Quality: Int get() = ExPreference.get<BangumiPreference>().quality
 
-    private val Path: File by lazy {
-        File(Environment.getExternalStorageDirectory(), "download")
-            .also { it.mkdirs() }
-    }
+    private val ExternalDownload: File by lazy { getExternalFilesDir("Download")!! }
 
     override fun onChanged(tasks: List<DownloadTaskEntity>) {
         // 同时只允许一个任务
         if (tasks.isNotEmpty()) {
+            log.debug("Task queue is not empty, waiting...")
             return
         }
         val next = Dao.oneWaiting
         if (next == null) {
+            log.info("No more waiting tasks.")
             stopSelf(0)
             return
         }
         log.info("starting task(epid: ${next.epid}, cid: ${next.cid}, qn: ${next.qn})")
         try {
+            if (next.taskId > 0) {
+                val task = Aria.download(this)
+                    .loadGroup(next.taskId)
+                    .customs()
+                when (task.entity.state) {
+                    IEntity.STATE_FAIL -> {
+                        next.status = DownloadTaskEntity.Status.Error
+                        log.info("Task failed! task_id: ${task.entity.id}")
+                    }
+                    IEntity.STATE_COMPLETE -> {
+                        next.status = DownloadTaskEntity.Status.Finished
+                        log.info("Task finished, task_id: ${task.entity.id}")
+                    }
+                    IEntity.STATE_RUNNING, IEntity.STATE_CANCEL -> { }
+                    else -> {
+                        task.resume()
+                        next.status = DownloadTaskEntity.Status.Processing
+                        log.info("Task resumed, task_id: ${next.taskId}")
+                    }
+                }
+                return
+            }
             val execute = AppClient.getPlayUrl(next.cid, next.epid, next.qn).execute()
             val fitted = PriorityQueue<Stream> { o1, o2 -> o2.info.quality - o1.info.quality }
             var min: Stream? = null
@@ -72,56 +107,66 @@ class DownloadService: BaseService(), Observer<List<DownloadTaskEntity>> {
                 it.id == video.dashVideo.audioId
             } ?: throw Exception("找不到合适的清晰度")
             val urls = LinkedHashMap<String, String>().also {
-                it["ss${next.sid}/ep${next.epid}/video.m4s"] = video.dashVideo.baseUrl
-                it["ss${next.sid}/ep${next.epid}/audio.m4s"] = audio.baseUrl
+                it["video.m4s"] = video.dashVideo.baseUrl
+                it["audio.m4s"] = audio.baseUrl
             }
-            "ss${next.sid}/ep${next.epid}/cover.png".let { epCover ->
-                if (File(Path, epCover).exists()) {
-                    return@let
-                }
-                urls[epCover] = next.episodeCover
-            }
-            "ss${next.sid}/cover.png".let { ssCover ->
-                if (File(Path, ssCover).exists()) {
-                    return@let
-                }
-                urls[ssCover] = next.seasonCover
-            }
-            val header = HttpOption()
-                .addHeader("Referer", "https://www.bilibili.com/bangumi/play/ep${next.epid}")
             val id = Aria.download(this)
                 .loadGroup(ArrayList(urls.values))
-                .setDirPath(Path.canonicalPath)
+                .setDirPath(File(ExternalDownload, "ss${next.sid}/ep${next.epid}/").canonicalPath)
                 .setSubFileName(ArrayList(urls.keys))
-                .option(header)
-                .ignoreCheckPermissions()
-                .ignoreFilePathOccupy()
-                .unknownSize()
+                .customs()
                 .create()
             next.taskId = id
             next.statusMessage = ""
             next.status = DownloadTaskEntity.Status.Processing
-            log.warn("Task started!")
+            log.info("Task started!\n" +
+                    "  video: ${video.dashVideo.baseUrl}\n" +
+                    "  audio: ${audio.baseUrl}")
         } catch (e: Exception) {
             log.warn("Task start failed.", e)
             next.statusMessage = e.requiredMessage()
             next.status = DownloadTaskEntity.Status.Error
+        } finally {
+            Dao.set(next)
         }
-        Dao.save(next)
     }
 
-    override fun onServiceCreated() {
-        log.info("Start DownloadService")
+    override fun onCreate() {
+        super.onCreate()
+        log.info("DownloadService onCreate")
         started = true
         ProcessingTasks.observeForever(this)
+        NotifyChannel.DownloadingTask.newBuilder(this)
+            .setContentTitle(getString(R.string.title_download_service))
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .build()
+            .startForeground(1)
+        Aria.download(this).register()
     }
 
     override fun onDestroy() {
-        log.info("Destroy DownloadService")
+        super.onDestroy()
+        log.info("DownloadService onDestroy")
         ProcessingTasks.removeObserver(this)
         AppClient.closeQuietly()
+        Aria.download(this).unRegister()
         started = false
-        super.onDestroy()
+    }
+
+    @DownloadGroup.onTaskComplete
+    fun onTaskComplete(task: DownloadGroupTask) {
+        log.info("Task finished, task_id: ${task.entity.id}")
+        val entity = Dao.getByTaskId(task.entity.id)
+        entity.status = DownloadTaskEntity.Status.Finished
+        Dao.set(entity)
+    }
+    @DownloadGroup.onTaskFail
+    fun onTaskFail(task: DownloadGroupTask, e: AriaGroupException) {
+        log.warn("Task failed! task_id: ${task.entity.id}")
+        val entity = Dao.getByTaskId(task.entity.id)
+        entity.status = DownloadTaskEntity.Status.Error
+        entity.statusMessage = e.requiredMessage()
+        Dao.set(entity)
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -129,10 +174,11 @@ class DownloadService: BaseService(), Observer<List<DownloadTaskEntity>> {
     companion object {
         private var started = false
         fun startService(origin: Context) {
-            if (!started) {
-                return
+            if (started) {
+                log.warn("Download service is already started!")
+            } else {
+                origin.startForegroundService(Intent(origin, DownloadService::class.java))
             }
-            origin.startService(Intent(origin, DownloadService::class.java))
         }
     }
 }
