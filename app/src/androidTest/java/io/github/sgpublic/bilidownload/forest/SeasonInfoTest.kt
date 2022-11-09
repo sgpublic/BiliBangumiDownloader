@@ -23,6 +23,6 @@ class SeasonInfoTest {
     }
 
     private fun realSeason(sid: Long): Any {
-        return ForestClients.API.seasonInfoV2(sid, Token.accessToken).execute()
+        return ForestClients.Api.seasonInfoV2(sid, Token.accessToken).execute()
     }
 }

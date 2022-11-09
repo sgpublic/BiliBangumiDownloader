@@ -86,7 +86,7 @@ class SeasonOnlinePageAdapter: ViewBindingRecyclerAdapter() {
         onRecommendEpisodeClick = onClick
     }
     fun playEpisode(epid: Long) {
-        val position = episodeAdapter.getPosition(epid)
+        val position = episodeAdapter.getItemPosition(epid)
         episodeAdapter.setSelection(position)
     }
     private var seasonDetailClick: () -> Unit = { }

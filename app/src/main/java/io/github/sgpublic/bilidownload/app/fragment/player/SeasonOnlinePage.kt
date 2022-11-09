@@ -48,9 +48,11 @@ class SeasonOnlinePage(activity: AppCompatActivity): BaseViewModelFragment<Fragm
             adapter.setSeries(seriesList)
             adapter.setOnChoseEpisodeClick {
                 val dialog = EpisodeListDialog(
-                    context, season.refineCover, ViewModel.EpisodeList.values, ViewModel.DownloadTasks,
+                    context, season.refineCover, ViewModel.EpisodeList.values,
+                    ViewModel.DownloadTasks,
                     getString(R.string.text_player_dialog_episode, ViewModel.EpisodeList.size),
-                    season.seasonId, ViewModel.EpisodeId, ViewModel.QualityData,
+                    season.seasonId, season.seasonTitle, ViewModel.EpisodeId,
+                    ViewModel.QualityData, ViewModel.FittedQuality
                 )
                 val popup = XPopup.Builder(context)
                     .asCustom(dialog)

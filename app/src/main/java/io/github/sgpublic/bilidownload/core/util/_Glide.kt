@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -22,10 +23,13 @@ import io.github.sgpublic.bilidownload.R
 import jp.wasabeef.glide.transformations.internal.FastBlur
 import java.security.MessageDigest
 
+private val option = RequestOptions()
+    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+    .centerCrop()
 fun RequestManager.customLoad(url: String): RequestBuilder<Drawable> {
-    val option = RequestOptions()
-        .diskCacheStrategy(DiskCacheStrategy.DATA)
-        .centerCrop()
+    return load(url).apply(option)
+}
+fun RequestManager.customLoad(url: Uri): RequestBuilder<Drawable> {
     return load(url).apply(option)
 }
 

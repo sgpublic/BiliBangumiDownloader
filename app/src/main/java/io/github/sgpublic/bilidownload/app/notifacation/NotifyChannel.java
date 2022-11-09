@@ -37,7 +37,8 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public enum NotifyChannel {
-    DownloadingTask(R.string.title_chanel_download, R.string.text_chanel_download);
+    DownloadingTask(R.string.title_chanel_download, R.string.text_chanel_download),
+    DownloadInfo(R.string.title_chanel_download_info, R.string.text_chanel_download_info, NotificationManager.IMPORTANCE_LOW, false, false);
 
     /**
      * 构造器参数 1，频道名称，请传入字符串资源

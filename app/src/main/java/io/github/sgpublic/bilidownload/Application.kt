@@ -1,7 +1,7 @@
 package io.github.sgpublic.bilidownload
 
+import android.app.Activity
 import android.app.Application
-import android.content.ContentResolver
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Handler
@@ -9,7 +9,6 @@ import android.os.Looper
 import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.PatternLayout
@@ -25,7 +24,6 @@ import io.github.sgpublic.bilidownload.core.forest.core.BiliApiInterceptor
 import io.github.sgpublic.bilidownload.core.forest.core.UrlEncodedInterceptor
 import io.github.sgpublic.bilidownload.core.logback.PkgNameConverter
 import io.github.sgpublic.bilidownload.core.logback.TraceConverter
-import io.github.sgpublic.bilidownload.core.room.AppDao
 import io.github.sgpublic.bilidownload.core.room.AppDatabase
 import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.exsp.ExPreference
@@ -82,7 +80,7 @@ class Application : Application() {
                 it.logLevel = 2
             }
             dGroupConfig.let {
-
+                it.setConvertSpeed(true)
             }
         }
     }
@@ -130,19 +128,24 @@ class Application : Application() {
         val IsNightMode: Boolean get() = (ApplicationContext.resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
-        fun onToast(context: AppCompatActivity, content: String?) {
-            context.runOnUiThread {
+        fun onToast(context: Context, content: String?) {
+            val toast = {
                 Toast.makeText(ApplicationContext, content, Toast.LENGTH_SHORT).show()
             }
+            if (context is Activity) {
+                context.runOnUiThread(toast)
+            } else {
+                toast.invoke()
+            }
         }
-        fun onToast(context: AppCompatActivity, @StringRes content: Int) {
+        fun onToast(context: Context, @StringRes content: Int) {
             onToast(context, ApplicationContext.resources.getText(content).toString())
         }
-        fun onToast(context: AppCompatActivity, @StringRes content: Int, code: Int) {
+        fun onToast(context: Context, @StringRes content: Int, code: Int) {
             val contentShow = (ApplicationContext.resources.getText(content).toString() + "($code)")
             onToast(context, contentShow)
         }
-        fun onToast(context: AppCompatActivity, @StringRes content: Int, message: String?, code: Int) {
+        fun onToast(context: Context, @StringRes content: Int, message: String?, code: Int) {
             if (message != null) {
                 val contentShow = ApplicationContext.resources.getText(content).toString() + "，$message($code)"
                 onToast(context, contentShow)

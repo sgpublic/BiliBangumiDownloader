@@ -133,9 +133,14 @@
     <string name="text_download_task_paused">已暂停</string>
 
     <string name="title_download_service">哔哩番剧下载服务</string>
+    <string name="title_download_service_running">正在下载：%s</string>
+    <string name="title_download_service_finish">下载完成：%s</string>
+    <string name="title_download_service_error">下载出错：%s</string>
 
     <string name="title_chanel_download">下载服务消息</string>
     <string name="text_chanel_download">用于展示下载任务状态</string>
+    <string name="title_chanel_download_info">下载任务消息</string>
+    <string name="text_chanel_download_info">用于当下载任务完成或失败时发出通知</string>
 
     <string name="title_about_update">检查更新</string>
     <string name="title_about_opensource">开源地址</string>
@@ -167,8 +172,7 @@
 
     <string name="title_update_get">有更新版本</string>
     <string name="title_update_already">已是最新版本</string>
-    <string name="text_update_content">新的 release 可用！</string>
-    <string name="text_update_content_dev">新的 pre-release 可用！</string>
+    <string name="text_update_content">新的 release 可用：%s\n%s</string>
     <string name="title_update_download">哔哩番剧更新</string>
     <string name="title_update_goto_download">立即下载</string>
     <string name="title_update_not_now">暂不更新</string>

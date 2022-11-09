@@ -29,7 +29,7 @@ class FollowModel(private val status: FollowStatus): BaseViewModel() {
             pageIndex = 1
             Loading.postValue(true)
         }
-        ForestClients.API.follow(
+        ForestClients.Api.follow(
             status.value, pageIndex, TokenPreference.accessToken
         ).biliapi(object : RequestCallback<FollowsResp.FollowsData>() {
             override fun onFailure(code: Int, message: String?) {

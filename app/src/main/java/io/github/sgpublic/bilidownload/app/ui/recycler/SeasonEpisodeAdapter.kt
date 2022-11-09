@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.ui.SelectableArrayAdapter
+import io.github.sgpublic.bilidownload.base.ui.SingleSelection
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
 import io.github.sgpublic.bilidownload.core.room.entity.DownloadTaskEntity
 import io.github.sgpublic.bilidownload.core.util.*
@@ -18,7 +19,8 @@ import io.github.sgpublic.bilidownload.databinding.ItemSeasonEpisodeBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
-open class SeasonEpisodeAdapter: SelectableArrayAdapter<ItemSeasonEpisodeBinding, SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem>() {
+open class SeasonEpisodeAdapter: SelectableArrayAdapter<ItemSeasonEpisodeBinding, SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem>(),
+    SingleSelection<SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem> {
     override fun onCreateViewBinding(
         inflater: LayoutInflater,
         parent: ViewGroup
@@ -39,11 +41,11 @@ open class SeasonEpisodeAdapter: SelectableArrayAdapter<ItemSeasonEpisodeBinding
                 continue
             }
             this.tasks[item.epid] = item.status
-            notifyItemChanged(getPosition(item.epid))
+            notifyItemChanged(getItemPosition(item.epid))
         }
         for ((key, _) in tmp) {
             this.tasks.remove(key)
-            notifyItemChanged(getPosition(key))
+            notifyItemChanged(getItemPosition(key))
         }
         tmp.clear()
     }
@@ -102,22 +104,11 @@ open class SeasonEpisodeAdapter: SelectableArrayAdapter<ItemSeasonEpisodeBinding
 
     final override fun getClickableView(ViewBinding: ItemSeasonEpisodeBinding) = ViewBinding.itemEpisodeBase
 
-    private var recycler: RecyclerView? = null
-    @CallSuper
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        recycler = recyclerView
-    }
-
-    @CallSuper
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        recycler = null
-    }
-
     private val indexTmp: HashMap<Long, Int> = HashMap()
     fun setSelectedEpid(epid: Long) {
         setSelection(indexTmp[epid] ?: -1)
     }
-    fun getPosition(epid: Long): Int = indexTmp[epid] ?: 0
+    override fun getItemPosition(id: Long): Int = indexTmp[id] ?: 0
 
     @CallSuper
     override fun setData(list: Collection<SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem>) {
@@ -127,4 +118,7 @@ open class SeasonEpisodeAdapter: SelectableArrayAdapter<ItemSeasonEpisodeBinding
             indexTmp[data.id] = index
         }
     }
+
+    override val Adapter: SelectableArrayAdapter<*, SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem> = this
+    override var position: Int = 0
 }

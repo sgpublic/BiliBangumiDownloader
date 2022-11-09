@@ -1,17 +1,11 @@
 package io.github.sgpublic.bilidownload.core.room;
 
-import androidx.annotation.NonNull;
 import androidx.room.Database;
-import androidx.room.DatabaseConfiguration;
-import androidx.room.InvalidationTracker;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
-import androidx.sqlite.db.SupportSQLiteOpenHelper;
 
 import io.github.sgpublic.bilidownload.core.room.dao.DownloadTaskDao;
 import io.github.sgpublic.bilidownload.core.room.entity.DownloadTaskEntity;
-import kotlin.Lazy;
-import kotlin.LazyKt;
 
 /**
  * @author Madray Haven
@@ -19,7 +13,7 @@ import kotlin.LazyKt;
  */
 @Database(
         entities = { DownloadTaskEntity.class },
-        version = 6, exportSchema = false
+        version = 7, exportSchema = false
 )
 @TypeConverters({
         DownloadTaskEntity.Status.Converter.class

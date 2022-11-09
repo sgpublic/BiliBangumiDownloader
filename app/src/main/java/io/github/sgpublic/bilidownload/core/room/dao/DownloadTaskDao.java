@@ -43,7 +43,7 @@ public interface DownloadTaskDao {
     LiveData<List<DownloadTaskEntity>> observeProcessing();
 
     @Nullable
-    @Query("select * from download_task where status == 'Waiting' limit 1")
+    @Query("select * from download_task where status == 'Waiting' or status == 'Retry' limit 1")
     DownloadTaskEntity getOneWaiting();
 
     @Query("update download_task set status='Waiting' where status == 'Processing'")

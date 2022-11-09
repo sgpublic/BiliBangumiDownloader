@@ -11,7 +11,7 @@ import org.junit.Test
 class HomeBangumiTest {
     @Test
     fun getBangumi() {
-        val execute = ForestClients.API.bangumi(ExPreference.get<TokenPreference>().accessToken, 0, 1)
+        val execute = ForestClients.Api.bangumi(ExPreference.get<TokenPreference>().accessToken, 0, 1)
             .execute(BangumiPageResp::class.java)
         log.debug(execute.data.toGson())
     }

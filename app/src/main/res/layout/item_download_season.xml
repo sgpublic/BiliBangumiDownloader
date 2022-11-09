@@ -30,20 +30,11 @@
         android:layout_marginEnd="30dp"
         android:maxLines="2"
         android:ellipsize="end"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:textColor="@color/color_text_normal"
         app:layout_constraintTop_toTopOf="@id/item_download_season_cover"
         app:layout_constraintLeft_toRightOf="@id/item_download_season_cover"
         app:layout_constraintRight_toRightOf="parent"/>
-    <TextView
-        android:id="@+id/item_download_season_status"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textColor="@color/color_text_normal"
-        app:layout_constraintTop_toBottomOf="@id/item_download_season_title"
-        app:layout_constraintLeft_toLeftOf="@id/item_download_season_title"
-        app:layout_constraintRight_toRightOf="@id/item_download_season_title" />
     <TextView
         android:id="@+id/item_download_season_count"
         android:layout_width="0dp"
@@ -51,7 +42,7 @@
         android:textSize="14sp"
         android:textColor="@color/color_text_normal"
         app:layout_constraintBottom_toBottomOf="@id/item_download_season_cover"
-        app:layout_constraintLeft_toLeftOf="@id/item_download_season_status"
+        app:layout_constraintLeft_toLeftOf="@id/item_download_season_title"
         app:layout_constraintRight_toRightOf="@id/item_download_season_title" />
     <View
         android:id="@+id/item_download_season_selected"

@@ -17,7 +17,6 @@ import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.app.dialog.PlayerPanel
 import io.github.sgpublic.bilidownload.app.ui.list.EpisodeListAdapter
 import io.github.sgpublic.bilidownload.app.ui.list.QualityListAdapter
-import io.github.sgpublic.bilidownload.app.ui.smartDestroy
 import io.github.sgpublic.bilidownload.app.viewmodel.OnlinePlayerModel
 import io.github.sgpublic.bilidownload.base.app.postValue
 import io.github.sgpublic.bilidownload.core.exsp.BangumiPreference

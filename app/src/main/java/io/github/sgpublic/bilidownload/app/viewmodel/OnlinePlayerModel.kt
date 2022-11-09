@@ -30,7 +30,7 @@ class OnlinePlayerModel(sid: Long, epid: Long): BasePlayerModel() {
     val SeasonData: MutableLiveData<SeasonInfoResp.SeasonInfoData> = MutableLiveData()
     val EpisodeList: HashMap<Long, SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem> = LinkedHashMap()
     fun getSeasonInfo(sid: Long) {
-        ForestClients.API.seasonInfoV2(
+        ForestClients.Api.seasonInfoV2(
             sid, TokenPreference.accessToken
         ).biliapi(newRequestCallback { data ->
             for (episodes in data.find<SeasonInfoResp.SeasonInfoData.Episodes>()) {
@@ -51,7 +51,7 @@ class OnlinePlayerModel(sid: Long, epid: Long): BasePlayerModel() {
     }
 
     fun getSeasonRecommend(sid: Long) {
-        ForestClients.API.seasonRecommend(
+        ForestClients.Api.seasonRecommend(
             sid, TokenPreference.accessToken
         ).biliapi(object : RequestCallback<SeasonRecommendResp.SeasonRecommend>() {
             override fun onFailure(code: Int, message: String?) {
@@ -70,7 +70,7 @@ class OnlinePlayerModel(sid: Long, epid: Long): BasePlayerModel() {
     fun setOnResolvePlayDataListener(onResolvePlayData: (PlayViewReply) -> Unit = { }) {
         this.onResolvePlayData = onResolvePlayData
     }
-    val QualityData: HashMap<Int, String> = LinkedHashMap()
+    val QualityData: LinkedHashMap<Int, String> = LinkedHashMap()
     val QualityDesc: MutableLiveData<String> = MutableLiveData()
     fun getPlayUrl(epid: Long, cid: Long) {
         log.info("getPlayUrl(epid: $epid, cid: $cid)")

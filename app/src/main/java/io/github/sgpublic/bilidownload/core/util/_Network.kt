@@ -9,6 +9,7 @@ import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.forest.CommonResp
 import io.github.sgpublic.bilidownload.core.forest.client.ApiClient
 import io.github.sgpublic.bilidownload.core.forest.client.AppClient
+import io.github.sgpublic.bilidownload.core.forest.client.GithubClient
 import io.github.sgpublic.bilidownload.core.forest.client.PassportClient
 import io.github.sgpublic.bilidownload.core.forest.core.BiliApiException
 import io.grpc.*
@@ -19,9 +20,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 object ForestClients {
-    val PASSPORT: PassportClient by lazy { Forest.client(PassportClient::class.java) }
-    val APP: AppClient by lazy { Forest.client(AppClient::class.java) }
-    val API: ApiClient by lazy { Forest.client(ApiClient::class.java) }
+    val Passport: PassportClient by lazy { Forest.client(PassportClient::class.java) }
+    val App: AppClient by lazy { Forest.client(AppClient::class.java) }
+    val Api: ApiClient by lazy { Forest.client(ApiClient::class.java) }
+    val Github: GithubClient by lazy { Forest.client(GithubClient::class.java) }
 }
 
 /** ForestRequest 封装异步请求 */
@@ -67,8 +69,8 @@ inline fun <reified T> ForestRequest<T>.enqueue(callback: RequestCallback<T>, vi
     }
 }
 
-fun Exception.requiredMessage(): String {
-    return message ?: "Unknown error"
+fun Exception?.requiredMessage(): String {
+    return this?.message ?: "Unknown error"
 }
 
 abstract class RequestCallback<Data> {

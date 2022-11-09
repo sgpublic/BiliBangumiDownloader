@@ -11,8 +11,6 @@ import io.github.sgpublic.bilidownload.core.forest.data.FollowsResp
 import io.github.sgpublic.bilidownload.core.util.*
 import io.github.sgpublic.bilidownload.databinding.ItemBangumiFollowBinding
 import io.github.sgpublic.bilidownload.databinding.RecyclerFooterBinding
-import kotlin.collections.ArrayList
-import kotlin.math.max
 
 /**
  *

@@ -22,11 +22,17 @@ public class DownloadTaskEntity {
     @ColumnInfo(name = "cid")
     private long cid;
 
+    @ColumnInfo(name = "ep_title")
+    private String episodeTitle;
+
     @ColumnInfo(name = "ep_cover")
     private String episodeCover;
 
     @ColumnInfo(name = "sid")
     private long sid;
+
+    @ColumnInfo(name = "ss_title")
+    private String seasonTitle;
 
     @ColumnInfo(name = "ss_cover")
     private String seasonCover;
@@ -47,7 +53,7 @@ public class DownloadTaskEntity {
     private long addTime = ApiModule.INSTANCE.getTS_FULL();
 
     public enum Status {
-        Waiting, Processing, Paused, Error, Finished;
+        Waiting, Processing, Paused, Error, Retry, Finished;
 
         public static class Converter {
             @TypeConverter

@@ -8,7 +8,6 @@ import io.github.sgpublic.bilidownload.core.forest.ApiModule
 import io.github.sgpublic.bilidownload.core.forest.annotations.BiliSign
 import io.github.sgpublic.bilidownload.core.util.MD5_FULL
 import io.github.sgpublic.bilidownload.core.util.encodeUrl
-import io.github.sgpublic.bilidownload.core.util.log
 import java.util.*
 
 class SignLifeCycle: MethodAnnotationLifeCycle<BiliSign, Any> {

@@ -5,7 +5,9 @@ import android.content.Intent
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.app.ui.list.LicenseListAdapter
 import io.github.sgpublic.bilidownload.base.app.BaseActivity
+import io.github.sgpublic.bilidownload.core.util.toSortedList
 import io.github.sgpublic.bilidownload.databinding.ActivityLicenseBinding
+import java.util.PriorityQueue
 
 class License: BaseActivity<ActivityLicenseBinding>() {
     override fun onActivityCreated(hasSavedInstanceState: Boolean) {
@@ -19,7 +21,9 @@ class License: BaseActivity<ActivityLicenseBinding>() {
             setDisplayHomeAsUpEnabled(true)
         }
 
-        val arrayList = ArrayList<LicenseListAdapter.LicenseListItem>()
+        val arrayList = PriorityQueue(Comparator<LicenseListAdapter.LicenseListItem> { o1, o2 ->
+            return@Comparator o1.projectTitle.compareTo(o2.projectTitle)
+        })
         arrayList.add(
             LicenseListAdapter.LicenseListItem(
                 "BannerViewPager",
@@ -30,18 +34,42 @@ class License: BaseActivity<ActivityLicenseBinding>() {
         )
         arrayList.add(
             LicenseListAdapter.LicenseListItem(
-                "Blur-Fix-AndroidX",
-                "Fork from https://github.com/ThomasCookDeveloperInfo/BlurKit-Fix, add AndroidX support, move to JitPack.",
-                "SGPublic",
-                "https://github.com/SGPublic/Blur-Fix-AndroidX"
+                "Sofia",
+                "Android沉浸式效果的实现，状态栏和导航栏均支持设置颜色、渐变色、图片、透明度、内容入侵和状态栏深色字体；兼容竖屏、横屏，当屏幕旋转时会自动适配。",
+                "yanzhenjie",
+                "https://github.com/yanzhenjie/Sofia"
             )
         )
         arrayList.add(
             LicenseListAdapter.LicenseListItem(
-                "DialogX",
-                "\uD83D\uDCACDialogX对话框组件库，更加方便易用，可自定义程度更高，扩展性更强，轻松实现各种对话框、菜单和提示效果，更有iOS、MIUI等主题扩展可选",
-                "kongzue",
-                "https://github.com/kongzue/DialogX"
+                "MultiWaveHeader",
+                "Wave,水波,Android 炫酷的多重水波纹 MultiWaveHeader",
+                "scwang90",
+                "https://github.com/scwang90/MultiWaveHeader"
+            )
+        )
+        arrayList.add(
+            LicenseListAdapter.LicenseListItem(
+                "XPopup",
+                "\uD83D\uDD25XPopup2.0版本重磅来袭，2倍以上性能提升，带来可观的动画性能优化和交互细节的提升！！！功能强大，交互优雅，动画丝滑的通用弹窗！可以替代Dialog，PopupWindow，PopupMenu，BottomSheet，DrawerLayout，Spinner等组件，自带十几种效果良好的动画， 支持完全的UI和动画自定义！(Powerful and Beautiful Popup for Android，can absolutely replace Dialog，PopupWindow，PopupMenu，BottomSheet，DrawerLayout，Spinner. With built-in animators , very easy to custom popup vi…",
+                "li-xiaojun",
+                "https://github.com/li-xiaojun/XPopup"
+            )
+        )
+        arrayList.add(
+            LicenseListAdapter.LicenseListItem(
+                "zxing",
+                "ZXing (\"Zebra Crossing\") barcode scanning library for Java, Android",
+                "zxing",
+                "https://github.com/zxing/zxing"
+            )
+        )
+        arrayList.add(
+            LicenseListAdapter.LicenseListItem(
+                "ExSharedPreference",
+                "Manage SharedPreference with annotation!",
+                "sgpublic",
+                "https://github.com/sgpublic/ExSharedPreference"
             )
         )
         arrayList.add(
@@ -70,29 +98,37 @@ class License: BaseActivity<ActivityLicenseBinding>() {
         )
         arrayList.add(
             LicenseListAdapter.LicenseListItem(
-                "Sofia",
-                "Android沉浸式效果的实现，状态栏和导航栏均支持设置颜色、渐变色、图片、透明度、内容入侵和状态栏深色字体；兼容竖屏、横屏，当屏幕旋转时会自动适配。",
-                "yanzhenjie",
-                "https://github.com/yanzhenjie/Sofia"
+                "ExoPlayer",
+                "An extensible media player for Android",
+                "google",
+                "https://github.com/google/ExoPlayer"
             )
         )
         arrayList.add(
             LicenseListAdapter.LicenseListItem(
-                "SmartTabLayout",
-                "A custom ViewPager title strip which gives continuous feedback to the user when scrolling",
-                "ogaclejapan",
-                "https://github.com/ogaclejapan/SmartTabLayout"
+                "logback-android",
+                "\uD83D\uDCC4The reliable, generic, fast and flexible logging framework for Android",
+                "tony19",
+                "https://github.com/tony19/logback-android"
             )
         )
         arrayList.add(
             LicenseListAdapter.LicenseListItem(
-                "SwipeBackLayoutX",
-                "Fork from https://github.com/ikew0ng/SwipeBackLayout, add AndroidX support, move to JitPack.",
-                "SGPublic",
-                "https://github.com/SGPublic/SwipeBackLayoutX"
+                "forest",
+                "A high-level and lightweight HTTP client framework for Java. it makes sending HTTP requests in Java easier.",
+                "dromara",
+                "https://github.com/dromara/forest"
             )
         )
-        ViewBinding.licenseList.adapter = LicenseListAdapter(this@License, arrayList)
+        arrayList.add(
+            LicenseListAdapter.LicenseListItem(
+                "Aria",
+                "下载可以很简单",
+                "AriaLyy",
+                "https://github.com/AriaLyy/Aria"
+            )
+        )
+        ViewBinding.licenseList.adapter = LicenseListAdapter(this@License, arrayList.toSortedList())
     }
 
 

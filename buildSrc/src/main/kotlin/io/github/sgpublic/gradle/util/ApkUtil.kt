@@ -3,7 +3,6 @@ package io.github.sgpublic.gradle.util
 import io.github.sgpublic.gradle.ApkPlugin
 import io.github.sgpublic.gradle.core.BuildTypes
 import net.dongliu.apk.parser.ApkFile
-import org.gradle.internal.component.external.model.ComponentVariant
 import org.gradle.internal.os.OperatingSystem
 import java.io.File
 import java.io.InputStream

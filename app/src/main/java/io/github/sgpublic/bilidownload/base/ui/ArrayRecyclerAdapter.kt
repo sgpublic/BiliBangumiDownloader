@@ -8,7 +8,6 @@ import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.viewbinding.ViewBinding
-import io.github.sgpublic.bilidownload.core.util.log
 import java.lang.Integer.max
 
 /**

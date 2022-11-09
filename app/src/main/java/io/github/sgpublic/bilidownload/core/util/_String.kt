@@ -6,6 +6,7 @@ import androidx.annotation.IntRange
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
+import io.github.sgpublic.bilidownload.BuildConfig
 import java.io.Serializable
 import java.math.BigInteger
 import java.net.URLDecoder
@@ -14,6 +15,7 @@ import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.util.*
 import java.util.regex.Pattern
+import kotlin.math.max
 
 private val pattern = Pattern.compile("[\\u4E00-\\u9FA5]+")
 private val GB2312 = Charset.forName("GB2312")
@@ -149,4 +151,24 @@ fun Pattern.matchString(target: CharSequence, def: String): String {
 
 fun String.countLine(): Int {
     return split("\n").size
+}
+
+/** 比较版本号 */
+fun String.isHigherThanCurrent(): Boolean {
+    val origin = split("-")[0].split(".").map {
+        it.toIntOrNull() ?: return false
+    }
+    val target = BuildConfig.ORIGIN_VERSION_NAME.split(".").map {
+        it.toIntOrNull() ?: return false
+    }
+    val length = max(origin.size, target.size)
+    for (i in 0 until length) {
+        val originNum = origin.getOrElse(i) { 0 }
+        val targetNum = target.getOrElse(i) { 0 }
+        if (originNum == targetNum) {
+            continue
+        }
+        return originNum > targetNum
+    }
+    return false
 }

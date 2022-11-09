@@ -11,7 +11,7 @@ import org.junit.Test
 class BannerDataTest {
     @Test
     fun getBanner() {
-        val execute = ForestClients.API.banner(ExPreference.get<TokenPreference>().accessToken)
+        val execute = ForestClients.Api.banner(ExPreference.get<TokenPreference>().accessToken)
             .execute(BannerResp::class.java)
         log.debug(execute.data.toGson())
     }

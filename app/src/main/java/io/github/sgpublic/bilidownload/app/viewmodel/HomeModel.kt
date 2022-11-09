@@ -21,7 +21,7 @@ class HomeModel : BaseViewModel() {
     }
     fun getBannerInfo() {
         Loading.postValue(true)
-        ForestClients.API.banner(TokenPreference.accessToken).biliapi(object : RequestCallback<BannerResp.BannerData>() {
+        ForestClients.Api.banner(TokenPreference.accessToken).biliapi(object : RequestCallback<BannerResp.BannerData>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
@@ -42,7 +42,7 @@ class HomeModel : BaseViewModel() {
         if (isRefresh) {
             Loading.postValue(true)
         }
-        ForestClients.API.bangumi(
+        ForestClients.Api.bangumi(
             TokenPreference.accessToken, cursor, isRefresh.take(1, 0)
         ).biliapi(object : RequestCallback<BangumiPageResp.BangumiPageData>() {
             override fun onFailure(code: Int, message: String?) {

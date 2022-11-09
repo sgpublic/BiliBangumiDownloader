@@ -1,7 +1,6 @@
 package io.github.sgpublic.bilidownload.core.util
 
 import android.animation.Animator
-import android.content.IntentSender.OnFinished
 import android.view.View
 import com.lxj.xpopup.XPopup
 import io.github.sgpublic.bilidownload.Application

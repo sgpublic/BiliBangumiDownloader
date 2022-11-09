@@ -12,7 +12,6 @@ import io.github.sgpublic.bilidownload.core.util.customLoad
 import io.github.sgpublic.bilidownload.core.util.withCrossFade
 import io.github.sgpublic.bilidownload.core.util.withVerticalPlaceholder
 import io.github.sgpublic.bilidownload.databinding.ItemBangumiFollowBinding
-import kotlinx.coroutines.NonDisposableHandle.parent
 
 class SeriesListAdapter : ArrayListAdapter<SeasonInfoResp.SeasonInfoData.Seasons.SeasonData.SeasonItem, ItemBangumiFollowBinding>() {
     override fun onCreateViewBinding(

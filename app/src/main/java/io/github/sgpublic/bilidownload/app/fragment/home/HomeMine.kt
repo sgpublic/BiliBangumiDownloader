@@ -4,12 +4,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.lxj.xpopup.XPopup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.sgpublic.bilidownload.R
+import io.github.sgpublic.bilidownload.app.activity.About
 import io.github.sgpublic.bilidownload.app.activity.LoginPwd
 import io.github.sgpublic.bilidownload.app.activity.MyFollows
-import io.github.sgpublic.bilidownload.app.activity.Setting
-import io.github.sgpublic.bilidownload.app.ui.asConfirm
 import io.github.sgpublic.bilidownload.base.app.BaseFragment
 import io.github.sgpublic.bilidownload.core.exsp.UserPreference
 import io.github.sgpublic.bilidownload.core.util.customLoad
@@ -60,15 +59,17 @@ class HomeMine(context: AppCompatActivity): BaseFragment<FragmentHomeMineBinding
         )
         ViewBinding.mineGender.setImageResource(genders[user.sex])
         ViewBinding.mineLogout.setOnClickListener {
-            XPopup.Builder(context).asConfirm(
-                R.string.title_mine_logout,
-                R.string.text_mine_logout_check
-            ) {
-                LoginPwd.startActivity(context)
-            }.show()
+            MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.title_mine_logout)
+                .setMessage(R.string.text_mine_logout_check)
+                .setPositiveButton(R.string.text_ok) { _, _ ->
+                    LoginPwd.startActivity(context)
+                }
+                .setNegativeButton(R.string.text_cancel) { _, _ -> }
+                .show()
         }
         ViewBinding.mineAbout.setOnClickListener {
-            io.github.sgpublic.bilidownload.app.activity.About.startActivity(context)
+            About.startActivity(context)
         }
 //        ViewBinding.mineSetting.setOnClickListener {
 //            Setting.startActivity(context)

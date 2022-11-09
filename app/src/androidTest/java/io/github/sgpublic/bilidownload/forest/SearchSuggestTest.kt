@@ -8,7 +8,7 @@ import org.junit.Test
 class SearchSuggestTest {
     @Test
     fun getSuggest() {
-        val execute = ForestClients.API.searchSuggest("超炮").execute()
+        val execute = ForestClients.Api.searchSuggest("超炮").execute()
         log.debug(execute.toGson())
     }
 }

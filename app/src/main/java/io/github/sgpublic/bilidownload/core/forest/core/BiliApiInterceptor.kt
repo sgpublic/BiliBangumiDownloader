@@ -5,7 +5,6 @@ import com.dtflys.forest.http.ForestResponse
 import com.dtflys.forest.interceptor.Interceptor
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
-import io.github.sgpublic.bilidownload.base.forest.CommonResp
 import io.github.sgpublic.bilidownload.core.util.fromGson
 
 class BiliApiInterceptor: Interceptor<Any> {

@@ -25,7 +25,7 @@ class LoginPwdModel: BaseViewModel() {
     val UserInfo: MutableLiveData<UserInfoResp.UserInfo> = MutableLiveData()
 
     fun getCaptcha() {
-        ForestClients.PASSPORT.captcha().biliapi(object : RequestCallback<CaptchaResp.CaptchaData>() {
+        ForestClients.Passport.captcha().biliapi(object : RequestCallback<CaptchaResp.CaptchaData>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
@@ -37,7 +37,7 @@ class LoginPwdModel: BaseViewModel() {
     }
 
     private fun encryptPwd(password: String, callback: (String) -> Unit) {
-        ForestClients.PASSPORT.pubKey().biliapi(object : RequestCallback<GetKeyResp.GetKeyData>() {
+        ForestClients.Passport.pubKey().biliapi(object : RequestCallback<GetKeyResp.GetKeyData>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
@@ -65,7 +65,7 @@ class LoginPwdModel: BaseViewModel() {
     fun startAction(username: String, password: String, onPhoneValidate: (String) -> Unit) {
         encryptPwd(password) { pwdEncrypt ->
             try {
-                loginNextAction(ForestClients.PASSPORT.login(
+                loginNextAction(ForestClients.Passport.login(
                     username, pwdEncrypt
                 ), onPhoneValidate)
             } catch (e: BiliApiException) {
@@ -109,7 +109,7 @@ class LoginPwdModel: BaseViewModel() {
             })
             return
         }
-        ForestClients.PASSPORT.captcha().biliapi(object :
+        ForestClients.Passport.captcha().biliapi(object :
             RequestCallback<CaptchaResp.CaptchaData>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
@@ -128,7 +128,7 @@ class LoginPwdModel: BaseViewModel() {
     ) {
         encryptPwd(password) { pwdEncrypt ->
             try {
-                loginNextAction(ForestClients.PASSPORT.geetestLogin(
+                loginNextAction(ForestClients.Passport.geetestLogin(
                     token, challenge, validate, seccode, username, pwdEncrypt
                 ), onPhoneValidate)
             } catch (e: BiliApiException) {
@@ -148,7 +148,7 @@ class LoginPwdModel: BaseViewModel() {
     }
 
     fun accessToken(code: String) {
-        ForestClients.PASSPORT.accessToken(code).biliapi(object : RequestCallback<LoginResp.LoginData>() {
+        ForestClients.Passport.accessToken(code).biliapi(object : RequestCallback<LoginResp.LoginData>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
@@ -160,7 +160,7 @@ class LoginPwdModel: BaseViewModel() {
     }
 
     fun getUserInfo(accessToken: String) {
-        ForestClients.APP.getUserInfoRequest(accessToken).biliapi(object : RequestCallback<UserInfoResp.UserInfo>() {
+        ForestClients.App.getUserInfoRequest(accessToken).biliapi(object : RequestCallback<UserInfoResp.UserInfo>() {
             override fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }

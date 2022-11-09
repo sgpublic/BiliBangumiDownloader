@@ -112,25 +112,31 @@ android {
         /** 自动化版本命名 */
         named(BuildTypes.TYPE_RELEASE) {
             versionNameSuffix = "-$name"
-            buildConfigField( "BUILD_LEVEL", BuildTypes.LEVEL_RELEASE)
+            buildConfigField("VERSION_SUFFIX", "")
+            buildConfigField("BUILD_LEVEL", BuildTypes.LEVEL_RELEASE)
         }
         named(BuildTypes.TYPE_DEBUG) {
             defaultConfig.versionCode = VersionGen.DATED_VERSION
             isDebuggable = true
-            versionNameSuffix = "-${VersionGen.TIME_MD5}-$name"
-            buildConfigField( "BUILD_LEVEL", BuildTypes.LEVEL_DEBUG)
+            versionNameSuffix = "-$name"
+            buildConfigField("VERSION_SUFFIX", "")
+            buildConfigField("BUILD_LEVEL", BuildTypes.LEVEL_DEBUG)
         }
         if (signInfoExit) {
             register(BuildTypes.TYPE_DEV) {
-                versionNameSuffix = "-${VersionGen.GIT_HEAD}-$name"
+                val suffix = VersionGen.GIT_HEAD
+                versionNameSuffix = "-$suffix-$name"
                 isDebuggable = true
-                buildConfigField( "BUILD_LEVEL", BuildTypes.LEVEL_DEV)
+                buildConfigField("VERSION_SUFFIX", suffix)
+                buildConfigField("BUILD_LEVEL", BuildTypes.LEVEL_DEV)
             }
             register(BuildTypes.TYPE_SNAPSHOT) {
+                val suffix = VersionGen.TIME_MD5
                 defaultConfig.versionCode = VersionGen.DATED_VERSION
                 isDebuggable = true
-                versionNameSuffix = "-${VersionGen.TIME_MD5}-$name"
-                buildConfigField( "BUILD_LEVEL", BuildTypes.LEVEL_SNAPSHOT)
+                versionNameSuffix = "-$suffix-$name"
+                buildConfigField("VERSION_SUFFIX", suffix)
+                buildConfigField("BUILD_LEVEL", BuildTypes.LEVEL_SNAPSHOT)
             }
         }
     }
@@ -207,8 +213,8 @@ dependencies {
     implementation("com.github.li-xiaojun:XPopup:2.9.1")
     /* https://github.com/zxing/zxing qrcode */
     implementation("com.google.zxing:core:3.5.0")
-    /* https://github.com/KwaiAppTeam/AkDanmaku */
-    implementation("com.kuaishou:akdanmaku:1.0.3")
+//    /* https://github.com/KwaiAppTeam/AkDanmaku */
+//    implementation("com.kuaishou:akdanmaku:1.0.3")
     /* https://docs.geetest.com/sensebot/deploy/client/android */
     implementation("com.geetest.sensebot:sensebot:4.3.7")
 

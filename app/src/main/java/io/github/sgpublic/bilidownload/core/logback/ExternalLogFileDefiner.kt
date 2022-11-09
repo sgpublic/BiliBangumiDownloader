@@ -1,6 +1,5 @@
 package io.github.sgpublic.bilidownload.core.logback
 
-import ch.qos.logback.classic.PatternLayout
 import ch.qos.logback.core.PropertyDefinerBase
 import io.github.sgpublic.bilidownload.Application
 import java.io.File

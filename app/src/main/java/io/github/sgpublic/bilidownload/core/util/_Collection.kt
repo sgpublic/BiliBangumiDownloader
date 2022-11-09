@@ -1,5 +1,8 @@
 package io.github.sgpublic.bilidownload.core.util
 
+import java.util.LinkedList
+import java.util.PriorityQueue
+
 /**
  * Collection 扩展函数，判断是否存在所有元素，空指针冗余
  */
@@ -59,4 +62,12 @@ fun <ItemT, T: MutableCollection<ItemT>> T.addIf(other: Collection<ItemT>, check
         }
     }
     return this
+}
+
+fun <ItemT> PriorityQueue<ItemT>.toSortedList(): LinkedList<ItemT> {
+    return LinkedList<ItemT>().also {
+        while (isNotEmpty()) {
+            it.add(poll() ?: continue)
+        }
+    }
 }

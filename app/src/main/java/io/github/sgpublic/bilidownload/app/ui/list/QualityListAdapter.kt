@@ -3,20 +3,17 @@ package io.github.sgpublic.bilidownload.app.ui.list
 import android.content.Context
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams
 import androidx.core.content.ContextCompat
-import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.base.ui.SelectableArrayAdapter
+import io.github.sgpublic.bilidownload.base.ui.SingleSelection
 import io.github.sgpublic.bilidownload.core.exsp.BangumiPreference
-import io.github.sgpublic.bilidownload.core.exsp.UserPreference
-import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
 import io.github.sgpublic.bilidownload.core.util.take
 import io.github.sgpublic.bilidownload.databinding.ItemQualityListBinding
 import io.github.sgpublic.exsp.ExPreference
 
-class QualityListAdapter : SelectableArrayAdapter<ItemQualityListBinding, Map.Entry<Int, String>>() {
+class QualityListAdapter : SelectableArrayAdapter<ItemQualityListBinding, Map.Entry<Int, String>>(),
+    SingleSelection<Map.Entry<Int, String>>{
     override fun onCreateViewBinding(
         inflater: LayoutInflater,
         parent: ViewGroup
@@ -44,4 +41,6 @@ class QualityListAdapter : SelectableArrayAdapter<ItemQualityListBinding, Map.En
     }
 
     override fun getClickableView(ViewBinding: ItemQualityListBinding) = ViewBinding.root
+    override val Adapter: SelectableArrayAdapter<*, Map.Entry<Int, String>> = this
+    override var position: Int = 0
 }

@@ -13,9 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.viewbinding.ViewBinding
-import com.badlogic.gdx.utils.reflect.ClassReflection.getConstructor
-import io.github.sgpublic.bilidownload.core.util.log
-import io.github.sgpublic.bilidownload.databinding.ActivityPlayerBinding
 
 abstract class BaseFragment<VB: ViewBinding>(private val contest: AppCompatActivity) : Fragment() {
     private var _binding: VB? = null

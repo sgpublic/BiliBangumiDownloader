@@ -13,7 +13,7 @@ import org.junit.Test
 class AccessTokenTest {
     @Test
     fun accessToken() {
-        val execute = ForestClients.PASSPORT.accessToken("36c6bc7823c2cbe215f48f65b1f275a1").execute()
+        val execute = ForestClients.Passport.accessToken("36c6bc7823c2cbe215f48f65b1f275a1").execute()
         log.debug(execute.toGson())
     }
 }

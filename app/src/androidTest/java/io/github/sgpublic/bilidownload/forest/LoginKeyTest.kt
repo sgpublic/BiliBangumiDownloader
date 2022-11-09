@@ -9,7 +9,7 @@ import org.junit.Test
 class LoginKeyTest {
     @Test
     fun getKey() {
-        val execute = ForestClients.PASSPORT.pubKey().execute(GetKeyResp::class.java)
+        val execute = ForestClients.Passport.pubKey().execute(GetKeyResp::class.java)
         log.debug(execute.toGson())
     }
 }

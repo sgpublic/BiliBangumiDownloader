@@ -11,7 +11,6 @@ import com.lxj.xpopup.core.CenterPopupView
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.core.util.dp
 import io.github.sgpublic.bilidownload.core.util.fromGson
-import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.bilidownload.core.util.takeOr
 import io.github.sgpublic.bilidownload.databinding.DialogWebviewBinding
 import okhttp3.OkHttpClient
