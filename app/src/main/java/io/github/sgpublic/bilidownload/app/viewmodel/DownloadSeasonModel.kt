@@ -1,16 +1,17 @@
 package io.github.sgpublic.bilidownload.app.viewmodel
 
-import androidx.lifecycle.MutableLiveData
-import io.github.sgpublic.bilidownload.app.ui.recycler.DownloadSeasonAdapter
-import io.github.sgpublic.bilidownload.base.ui.BaseRecyclerActivity
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import io.github.sgpublic.bilidownload.Application
+import io.github.sgpublic.bilidownload.core.room.entity.DownloadTaskEntity
 
 /**
  *
  * @author Madray Haven
  * @date 2022/11/9 11:07
  */
-class DownloadSeasonModel: BaseRecyclerActivity.ArrayViewModel<DownloadSeasonAdapter.SeasonTaskGroup>() {
-    override val Data: MutableLiveData<List<DownloadSeasonAdapter.SeasonTaskGroup>> by lazy {
-        MutableLiveData()
+class DownloadSeasonModel: ViewModel() {
+    val SeasonTasks: LiveData<List<DownloadTaskEntity>> by lazy {
+        Application.Database.DownloadTaskDao().observeAll()
     }
 }

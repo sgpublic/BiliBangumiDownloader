@@ -2,6 +2,7 @@ package io.github.sgpublic.bilidownload.app.activity
 
 import android.content.Context
 import android.content.Intent
+import android.view.MenuItem
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.app.fragment.follows.Follows
@@ -30,6 +31,14 @@ class MyFollows: BaseActivity<ActivityMyFollowsBinding>() {
         TabLayoutMediator(ViewBinding.myFollowsTab, ViewBinding.myFollowsPager) { tab, pos ->
             tab.text = list[pos].getTitle()
         }.attach()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            onBackPressed()
+            return true
+        }
+        return false
     }
 
     override val ViewBinding: ActivityMyFollowsBinding by viewBinding()

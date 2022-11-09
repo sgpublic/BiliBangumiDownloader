@@ -7,6 +7,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.app.activity.About
+import io.github.sgpublic.bilidownload.app.activity.DownloadSeasonList
 import io.github.sgpublic.bilidownload.app.activity.LoginPwd
 import io.github.sgpublic.bilidownload.app.activity.MyFollows
 import io.github.sgpublic.bilidownload.base.app.BaseFragment
@@ -78,7 +79,7 @@ class HomeMine(context: AppCompatActivity): BaseFragment<FragmentHomeMineBinding
             MyFollows.startActivity(context)
         }
         ViewBinding.mineDownload.setOnClickListener {
-//            TaskList.startActivity(context)
+            DownloadSeasonList.startActivity(context)
         }
     }
 }

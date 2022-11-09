@@ -21,8 +21,8 @@ import java.io.File
  * @author Madray Haven
  * @date 2022/11/9 11:18
  */
-class DownloadSeasonAdapter: SelectableArrayAdapter<ItemDownloadSeasonBinding, DownloadSeasonAdapter.SeasonTaskGroup>(),
-    MultiSelectable<DownloadSeasonAdapter.SeasonTaskGroup> {
+class DownloadEpisodeAdapter: SelectableArrayAdapter<ItemDownloadSeasonBinding, DownloadEpisodeAdapter.SeasonTaskGroup>(),
+    MultiSelectable<DownloadEpisodeAdapter.SeasonTaskGroup> {
     init {
         setOnItemLongClickListener longClick@{
             if (isSelectMode()) {
@@ -93,8 +93,6 @@ class DownloadSeasonAdapter: SelectableArrayAdapter<ItemDownloadSeasonBinding, D
             else -> context.getString(R.string.text_download_task_finished, data.totalCount, data.finishedCount)
         }
     }
-
-    override fun getClickableView(ViewBinding: ItemDownloadSeasonBinding) = ViewBinding.root
 
     override val Adapter: SelectableArrayAdapter<*, SeasonTaskGroup> = this
     override var selectMode: Boolean = false
