@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.lxj.xpopup.core.DrawerPopupView
-import io.github.sgpublic.bilidownload.app.ui.list.EpisodeListAdapter
+import io.github.sgpublic.bilidownload.app.ui.list.PlayerEpisodeListAdapter
 import io.github.sgpublic.bilidownload.app.ui.list.QualityListAdapter
 import io.github.sgpublic.bilidownload.core.util.dp
 import io.github.sgpublic.bilidownload.databinding.DialogPlayerPanelBinding
@@ -32,7 +32,7 @@ class PlayerPanel(context: Context) : DrawerPopupView(context) {
         binding.dialogEpisodeListTitle.visibility = View.GONE
     }
 
-    fun setEpisodeAdapter(adapter: EpisodeListAdapter) {
+    fun setEpisodeAdapter(adapter: PlayerEpisodeListAdapter<*>) {
         panelWidth = 320.dp
         val params = binding.dialogPanelList.layoutParams as ConstraintLayout.LayoutParams
         params.width = panelWidth

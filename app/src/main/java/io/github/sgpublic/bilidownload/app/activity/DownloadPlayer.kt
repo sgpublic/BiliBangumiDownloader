@@ -2,21 +2,19 @@ package io.github.sgpublic.bilidownload.app.activity
 
 import android.content.Context
 import android.content.Intent
-import android.view.View
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
-import io.github.sgpublic.bilidownload.app.fragment.player.OnlinePlayer
-import io.github.sgpublic.bilidownload.app.fragment.player.SeasonOnlinePage
-import io.github.sgpublic.bilidownload.app.viewmodel.OnlinePlayerModel
+import io.github.sgpublic.bilidownload.app.fragment.player.LocalPlayer
+import io.github.sgpublic.bilidownload.app.viewmodel.LocalPlayerModel
 import io.github.sgpublic.bilidownload.base.app.BaseFragment
 import io.github.sgpublic.bilidownload.base.app.BaseViewModelActivity
 import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.bilidownload.databinding.ActivityPlayerBinding
 
-class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerModel>() {
+class DownloadPlayer: BaseViewModelActivity<ActivityPlayerBinding, LocalPlayerModel>() {
     override fun beforeCreate() {
         supportFragmentManager.fragmentFactory = BaseFragment.Factory(this)
         super.beforeCreate()
@@ -27,44 +25,33 @@ class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerMod
     }
 
     override fun onViewModelSetup() {
-        ViewModel.SID.observe(this) {
-            if (it <= 0) {
-                Application.onToast(this, R.string.title_season_unknown)
-                ViewBinding.playerLoading?.stopLoad(true)
-            } else {
-                ViewModel.Loading.postValue(true)
-                ViewModel.getSeasonInfo(it)
-            }
-        }
-        ViewModel.SeasonData.observe(this) { season ->
-            ViewBinding.playerToolbarTitle?.text = season.seasonTitle
-        }
-        ViewModel.Loading.observe(this) {
-            if (it) {
-                ViewBinding.playerContent?.visibility = View.GONE
-                ViewBinding.playerLoading?.startLoad()
-            } else {
-                ViewBinding.playerContent?.visibility = View.VISIBLE
-                ViewBinding.playerLoading?.stopLoad()
-            }
-        }
+
     }
 
     override fun onViewSetup() {
         supportFragmentManager.beginTransaction().apply {
-            replace(ViewBinding.playerOrigin.id, OnlinePlayer::class.java, null, "OnlinePlayer")
-            ViewBinding.playerContent?.let {
-                replace(it.id, SeasonOnlinePage::class.java, null, "SeasonPage")
-            }
+            replace(ViewBinding.playerOrigin.id, LocalPlayer::class.java, null, "LocalPlayer")
         }.commit()
+    }
 
-        ViewBinding.playerLoading?.startLoad()
-        ViewBinding.playerToolbar?.let {
-            initViewAtTop(it)
+    private var last: Long = -1
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun onBackPressed() {
+        val now = System.currentTimeMillis()
+        if (last == -1L) {
+            Application.onToast(this, R.string.text_back_local_player_exit)
+            last = now
+        } else {
+            if (now - last < 2000) {
+                super.onBackPressed()
+            } else {
+                last = now
+                Application.onToast(this, R.string.text_back_local_player_exit_notice)
+            }
         }
     }
 
-    override val ViewModel: OnlinePlayerModel by viewModels {
+    override val ViewModel: LocalPlayerModel by viewModels {
         ViewModelFactory(
             intent.getLongExtra(KEY_SEASON_ID, -1),
             intent.getLongExtra(KEY_EPISODE_ID, -1),
@@ -76,11 +63,11 @@ class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerMod
         const val KEY_SEASON_ID = "season_id"
         const val KEY_EPISODE_ID = "ep_id"
 
-        fun startActivity(context: Context, sid: Long, epid: Long? = null) {
+        fun startActivity(context: Context, sid: Long, epid: Long) {
             val intent = Intent(context, SeasonPlayer::class.java)
             intent.putExtra(KEY_SEASON_ID, sid)
-            epid?.let { intent.putExtra(KEY_EPISODE_ID, it) }
-            log.info("SeasonPlayer(sid: $sid, epid: $epid)")
+            intent.putExtra(KEY_EPISODE_ID, epid)
+            log.info("DownloadPlayer(sid: $sid, epid: $epid)")
             context.startActivity(intent)
         }
     }

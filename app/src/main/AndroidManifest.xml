@@ -27,6 +27,8 @@
         <activity android:name=".app.activity.About" />
         <activity android:name=".app.activity.MyFollows" />
         <activity android:name=".app.activity.SeasonPlayer" />
+        <activity android:name=".app.activity.DownloadPlayer"
+            android:screenOrientation="landscape" />
         <activity android:name=".app.activity.DownloadSeasonList" />
         <activity android:name=".app.activity.DownloadEpisodeList" />
         <activity

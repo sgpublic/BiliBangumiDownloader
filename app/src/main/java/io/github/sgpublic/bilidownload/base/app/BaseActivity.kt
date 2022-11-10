@@ -107,14 +107,14 @@ abstract class BaseActivity<VB : ViewBinding>: AppCompatActivity() {
             return
         }
         val now = System.currentTimeMillis()
-        if (last == -1L) {
+        if (last < 0) {
             Application.onToast(this, R.string.text_back_exit)
             last = now
         } else {
             if (now - last < 2000) {
                 Application.finishAll()
             } else {
-                last = now
+                last = -1
                 Application.onToast(this, R.string.text_back_exit_notice)
             }
         }

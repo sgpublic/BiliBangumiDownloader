@@ -196,4 +196,7 @@
     <string name="text_ok">确定</string>
     <string name="text_cancel">取消</string>
     <string name="text_download_start">下载已开始，请等待下载完成</string>
+
+    <string name="text_back_local_player_exit">再点击一次返回</string>
+    <string name="text_back_local_player_exit_notice">请再点击一次返回</string>
 </resources>

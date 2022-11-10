@@ -1,6 +1,9 @@
 package io.github.sgpublic.bilidownload.app.fragment.player
 
+import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.view.View
+import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import bilibili.pgc.gateway.player.v2.Playurl.PlayViewReply
@@ -15,7 +18,7 @@ import com.lxj.xpopup.enums.PopupPosition
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.app.dialog.PlayerPanel
-import io.github.sgpublic.bilidownload.app.ui.list.EpisodeListAdapter
+import io.github.sgpublic.bilidownload.app.ui.list.OnlineEpisodeListAdapter
 import io.github.sgpublic.bilidownload.app.ui.list.QualityListAdapter
 import io.github.sgpublic.bilidownload.app.viewmodel.OnlinePlayerModel
 import io.github.sgpublic.bilidownload.base.app.postValue
@@ -155,7 +158,7 @@ class OnlinePlayer(activity: AppCompatActivity): BasePlayer<OnlinePlayerModel>(a
         val popup = XPopup.Builder(context)
             .popupPosition(PopupPosition.Right)
             .asCustom(panel)
-        val adapter = EpisodeListAdapter()
+        val adapter = OnlineEpisodeListAdapter()
         adapter.setData(list)
         adapter.setSelectedEpid(ViewModel.EpisodeId.value?.first ?: 0)
         panel.setEpisodeAdapter(adapter)
@@ -165,6 +168,16 @@ class OnlinePlayer(activity: AppCompatActivity): BasePlayer<OnlinePlayerModel>(a
             ViewModel.getPlayUrl(it.id, it.cid!!)
             popup.dismiss()
         }
+    }
+
+    @CallSuper
+    override fun onBackPressed(): Boolean {
+        if (context.requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            @SuppressLint("SourceLockedOrientationActivity")
+            context.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            return true
+        }
+        return super.onBackPressed()
     }
 
     override val ViewModel: OnlinePlayerModel by activityViewModels()

@@ -158,16 +158,6 @@ abstract class BasePlayer<VM: BasePlayerModel>(activity: AppCompatActivity)
         return "$h:$s"
     }
 
-    @CallSuper
-    override fun onBackPressed(): Boolean {
-        if (context.requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-            @SuppressLint("SourceLockedOrientationActivity")
-            context.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            return true
-        }
-        return super.onBackPressed()
-    }
-
     override fun onDestroy() {
         setListenDuration(false)
         super.onDestroy()

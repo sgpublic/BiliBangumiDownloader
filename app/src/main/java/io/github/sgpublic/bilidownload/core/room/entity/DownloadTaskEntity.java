@@ -40,6 +40,9 @@ public class DownloadTaskEntity {
     @ColumnInfo(name = "qn")
     private int qn = 80;
 
+    @ColumnInfo(name = "qn_desc")
+    private String qnDesc = "";
+
     @ColumnInfo(name = "task_id")
     private long taskId = -1L;
 
