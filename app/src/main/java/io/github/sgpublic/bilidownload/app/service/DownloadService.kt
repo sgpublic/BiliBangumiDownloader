@@ -60,7 +60,9 @@ class DownloadService: BaseService(), Observer<List<DownloadTaskEntity>> {
         }
         log.info("starting task(epid: ${next.epid}, cid: ${next.cid}, qn: ${next.qn})")
         try {
-            if (next.taskId > 0 && next.status != DownloadTaskEntity.Status.Retry) {
+            next.status = DownloadTaskEntity.Status.Prepare
+            Dao.set(next)
+            if (next.taskId > 0 && !next.isRetry) {
                 val task = Aria.download(this)
                     .loadGroup(next.taskId)
                     .customs()
@@ -88,6 +90,7 @@ class DownloadService: BaseService(), Observer<List<DownloadTaskEntity>> {
                 }
             }
             next.statusMessage = ""
+            next.isRetry = false
             next.status = DownloadTaskEntity.Status.Processing
             log.info("Task started! task_id: ${next.taskId}")
         } catch (e: Exception) {
@@ -222,6 +225,9 @@ class DownloadService: BaseService(), Observer<List<DownloadTaskEntity>> {
         val taskId = (task ?: return).entity.id
         log.warn("Task running, task_id: $taskId")
         val entity = Dao.getByTaskId(taskId)
+        if (checkCanceled(entity)) {
+            return
+        }
 
         NotifyChannel.DownloadInfo.newBuilder(this)
             .setContentTitle(getString(R.string.title_download_service_running, entity.episodeTitle))
@@ -231,6 +237,25 @@ class DownloadService: BaseService(), Observer<List<DownloadTaskEntity>> {
             .setOngoing(true)
             .build()
             .send(getNotifyId(taskId))
+    }
+    @DownloadGroup.onTaskStart
+    fun onTaskStart(task: DownloadGroupTask?) {
+        val taskId = (task ?: return).entity.id
+        log.warn("Task starting, task_id: $taskId")
+        val entity = Dao.getByTaskId(taskId)
+        checkCanceled(entity)
+    }
+
+    private fun checkCanceled(entity: DownloadTaskEntity): Boolean {
+        if (entity.status != DownloadTaskEntity.Status.Canceled) {
+            return false
+        }
+        log.warn("Task canceled, task_id: ${entity.taskId}, stopping...")
+        Aria.download(this)
+            .loadGroup(entity.taskId)
+            .cancel(true)
+        Dao.deleteByEpid(entity.epid)
+        return true
     }
 
     private fun getNotifyId(taskId: Long): Int {

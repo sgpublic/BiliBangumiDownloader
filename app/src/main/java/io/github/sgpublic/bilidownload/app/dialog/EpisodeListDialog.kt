@@ -35,11 +35,7 @@ class EpisodeListDialog(
             adapter.setData(data)
             adapter.setIsSelectable(qn.isNotEmpty())
             adapter.setOnItemClickListener {
-                if (adapter.isSelectMode()) {
-                    adapter.toggleSelection(adapter.getItemPosition(it.id))
-                } else {
-                    onItemClick.invoke(it.id, it.cid!!)
-                }
+                onItemClick.invoke(it.id, it.cid!!)
             }
             tasks.observe(this) {
                 adapter.setDownloadTasks(it)

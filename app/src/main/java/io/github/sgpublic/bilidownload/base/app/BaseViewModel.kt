@@ -2,10 +2,12 @@ package io.github.sgpublic.bilidownload.base.app
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.core.exsp.BangumiPreference
 import io.github.sgpublic.bilidownload.core.exsp.TokenPreference
 import io.github.sgpublic.bilidownload.core.exsp.UserPreference
 import io.github.sgpublic.bilidownload.core.forest.core.BiliApiException
+import io.github.sgpublic.bilidownload.core.room.dao.DownloadTaskDao
 import io.github.sgpublic.bilidownload.core.util.RequestCallback
 import io.github.sgpublic.exsp.ExPreference
 
@@ -15,6 +17,8 @@ abstract class BaseViewModel: ViewModel() {
     data class ExceptionData(var code: Int, var message: String?)
 
     open val Loading: MutableLiveData<Boolean> = MutableLiveData()
+
+    protected val DownloadTaskDao: DownloadTaskDao by lazy { Application.Database.DownloadTaskDao() }
 
     fun <T> newRequestCallback(reply: (T) -> Unit): RequestCallback<T> {
         return object : RequestCallback<T>() {

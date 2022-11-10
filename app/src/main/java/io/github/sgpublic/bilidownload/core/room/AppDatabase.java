@@ -13,7 +13,7 @@ import io.github.sgpublic.bilidownload.core.room.entity.DownloadTaskEntity;
  */
 @Database(
         entities = { DownloadTaskEntity.class },
-        version = 7, exportSchema = false
+        version = 8, exportSchema = false
 )
 @TypeConverters({
         DownloadTaskEntity.Status.Converter.class

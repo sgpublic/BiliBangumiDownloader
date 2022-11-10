@@ -10,7 +10,6 @@ import io.github.sgpublic.bilidownload.base.ui.MultiSelectable
 import io.github.sgpublic.bilidownload.core.forest.data.SeasonInfoResp
 import io.github.sgpublic.bilidownload.core.util.take
 import io.github.sgpublic.bilidownload.databinding.ItemSeasonEpisodeBinding
-import java.util.HashSet
 
 class SeasonEpisodeDialogAdapter: SeasonEpisodeAdapter(),
     MultiSelectable<SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem>{
@@ -22,6 +21,16 @@ class SeasonEpisodeDialogAdapter: SeasonEpisodeAdapter(),
         param.height = RecyclerView.LayoutParams.WRAP_CONTENT
         param.width = RecyclerView.LayoutParams.MATCH_PARENT
         it.root.layoutParams = param
+    }
+
+    override fun setOnItemClickListener(onClick: (SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem) -> Unit) {
+        super.setOnItemClickListener {
+            if (isSelectMode()) {
+                toggleSelection(getItemPosition(it.id))
+            } else {
+                onClick.invoke(it)
+            }
+        }
     }
 
     private var selectable: Boolean = false

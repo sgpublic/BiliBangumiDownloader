@@ -33,6 +33,16 @@ class DownloadSeasonAdapter: SelectableArrayAdapter<ItemDownloadSeasonBinding, D
         }
     }
 
+    override fun setOnItemClickListener(onClick: (SeasonTaskGroup) -> Unit) {
+        super.setOnItemClickListener {
+            if (isSelectMode()) {
+                toggleSelection(getItemPosition(it.seasonId))
+            } else {
+                onClick.invoke(it)
+            }
+        }
+    }
+
     data class SeasonTaskGroup(
         val seasonTitle: String,
         val seasonCover: String,
@@ -95,6 +105,7 @@ class DownloadSeasonAdapter: SelectableArrayAdapter<ItemDownloadSeasonBinding, D
     }
 
     override fun getClickableView(ViewBinding: ItemDownloadSeasonBinding) = ViewBinding.root
+    override fun getLongClickableView(ViewBinding: ItemDownloadSeasonBinding) = ViewBinding.root
 
     override val Adapter: SelectableArrayAdapter<*, SeasonTaskGroup> = this
     override var selectMode: Boolean = false

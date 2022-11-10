@@ -17,13 +17,6 @@ import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.bilidownload.databinding.ActivityPlayerBinding
 
 class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerModel>() {
-    override val ViewModel: OnlinePlayerModel by viewModels {
-        ViewModelFactory(
-            intent.getLongExtra(KEY_SEASON_ID, -1),
-            intent.getLongExtra(KEY_EPISODE_ID, -1),
-        )
-    }
-
     override fun beforeCreate() {
         supportFragmentManager.fragmentFactory = BaseFragment.Factory(this)
         super.beforeCreate()
@@ -67,6 +60,13 @@ class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerMod
         ViewBinding.playerToolbar?.let {
             initViewAtTop(it)
         }
+    }
+
+    override val ViewModel: OnlinePlayerModel by viewModels {
+        ViewModelFactory(
+            intent.getLongExtra(KEY_SEASON_ID, -1),
+            intent.getLongExtra(KEY_EPISODE_ID, -1),
+        )
     }
 
     override val ViewBinding: ActivityPlayerBinding by viewBinding()

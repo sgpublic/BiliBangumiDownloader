@@ -46,6 +46,9 @@ public class DownloadTaskEntity {
     @ColumnInfo(name = "status")
     private Status status = Status.Waiting;
 
+    @ColumnInfo(name = "retry")
+    private boolean retry = false;
+
     @ColumnInfo(name = "status_message")
     private String statusMessage = "";
 
@@ -53,7 +56,7 @@ public class DownloadTaskEntity {
     private long addTime = ApiModule.INSTANCE.getTS_FULL();
 
     public enum Status {
-        Waiting, Processing, Paused, Error, Retry, Finished;
+        Waiting, Prepare, Processing, Paused, Error, Finished, Canceled;
 
         public static class Converter {
             @TypeConverter

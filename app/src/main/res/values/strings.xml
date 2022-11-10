@@ -131,6 +131,7 @@
     <string name="text_download_task_preparing">准备中</string>
     <string name="text_download_task_pausing">正在暂停</string>
     <string name="text_download_task_paused">已暂停</string>
+    <string name="text_download_task_error">错误：%s</string>
 
     <string name="title_download_service">哔哩番剧下载服务</string>
     <string name="title_download_service_running">正在下载：%s</string>

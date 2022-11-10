@@ -1,9 +1,7 @@
 package io.github.sgpublic.bilidownload.core.room.dao;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -33,9 +31,6 @@ public interface DownloadTaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void set(DownloadTaskEntity task);
 
-    @Query("select * from download_task where sid=:sid")
-    LiveData<List<DownloadTaskEntity>> observeBySid(long sid);
-
     @Query("select * from download_task where task_id=:taskId")
     DownloadTaskEntity getByTaskId(long taskId);
 
@@ -43,14 +38,17 @@ public interface DownloadTaskDao {
     LiveData<List<DownloadTaskEntity>> observeProcessing();
 
     @Nullable
-    @Query("select * from download_task where status=='Waiting' or status=='Retry' limit 1")
+    @Query("select * from download_task where status=='Waiting' limit 1")
     DownloadTaskEntity getOneWaiting();
 
     @Query("update download_task set status='Waiting' where status=='Processing'")
     void resetProcessing();
 
-    @Query("select * from download_task")
+    @Query("select * from download_task where status!='Canceled'")
     LiveData<List<DownloadTaskEntity>> observeAll();
+
+    @Query("select * from download_task where sid=:sid and status!='Canceled'")
+    LiveData<List<DownloadTaskEntity>> observeBySid(long sid);
 
     @Query("delete from download_task where sid==:sid")
     void deleteBySid(long sid);

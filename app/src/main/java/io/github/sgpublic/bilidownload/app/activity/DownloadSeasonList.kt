@@ -46,7 +46,6 @@ class DownloadSeasonList: BaseRecyclerActivity<DownloadSeasonAdapter.SeasonTaskG
                     item.totalCount += 1
                     when (entity.status) {
                         DownloadTaskEntity.Status.Waiting,
-                        DownloadTaskEntity.Status.Retry,
                         DownloadTaskEntity.Status.Processing -> {
                             item.runningCount += 1
                         }
@@ -69,7 +68,16 @@ class DownloadSeasonList: BaseRecyclerActivity<DownloadSeasonAdapter.SeasonTaskG
         return false
     }
 
-    override val Adapter = DownloadSeasonAdapter()
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun onBackPressed() {
+        if (Adapter.isSelectMode()) {
+            Adapter.cancelSelectMode()
+            return
+        }
+        super.onBackPressed()
+    }
+
+    override val Adapter by lazy { DownloadSeasonAdapter() }
     override val ViewModel: DownloadSeasonModel by viewModels()
 
     companion object {
