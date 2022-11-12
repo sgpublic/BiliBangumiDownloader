@@ -93,10 +93,10 @@ android {
         buildConfigField("PROJECT_NAME", rootProject.name)
         buildConfigField("TYPE_RELEASE", BuildTypes.TYPE_RELEASE)
         buildConfigField("LEVEL_RELEASE", BuildTypes.LEVEL_RELEASE)
-        buildConfigField("TYPE_DEV", BuildTypes.TYPE_DEV)
-        buildConfigField("LEVEL_DEV", BuildTypes.LEVEL_DEV)
-        buildConfigField("TYPE_SNAPSHOT", BuildTypes.TYPE_SNAPSHOT)
-        buildConfigField("LEVEL_SNAPSHOT", BuildTypes.LEVEL_SNAPSHOT)
+        buildConfigField("TYPE_BETA", BuildTypes.TYPE_BETA)
+        buildConfigField("LEVEL_BETA", BuildTypes.LEVEL_BETA)
+        buildConfigField("TYPE_ALPHA", BuildTypes.TYPE_ALPHA)
+        buildConfigField("LEVEL_ALPHA", BuildTypes.LEVEL_ALPHA)
         buildConfigField("TYPE_DEBUG", BuildTypes.TYPE_DEBUG)
         buildConfigField("LEVEL_DEBUG", BuildTypes.LEVEL_DEBUG)
     }
@@ -123,20 +123,20 @@ android {
             buildConfigField("BUILD_LEVEL", BuildTypes.LEVEL_DEBUG)
         }
         if (signInfoExit) {
-            register(BuildTypes.TYPE_DEV) {
+            register(BuildTypes.TYPE_BETA) {
                 val suffix = VersionGen.GIT_HEAD
                 versionNameSuffix = "-$suffix-$name"
                 isDebuggable = true
                 buildConfigField("VERSION_SUFFIX", suffix)
-                buildConfigField("BUILD_LEVEL", BuildTypes.LEVEL_DEV)
+                buildConfigField("BUILD_LEVEL", BuildTypes.LEVEL_BETA)
             }
-            register(BuildTypes.TYPE_SNAPSHOT) {
+            register(BuildTypes.TYPE_ALPHA) {
                 val suffix = VersionGen.TIME_MD5
                 defaultConfig.versionCode = VersionGen.DATED_VERSION
                 isDebuggable = true
                 versionNameSuffix = "-$suffix-$name"
                 buildConfigField("VERSION_SUFFIX", suffix)
-                buildConfigField("BUILD_LEVEL", BuildTypes.LEVEL_SNAPSHOT)
+                buildConfigField("BUILD_LEVEL", BuildTypes.LEVEL_ALPHA)
             }
         }
     }

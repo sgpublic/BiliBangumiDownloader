@@ -5,5 +5,5 @@ import io.github.sgpublic.bilidownload.BuildConfig
 import io.github.sgpublic.bilidownload.core.util.take
 
 class FileFilter: AutoLevelFilter(
-    (BuildConfig.BUILD_TYPE == BuildConfig.TYPE_SNAPSHOT).take(Level.DEBUG, Level.INFO)
+    (BuildConfig.BUILD_LEVEL < BuildConfig.LEVEL_RELEASE).take(Level.DEBUG, Level.INFO)
 )

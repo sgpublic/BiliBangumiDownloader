@@ -88,6 +88,8 @@ abstract class BasePlayerModel: BaseViewModel(), Player.Listener {
         controllerDismissTimer?.cancel()
     }
 
+    val QualityDesc: MutableLiveData<String> = MutableLiveData()
+
     @CallSuper
     override fun onCleared() {
         cancelControllerDismissWithDelay()

@@ -74,6 +74,7 @@ class DownloadSeasonList: BaseRecyclerActivity<DownloadSeasonAdapter.SeasonTaskG
             Adapter.cancelSelectMode()
             return
         }
+        @Suppress("DEPRECATION")
         super.onBackPressed()
     }
 

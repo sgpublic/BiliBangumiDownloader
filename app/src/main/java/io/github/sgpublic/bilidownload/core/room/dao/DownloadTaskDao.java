@@ -53,6 +53,9 @@ public interface DownloadTaskDao {
     @Query("select * from download_task where sid=:sid and status=='Finished'")
     LiveData<List<DownloadTaskEntity>> observeBySidWhereFinished(long sid);
 
+    @Query("select * from download_task where epid=:epid")
+    DownloadTaskEntity getByEpid(long epid);
+
     @Query("delete from download_task where sid==:sid")
     void deleteBySid(long sid);
 

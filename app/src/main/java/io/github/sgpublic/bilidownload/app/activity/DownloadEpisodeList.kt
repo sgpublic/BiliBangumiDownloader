@@ -52,6 +52,9 @@ class DownloadEpisodeList: BaseRecyclerActivity<DownloadTaskEntity, ItemDownload
                         .loadGroup(it.taskId)
                         .resume()
                 }
+                DownloadTaskEntity.Status.Finished -> {
+                    DownloadPlayer.startActivity(this, it.sid, it.epid)
+                }
                 else -> { }
             }
         }
@@ -65,6 +68,7 @@ class DownloadEpisodeList: BaseRecyclerActivity<DownloadTaskEntity, ItemDownload
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
+            @Suppress("DEPRECATION")
             onBackPressed()
             return true
         }
@@ -77,6 +81,7 @@ class DownloadEpisodeList: BaseRecyclerActivity<DownloadTaskEntity, ItemDownload
             Adapter.cancelSelectMode()
             return
         }
+        @Suppress("DEPRECATION")
         super.onBackPressed()
     }
 

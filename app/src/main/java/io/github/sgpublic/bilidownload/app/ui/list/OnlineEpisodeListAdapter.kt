@@ -21,4 +21,6 @@ class OnlineEpisodeListAdapter:
     override fun isSelected(data: SeasonInfoData.Episodes.EpisodesData.EpisodesItem): Boolean {
         return getSelectedItem().id == data.id
     }
+
+    override fun getItemId(position: Int) = getItem(position).id
 }

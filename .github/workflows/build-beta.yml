@@ -1,4 +1,4 @@
-name: Assemble Release
+name: Assemble Beta
 
 on:
   workflow_dispatch:
@@ -13,6 +13,7 @@ jobs:
       with:
         token: ${{ secrets.TOKEN }}
         submodules: 'recursive'
+
 
     - name: Initialization environment
       env:
@@ -41,7 +42,7 @@ jobs:
 
     - name: Build with Gradle
       run: |
-        bash ./gradlew assembleReleaseAndLocate
+        bash ./gradlew assembleBetaAndLocate
 
     - name: Organize files
       run: |
@@ -61,6 +62,7 @@ jobs:
         file: "/workdir/*"
         overwrite: true
         file_glob: true
+        prerelease: true
 
     - name: Delete workflow runs
       uses: GitRML/delete-workflow-runs@main
@@ -76,6 +78,6 @@ jobs:
       with:
         release-drop: false
         pre-release-drop: true
-        pre-release-keep-count: -1
+        pre-release-keep-count: 0
         pre-release-drop-tag: true
         draft-drop: true

@@ -22,12 +22,12 @@ import okhttp3.internal.closeQuietly
 import java.util.*
 
 class OnlinePlayerModel(sid: Long, epid: Long): BasePlayerModel() {
-    val SID: MutableLiveData<Long> by lazy {
-        getSeasonInfo(sid)
-        MutableLiveData(sid)
-    }
+    val SID: MutableLiveData<Long> = MutableLiveData(sid)
     val EpisodeId: MutableLiveData<Pair<Long, Long>> = MutableLiveData(epid to -1)
-    val SeasonData: MutableLiveData<SeasonInfoResp.SeasonInfoData> = MutableLiveData()
+    val SeasonData: MutableLiveData<SeasonInfoResp.SeasonInfoData> by lazy {
+        getSeasonInfo(sid)
+        MutableLiveData()
+    }
     val EpisodeList: HashMap<Long, SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem> = LinkedHashMap()
     fun getSeasonInfo(sid: Long) {
         ForestClients.Api.seasonInfoV2(
@@ -71,7 +71,6 @@ class OnlinePlayerModel(sid: Long, epid: Long): BasePlayerModel() {
         this.onResolvePlayData = onResolvePlayData
     }
     val QualityData: LinkedHashMap<Int, String> = LinkedHashMap()
-    val QualityDesc: MutableLiveData<String> = MutableLiveData()
     fun getPlayUrl(epid: Long, cid: Long) {
         log.info("getPlayUrl(epid: $epid, cid: $cid)")
         EpisodeId.postValue(epid to cid)

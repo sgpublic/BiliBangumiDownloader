@@ -7,7 +7,6 @@ import org.gradle.internal.os.OperatingSystem
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
-import java.util.*
 
 object ApkUtil {
     fun assembleAndLocate(name: String, outputFile: File, targetPath: String) {
@@ -23,9 +22,9 @@ object ApkUtil {
             it.apkMeta.let { meta ->
                 if (name.contains(BuildTypes.TYPE_RELEASE)) {
                     return@let " V${meta.versionName}(${meta.versionCode})"
-                } else if (name.contains(BuildTypes.TYPE_DEV)) {
+                } else if (name.contains(BuildTypes.TYPE_BETA)) {
                     return@let "_${meta.versionName}"
-                } else if (name.contains(BuildTypes.TYPE_SNAPSHOT)) {
+                } else if (name.contains(BuildTypes.TYPE_ALPHA)) {
                     return@let "_${meta.versionName}"
                 } else {
                     return

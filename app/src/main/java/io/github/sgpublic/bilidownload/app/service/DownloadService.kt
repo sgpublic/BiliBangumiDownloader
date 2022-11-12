@@ -116,6 +116,7 @@ class DownloadService: BaseService(), Observer<List<DownloadTaskEntity>> {
         }
         val video = fitted.peek().also { fitted.clear() } ?: min!!
         task.qn = video.info.quality
+        task.qnDesc = video.info.newDescription
         val audio = execute.videoInfo.dashAudioList.find {
             it.id == video.dashVideo.audioId
         } ?: throw Exception("找不到合适的清晰度")
@@ -223,7 +224,7 @@ class DownloadService: BaseService(), Observer<List<DownloadTaskEntity>> {
     @DownloadGroup.onTaskRunning
     fun onTaskRunning(task: DownloadGroupTask?) {
         val taskId = (task ?: return).entity.id
-        log.warn("Task running, task_id: $taskId")
+        log.debug("Task running, task_id: $taskId")
         val entity = Dao.getByTaskId(taskId)
         if (checkCanceled(entity)) {
             return
@@ -241,7 +242,7 @@ class DownloadService: BaseService(), Observer<List<DownloadTaskEntity>> {
     @DownloadGroup.onTaskStart
     fun onTaskStart(task: DownloadGroupTask?) {
         val taskId = (task ?: return).entity.id
-        log.warn("Task starting, task_id: $taskId")
+        log.info("Task starting, task_id: $taskId")
         val entity = Dao.getByTaskId(taskId)
         checkCanceled(entity)
     }
@@ -250,7 +251,7 @@ class DownloadService: BaseService(), Observer<List<DownloadTaskEntity>> {
         if (entity.status != DownloadTaskEntity.Status.Canceled) {
             return false
         }
-        log.warn("Task canceled, task_id: ${entity.taskId}, stopping...")
+        log.info("Task canceled, task_id: ${entity.taskId}, stopping...")
         Aria.download(this)
             .loadGroup(entity.taskId)
             .cancel(true)

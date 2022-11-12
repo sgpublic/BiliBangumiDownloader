@@ -11,4 +11,6 @@ class LocalEpisodeListAdapter:
     override fun isSelected(data: DownloadTaskEntity): Boolean {
         return getSelectedItem().epid == data.epid
     }
+
+    override fun getItemId(position: Int) = getItem(position).epid
 }

@@ -15,7 +15,7 @@ abstract class PlayerEpisodeListAdapter<T: Any> :
     private val idTmp = HashMap<Long, Int>()
     override fun setData(list: Collection<T>) {
         super.setData(list)
-        list.forEachIndexed { index, item ->
+        list.forEachIndexed { index, _ ->
             idTmp[getItemId(index)] = index
         }
     }

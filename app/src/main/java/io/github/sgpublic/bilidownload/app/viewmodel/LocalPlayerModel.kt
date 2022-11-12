@@ -4,9 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.github.sgpublic.bilidownload.core.room.entity.DownloadTaskEntity
 
-class LocalPlayerModel(sid: Long, epid: Long): BasePlayerModel() {
+class LocalPlayerModel(val SID: Long, epid: Long): BasePlayerModel() {
     val EpisodeList: LiveData<List<DownloadTaskEntity>> by lazy {
-        DownloadTaskDao.observeBySidWhereFinished(sid)
+        DownloadTaskDao.observeBySidWhereFinished(SID)
     }
     val EpisodeId: MutableLiveData<Long> = MutableLiveData(epid)
+
+    val PlayerData: MutableLiveData<DownloadTaskEntity> by lazy {
+        MutableLiveData(DownloadTaskDao.getByEpid(epid))
+    }
 }

@@ -2,29 +2,39 @@ package io.github.sgpublic.bilidownload.app.activity
 
 import android.content.Context
 import android.content.Intent
-import androidx.activity.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
 import io.github.sgpublic.bilidownload.Application
 import io.github.sgpublic.bilidownload.R
 import io.github.sgpublic.bilidownload.app.fragment.player.LocalPlayer
-import io.github.sgpublic.bilidownload.app.viewmodel.LocalPlayerModel
-import io.github.sgpublic.bilidownload.base.app.BaseFragment
-import io.github.sgpublic.bilidownload.base.app.BaseViewModelActivity
+import io.github.sgpublic.bilidownload.base.app.BaseActivity
 import io.github.sgpublic.bilidownload.core.util.log
 import io.github.sgpublic.bilidownload.databinding.ActivityPlayerBinding
 
-class DownloadPlayer: BaseViewModelActivity<ActivityPlayerBinding, LocalPlayerModel>() {
+class DownloadPlayer: BaseActivity<ActivityPlayerBinding>() {
     override fun beforeCreate() {
-        supportFragmentManager.fragmentFactory = BaseFragment.Factory(this)
+        supportFragmentManager.fragmentFactory = object : FragmentFactory() {
+            override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
+                val clazz = loadFragmentClass(classLoader, className)
+                return if (LocalPlayer::class.java.isAssignableFrom(clazz)) {
+                    clazz.getConstructor(
+                        Long::class.java, Long::class.java,
+                        AppCompatActivity::class.java,
+                    ).newInstance(
+                        intent.getLongExtra(KEY_SEASON_ID, -1),
+                        intent.getLongExtra(KEY_EPISODE_ID, -1),
+                        this@DownloadPlayer,
+                    )
+                } else {
+                    super.instantiate(classLoader, className)
+                }
+            }
+        }
         super.beforeCreate()
     }
 
     override fun onActivityCreated(hasSavedInstanceState: Boolean) {
-
-    }
-
-    override fun onViewModelSetup() {
 
     }
 
@@ -43,6 +53,7 @@ class DownloadPlayer: BaseViewModelActivity<ActivityPlayerBinding, LocalPlayerMo
             last = now
         } else {
             if (now - last < 2000) {
+                @Suppress("DEPRECATION")
                 super.onBackPressed()
             } else {
                 last = now
@@ -51,34 +62,17 @@ class DownloadPlayer: BaseViewModelActivity<ActivityPlayerBinding, LocalPlayerMo
         }
     }
 
-    override val ViewModel: LocalPlayerModel by viewModels {
-        ViewModelFactory(
-            intent.getLongExtra(KEY_SEASON_ID, -1),
-            intent.getLongExtra(KEY_EPISODE_ID, -1),
-        )
-    }
-
     override val ViewBinding: ActivityPlayerBinding by viewBinding()
     companion object {
         const val KEY_SEASON_ID = "season_id"
         const val KEY_EPISODE_ID = "ep_id"
 
         fun startActivity(context: Context, sid: Long, epid: Long) {
-            val intent = Intent(context, SeasonPlayer::class.java)
+            val intent = Intent(context, DownloadPlayer::class.java)
             intent.putExtra(KEY_SEASON_ID, sid)
             intent.putExtra(KEY_EPISODE_ID, epid)
             log.info("DownloadPlayer(sid: $sid, epid: $epid)")
             context.startActivity(intent)
-        }
-    }
-
-    private class ViewModelFactory(
-        private val sid: Long,
-        private val epid: Long,
-    ): ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return modelClass.getConstructor(Long::class.java, Long::class.java)
-                .newInstance(sid, epid)
         }
     }
 }

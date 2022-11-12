@@ -126,6 +126,9 @@ abstract class BasePlayer<VM: BasePlayerModel>(activity: AppCompatActivity)
                 }
             }
         }
+        ViewModel.QualityDesc.observe(this) {
+            ViewBinding.playerControllerQuality?.text = it
+        }
     }
 
     private var durationListener: Timer? = null

@@ -13,3 +13,5 @@ fun File.writeAndClose(content: String, charset: Charset = Charsets.UTF_8) {
         it.closeQuietly()
     }
 }
+
+fun File.child(name: String) = File(this, name)

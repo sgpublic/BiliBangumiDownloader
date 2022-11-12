@@ -39,7 +39,6 @@ class OnlinePlayer(activity: AppCompatActivity): BasePlayer<OnlinePlayerModel>(a
 
     override fun onViewSetup() {
         super.onViewSetup()
-        ViewBinding.playerControllerQuality?.visibility = View.VISIBLE
         ViewBinding.playerControllerQuality?.setOnClickListener {
             openQualityListPanel()
         }
@@ -82,9 +81,6 @@ class OnlinePlayer(activity: AppCompatActivity): BasePlayer<OnlinePlayerModel>(a
                 ViewBinding.playerPlayerCover?.visibility = View.GONE
             }
         }
-        ViewModel.QualityDesc.observe(this) {
-            ViewBinding.playerControllerQuality?.text = it
-        }
     }
 
     private fun onPlay(data: PlayViewReply) {
@@ -116,7 +112,7 @@ class OnlinePlayer(activity: AppCompatActivity): BasePlayer<OnlinePlayerModel>(a
 //        if (index.subtitles.isNotEmpty()) {
 //            val subtitle = index.subtitles[0]
 //            subtitleUrl = subtitle.subtitle_url
-//            // TODO 显示字幕
+            // TODO 显示字幕
 ////                mediaSource.add(factory.createMediaSource(
 ////                    MediaItem.Builder().setUri(subtitle.subtitle_url)
 ////                        .setMimeType(MimeTypes.TEXT_VTT).build()
@@ -160,7 +156,9 @@ class OnlinePlayer(activity: AppCompatActivity): BasePlayer<OnlinePlayerModel>(a
             .asCustom(panel)
         val adapter = OnlineEpisodeListAdapter()
         adapter.setData(list)
-        adapter.setSelectedEpid(ViewModel.EpisodeId.value?.first ?: 0)
+        ViewModel.EpisodeId.observe(popup) {
+            adapter.setSelectedEpid(it.first)
+        }
         panel.setEpisodeAdapter(adapter)
         popup.show()
         adapter.setOnItemClickListener {
