@@ -84,7 +84,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        "sgpublic/BiliBangumiDownloader_Kotlin".let {
+        "sgpublic/BiliBangumiDownloader".let {
             buildConfigField("GITHUB_REPO", it)
             val repo = it.split("/")
             buildConfigField("GITHUB_AUTHOR", repo[0])
@@ -188,12 +188,12 @@ kapt {
 }
 
 dependencies {
-    implementation("androidx.test.ext:junit-ktx:1.1.3")
+    implementation("androidx.test.ext:junit-ktx:1.1.4")
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
-    androidTestImplementation("androidx.test:runner:1.4.0")
-    androidTestImplementation("androidx.test:rules:1.4.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.4")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
+    androidTestImplementation("androidx.test:runner:1.5.1")
+    androidTestImplementation("androidx.test:rules:1.5.0")
     implementation(kotlin("reflect"))
 
     implementation("androidx.core:core-ktx:1.9.0")
@@ -224,6 +224,10 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:${Dep.Lombok}")
     annotationProcessor("org.projectlombok:lombok:${Dep.Lombok}")
+    testCompileOnly("org.projectlombok:lombok:${Dep.Lombok}")
+    testAnnotationProcessor("org.projectlombok:lombok:${Dep.Lombok}")
+    androidTestCompileOnly("org.projectlombok:lombok:${Dep.Lombok}")
+    androidTestAnnotationProcessor("org.projectlombok:lombok:${Dep.Lombok}")
 
     implementation("androidx.room:room-runtime:${Dep.Room}")
     annotationProcessor("androidx.room:room-compiler:${Dep.Room}")

@@ -46,6 +46,10 @@ class SeasonOnlinePage(activity: AppCompatActivity): BaseViewModelFragment<Fragm
                 seriesList.addAll(item.data.seasons)
             }
             adapter.setSeries(seriesList)
+            adapter.setOnSeriesClick {
+                loadNewSeason(it)
+            }
+
             adapter.setOnChoseEpisodeClick {
                 val dialog = EpisodeListDialog(
                     context, season.refineCover, ViewModel.EpisodeList.values,
@@ -66,11 +70,9 @@ class SeasonOnlinePage(activity: AppCompatActivity): BaseViewModelFragment<Fragm
 
             adapter.setEpisode(ViewModel.EpisodeList.values)
             adapter.setOnRecommendEpisodeClick { sid, epid ->
-                if (sid != ViewModel.SID.value) {
-                    ViewModel.EpisodeId.postValue((epid ?: -1) to -1)
-                    ViewModel.SID.postValue(sid)
-                }
+                loadNewSeason(sid, epid)
             }
+
             adapter.setOnResourceItemClickListener {
                 XPopup.Builder(context).showAsOutsideConfirm {
                     IntentUtil.openUrl(it)
@@ -90,6 +92,19 @@ class SeasonOnlinePage(activity: AppCompatActivity): BaseViewModelFragment<Fragm
         ViewModel.DownloadTasks.observe(this) {
             adapter.setDownloadTask(it)
         }
+    }
+
+    private fun loadNewSeason(sid: Long, epid: Long? = null) {
+        if (sid == ViewModel.SID.value) {
+            return
+        }
+        ViewModel.Player.stop()
+        ViewModel.Loading.postValue(true)
+        ViewBinding.root.smoothScrollToPosition(0)
+        ViewModel.getSeasonInfo(sid)
+        adapter.reset()
+        ViewModel.SID.postValue(sid)
+        ViewModel.EpisodeId.postValue((epid ?: -1) to -1)
     }
 
     override val ViewModel: OnlinePlayerModel by activityViewModels()

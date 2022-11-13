@@ -61,13 +61,26 @@ class SeasonOnlinePageAdapter: ViewBindingRecyclerAdapter() {
         }
     }
 
+    fun reset() {
+        setSeasonInfo(null)
+        setSeries(listOf())
+        setEpisode(listOf())
+        setRecommend(listOf())
+    }
+
     private var season: SeasonInfoData? = null
-    fun setSeasonInfo(season: SeasonInfoData) {
+    fun setSeasonInfo(season: SeasonInfoData?) {
         this.season = season
+        notifyItemChanged(0)
     }
     private val seriesAdapter: SeriesListAdapter by lazy { SeriesListAdapter() }
     fun setSeries(list: Collection<SeasonInfoData.Seasons.SeasonData.SeasonItem>) {
         seriesAdapter.setData(list)
+    }
+    fun setOnSeriesClick(onClick: (Long) -> Unit) {
+        seriesAdapter.setOnItemClickListener {
+            onClick.invoke(it.seasonId!!)
+        }
     }
     private val episodeAdapter: SeasonEpisodeAdapter by lazy { SeasonEpisodeAdapter() }
     fun setEpisode(list: Collection<SeasonInfoData.Episodes.EpisodesData.EpisodesItem>) {

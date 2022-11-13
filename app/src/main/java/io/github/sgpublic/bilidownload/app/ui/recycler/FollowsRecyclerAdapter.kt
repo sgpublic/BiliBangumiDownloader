@@ -90,7 +90,7 @@ class FollowsRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             .withCrossFade()
             .centerCrop()
             .into(holder.ViewBinding.followImage)
-        holder.ViewBinding.root.setOnClickListener {
+        holder.ViewBinding.followBase.setOnClickListener {
             onEpisodeClickListener.invoke(data.seasonId ?: return@setOnClickListener)
         }
     }

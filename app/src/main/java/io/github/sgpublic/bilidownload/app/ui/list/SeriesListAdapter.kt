@@ -39,6 +39,6 @@ class SeriesListAdapter : ArrayListAdapter<SeasonInfoResp.SeasonInfoData.Seasons
     }
 
     override fun getClickableView(ViewBinding: ItemBangumiFollowBinding): View {
-        return ViewBinding.root
+        return ViewBinding.followBase
     }
 }

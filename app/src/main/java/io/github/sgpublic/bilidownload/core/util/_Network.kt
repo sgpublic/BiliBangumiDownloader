@@ -18,6 +18,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okio.Closeable
+import java.util.concurrent.TimeUnit
 
 object ForestClients {
     val Passport: PassportClient by lazy { Forest.client(PassportClient::class.java) }
@@ -107,7 +109,7 @@ class GrpcRequest<ReqT: GeneratedMessageLite<ReqT, *>,
                     val status = when (case) {
                         is StatusRuntimeException -> case.status to case.trailers
                         is StatusException -> case.status to case.trailers
-                        else -> RequestCallback.CODE_NETWORK_UNKNOWN to null
+                        else -> Status.UNKNOWN to null
                     }
                     // TODO 解析错误信息
                     return@withContext
@@ -119,5 +121,70 @@ class GrpcRequest<ReqT: GeneratedMessageLite<ReqT, *>,
 
     fun execute(): ReplyT {
         return ClientCalls.blockingUnaryCall(channel, method, CallOptions.DEFAULT, req)
+    }
+}
+
+class LazyChannel<T: ManagedChannel>(initializer: () -> T): Lazy<T>, ManagedChannel(), Closeable {
+    private val channel: Lazy<T> = lazy(initializer)
+
+    override val value: T by channel
+
+    override fun isInitialized() = channel.isInitialized()
+
+    override fun <RequestT : Any?, ResponseT : Any?> newCall(
+        methodDescriptor: MethodDescriptor<RequestT, ResponseT>?,
+        callOptions: CallOptions?
+    ): ClientCall<RequestT, ResponseT> {
+        return value.newCall(methodDescriptor, callOptions)
+    }
+
+    override fun authority() = value.authority()
+
+    override fun shutdown(): LazyChannel<T> {
+        if (isInitialized()) {
+            value.shutdown()
+        }
+        return this
+    }
+
+    override fun isShutdown(): Boolean {
+        return if (!isInitialized()) {
+            true
+        } else {
+            value.isShutdown
+        }
+    }
+
+    override fun isTerminated() = value.isTerminated
+
+    override fun shutdownNow(): ManagedChannel {
+        if (isInitialized()) {
+            value.shutdown()
+        }
+        return this
+    }
+
+    override fun awaitTermination(timeout: Long, unit: TimeUnit?): Boolean {
+        return value.awaitTermination(timeout, unit)
+    }
+
+    override fun getState(requestConnection: Boolean): ConnectivityState {
+        return value.getState(requestConnection)
+    }
+
+    override fun notifyWhenStateChanged(source: ConnectivityState?, callback: Runnable?) {
+        return value.notifyWhenStateChanged(source, callback)
+    }
+
+    override fun resetConnectBackoff() {
+        return value.resetConnectBackoff()
+    }
+
+    override fun enterIdle() {
+        return value.enterIdle()
+    }
+
+    override fun close() {
+        shutdown()
     }
 }

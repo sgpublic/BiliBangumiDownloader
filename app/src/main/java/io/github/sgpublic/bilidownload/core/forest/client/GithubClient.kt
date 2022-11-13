@@ -4,6 +4,7 @@ import com.dtflys.forest.annotation.Address
 import com.dtflys.forest.annotation.Get
 import com.dtflys.forest.http.ForestRequest
 import com.google.gson.JsonObject
+import io.github.sgpublic.bilidownload.BuildConfig
 
 /**
  *
@@ -15,6 +16,6 @@ import com.google.gson.JsonObject
     host = "api.github.com"
 )
 interface GithubClient {
-    @Get("/repos/sgpublic/BiliBangumiDownloader/releases/latest")
+    @Get("/repos/${BuildConfig.GITHUB_REPO}/releases/latest")
     fun getRelease(): ForestRequest<JsonObject>
 }

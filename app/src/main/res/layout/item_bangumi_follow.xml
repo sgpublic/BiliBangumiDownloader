@@ -5,11 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <com.google.android.material.card.MaterialCardView
-        style="?materialCardViewFilledStyle"
+        android:id="@+id/follow_base"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="6dp"
         android:clickable="true"
+        style="?materialCardViewFilledStyle"
         app:cardElevation="4dp"
         app:cardBackgroundColor="@color/colorOnPrimary"
         app:cardCornerRadius="8dp">

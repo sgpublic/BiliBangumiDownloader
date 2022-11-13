@@ -42,27 +42,21 @@ class OnlinePlayerModel(sid: Long, epid: Long): BasePlayerModel() {
             (EpisodeList[EpisodeId.value ?: -1] ?: ArrayList(EpisodeList.values)[0]).let { episode ->
                 getPlayUrl(episode.id, episode.cid!!)
             }
+            ForestClients.Api.seasonRecommend(
+                sid, TokenPreference.accessToken
+            ).biliapi(object : RequestCallback<SeasonRecommendResp.SeasonRecommend>() {
+                override fun onFailure(code: Int, message: String?) {
+
+                }
+
+                override fun onResponse(data: SeasonRecommendResp.SeasonRecommend) {
+                    SeasonRecommend.postValue(data)
+                }
+            }, viewModelScope)
         }, viewModelScope)
     }
 
-    val SeasonRecommend: MutableLiveData<SeasonRecommendResp.SeasonRecommend> by lazy {
-        getSeasonRecommend(sid)
-        MutableLiveData()
-    }
-
-    fun getSeasonRecommend(sid: Long) {
-        ForestClients.Api.seasonRecommend(
-            sid, TokenPreference.accessToken
-        ).biliapi(object : RequestCallback<SeasonRecommendResp.SeasonRecommend>() {
-            override fun onFailure(code: Int, message: String?) {
-
-            }
-
-            override fun onResponse(data: SeasonRecommendResp.SeasonRecommend) {
-                SeasonRecommend.postValue(data)
-            }
-        }, viewModelScope)
-    }
+    val SeasonRecommend: MutableLiveData<SeasonRecommendResp.SeasonRecommend> = MutableLiveData()
 
     private val AppClient: AppClient by lazy { AppClient() }
 
