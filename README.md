@@ -1,5 +1,7 @@
 # 哔哩番剧
 
+![GitHub all releases](https://img.shields.io/github/downloads/sgpublic/BiliBangumiDownloader/total) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/sgpublic/BiliBangumiDownloader) ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/sgpublic/BiliBangumiDownloader?include_prereleases)
+
 哔哩番剧正在迁移至Kotlin，Java实现项目地址：[BiliBangumiDownloader_Java](https://github.com/SGPublic/BiliBangumiDownloader_Java)
 
 ## 申明
