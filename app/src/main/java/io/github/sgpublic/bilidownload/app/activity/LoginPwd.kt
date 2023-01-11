@@ -155,17 +155,17 @@ class LoginPwd: BaseViewModelActivity<ActivityLoginPwdBinding, LoginPwdModel>() 
 
     private fun validatePhone(url: String) {
         log.debug("校验手机号：$url")
-        val realUrl = when {
-            url.contains("/h5-app/passport/risk/verify") -> {
-                // TODO 这里只是简单做替换，新的验证页需要拦截 POST 请求，未完待续
-                url.replace(
-                    "/h5-app/passport/risk/verify",
-                    "/account/mobile/security/managephone/phone/verify",
-                )
-            }
-            else -> url
-        }
-        phoneValidate.launch(realUrl)
+//        val realUrl = when {
+//            url.contains("/h5-app/passport/risk/verify") -> {
+//                // TODO 这里只是简单做替换，新的验证页需要拦截 POST 请求，未完待续
+//                url.replace(
+//                    "/h5-app/passport/risk/verify",
+//                    "/account/mobile/security/managephone/phone/verify",
+//                )
+//            }
+//            else -> url
+//        }
+        phoneValidate.launch(url)
     }
 
     override fun onViewSetup() {

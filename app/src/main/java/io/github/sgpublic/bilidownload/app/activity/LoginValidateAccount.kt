@@ -162,7 +162,6 @@ class LoginValidateAccount: BaseActivity<ActivityWebviewBinding>() {
     /** 适用于 /h5-app/passport/risk/verify 的校验规则 */
     private class PhoneValidateClientB(callback: Callback): PhoneValidateClient(callback) {
         private var verifyBody: String? = null
-        private lateinit var url: String
 
         override fun onAttachToWebView(webView: WebView, url: String) {
             webView.addJavascriptInterface(Injection {
@@ -210,10 +209,11 @@ class LoginValidateAccount: BaseActivity<ActivityWebviewBinding>() {
                         )
                         .addHeader(mapOf(
                             "Origin" to "https://passport.bilibili.com",
-                            "Referer" to this.url,
+                            "Referer" to request.url,
                         ))
                         .execute(JsonObject::class.java)
                     callback.onConfirm(resp.getAsJsonObject("data").get("code").asString)
+                    resp.getAsJsonObject("data").addProperty("code", "-1")
                     return WebResourceResponse("application/json", "UTF-8", resp.toString().byteInputStream())
                 } catch (e: Exception) {
                     log.error("校验请求提交错误", e)
