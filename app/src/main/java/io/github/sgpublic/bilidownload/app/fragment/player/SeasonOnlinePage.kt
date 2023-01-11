@@ -103,7 +103,6 @@ class SeasonOnlinePage(activity: AppCompatActivity): BaseViewModelFragment<Fragm
         ViewBinding.root.smoothScrollToPosition(0)
         ViewModel.getSeasonInfo(sid)
         adapter.reset()
-        ViewModel.SID.postValue(sid)
         ViewModel.EpisodeId.postValue((epid ?: -1) to -1)
     }
 

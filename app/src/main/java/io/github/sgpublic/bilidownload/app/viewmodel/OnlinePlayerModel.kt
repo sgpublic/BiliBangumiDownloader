@@ -29,7 +29,9 @@ class OnlinePlayerModel(sid: Long, epid: Long): BasePlayerModel() {
         MutableLiveData()
     }
     val EpisodeList: HashMap<Long, SeasonInfoResp.SeasonInfoData.Episodes.EpisodesData.EpisodesItem> = LinkedHashMap()
+
     fun getSeasonInfo(sid: Long) {
+        SID.postValue(sid)
         ForestClients.Api.seasonInfoV2(
             sid, TokenPreference.accessToken
         ).biliapi(newRequestCallback { data ->

@@ -31,9 +31,6 @@ class SeasonPlayer: BaseViewModelActivity<ActivityPlayerBinding, OnlinePlayerMod
             if (it <= 0) {
                 Application.onToast(this, R.string.title_season_unknown)
                 ViewBinding.playerLoading?.stopLoad(true)
-            } else {
-                ViewModel.Loading.postValue(true)
-                ViewModel.getSeasonInfo(it)
             }
         }
         ViewModel.SeasonData.observe(this) { season ->
