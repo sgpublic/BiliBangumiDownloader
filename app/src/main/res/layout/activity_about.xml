@@ -49,32 +49,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:background="@color/color_mine_parting" />
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="55dp">
-                <ProgressBar
-                    android:id="@+id/about_progress"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:visibility="invisible"
-                    android:layout_gravity="end|center"
-                    android:layout_marginEnd="30dp" />
-                <TextView
-                    android:id="@+id/about_update"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingStart="30dp"
-                    android:paddingEnd="30dp"
-                    android:gravity="center_vertical"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:text="@string/title_about_update"
-                    android:textSize="16sp"
-                    android:textColor="@color/color_text_normal" />
-            </FrameLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/color_mine_parting" />
             <TextView
                 android:id="@+id/about_opensource"
                 android:layout_width="match_parent"
