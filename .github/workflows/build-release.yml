@@ -70,7 +70,7 @@ jobs:
         keep_minimum_runs: 1
 
     - name: Remove old release
-      uses: sgpublic/delete-release-action@v1.0
+      uses: sgpublic/delete-release-action@v1.1
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
       with:
