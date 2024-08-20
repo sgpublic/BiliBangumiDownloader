@@ -1,0 +1,43 @@
+name: Assemble Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3.1.0
+      with:
+        token: ${{ secrets.PUBLISHING_GITHUB_TOKEN }}
+        submodules: 'recursive'
+
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo timedatectl set-timezone "Asia/Shanghai"
+
+    - name: Setup JDK 17
+      uses: oracle-actions/setup-java@v1
+      with:
+        website: oracle.com
+        release: 17
+        version: 17
+
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+
+    - name: Build with Gradle
+      env:
+        PUBLISHING_GITHUB_TOKEN: ${{ secrets.PUBLISHING_GITHUB_TOKEN }}
+      run: |
+        bash ./gradlew assembleReleaseAndLocate
+        bash ./gradlew githubRelease

@@ -12,3 +12,4 @@ version.properties
 
 buildSrc/build/
 .kotlin/
+assemble/

@@ -1,0 +1,141 @@
+[versions]
+kotlin = "2.0.10"
+agp = "8.5.2"
+protobuf-plugin = "0.9.4"
+lombok-plugin = "5.3.0"
+github-release = "2.5.2"
+android-assemble = "2.0.0"
+
+junit = "4.13.2"
+androidx-test-ext = "1.2.1"
+androidx-test-espresso = "3.6.1"
+androidx-test-runner = "1.6.2"
+androidx-test-rules = "1.6.1"
+
+androidx-core = "1.13.1"
+androidx-appcompat = "1.7.0"
+androidx-constraintlayout = "2.1.4"
+androidx-swiperefreshlayout = "1.1.0"
+androidx-navigation = "2.7.7"
+androidx-room = "2.4.3"
+
+google-material = "1.12.0"
+google-play-cronet = "18.1.0"
+
+bannerviewpager = "3.5.7"
+sofia = "1.0.5"
+multiwaveheader = "1.0.2"
+xpopup = "2.9.1"
+zxing = "3.5.0"
+akdanmaku = "1.0.3"
+geetest = "4.4.2.1"
+exsp = "1.0.0-alpha04"
+lombok = "1.18.24"
+protobuf = "3.21.8"
+grpc = "1.50.2"
+cronet-fallback = "119.6045.31"
+tomcat-annotations = "6.0.53"
+glide = "4.14.2"
+glide-transformations = "4.3.0"
+exoplayer = "2.18.1"
+aria = "3.8.16"
+logback-android = "3.0.0"
+slf4j-api = "2.0.13"
+forest = "1.5.26"
+gson = "2.10.1"
+okhttp3 = "4.12.0"
+
+
+[libraries]
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
+androidx-test-ext = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidx-test-ext" }
+androidx-test-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-test-espresso" }
+androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-runner" }
+androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidx-test-rules" }
+
+androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraintlayout" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "androidx-swiperefreshlayout" }
+androidx-navigation = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "androidx-navigation" }
+
+google-material = { group = "com.google.android.material", name = "material", version.ref = "google-material" }
+google-play-cronet = { group = "com.google.android.gms", name = "play-services-cronet", version.ref = "google-play-cronet" }
+
+# https://github.com/zhpanvip/BannerViewPager
+bannerviewpager = { group = "com.github.zhpanvip", name = "BannerViewPager", version.ref = "bannerviewpager" }
+# https://github.com/yanzhenjie/Sofia
+sofia = { group = "com.yanzhenjie", name = "sofia", version.ref = "sofia" }
+# https://github.com/sgpublic-forks/MultiWaveHeader
+multiwaveheader = { group = "io.github.sgpublic", name = "MultiWaveHeader", version.ref = "multiwaveheader" }
+# https://github.com/li-xiaojun/XPopup
+xpopup = { group = "com.github.li-xiaojun", name = "XPopup", version.ref = "xpopup" }
+# https://github.com/zxing/zxing
+zxing = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
+# https://github.com/KwaiAppTeam/AkDanmaku
+akdanmaku = { group = "com.kuaishou", name = "akdanmaku", version.ref = "akdanmaku" }
+# https://docs.geetest.com/sensebot/deploy/client/android
+geetest = { group = "com.geetest.sensebot", name = "sensebot", version.ref = "geetest" }
+
+# https://github.com/sgpublic/ExSharedPreference
+exsp-runtime = { group = "io.github.sgpublic", name = "exsp-runtime", version.ref = "exsp" }
+exsp-compiler = { group = "io.github.sgpublic", name = "exsp-compiler", version.ref = "exsp" }
+
+lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
+
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
+
+# https://github.com/google/protobuf-gradle-plugin
+protobuf = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobuf" }
+grpc-cronet = { group = "io.grpc", name = "grpc-cronet", version.ref = "grpc" }
+grpc-android = { group = "io.grpc", name = "grpc-android", version.ref = "grpc" }
+grpc-protobuf = { group = "io.grpc", name = "grpc-protobuf", version.ref = "grpc" }
+grpc-stub = { group = "io.grpc", name = "grpc-stub", version.ref = "grpc" }
+cronet-fallback = { group = "org.chromium.net", name = "cronet-fallback", version.ref = "cronet-fallback" }
+tomcat-annotations = { group = "org.apache.tomcat", name = "annotations-api", version.ref = "tomcat-annotations" }
+
+# https://github.com/bumptech/glide
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
+glide-transformations = { group = "jp.wasabeef", name = "glide-transformations", version.ref = "glide-transformations" }
+
+# https://github.com/google/ExoPlayer
+exoplayer-core = { group = "com.google.android.exoplayer", name = "exoplayer-core", version.ref = "exoplayer" }
+exoplayer-dash = { group = "com.google.android.exoplayer", name = "exoplayer-dash", version.ref = "exoplayer" }
+exoplayer-ui = { group = "com.google.android.exoplayer", name = "exoplayer-ui", version.ref = "exoplayer" }
+
+# https://github.com/AriaLyy/Aria
+aria-core = { group = "me.laoyuyu.aria", name = "core", version.ref = "aria" }
+aria-compiler = { group = "me.laoyuyu.aria", name = "compiler", version.ref = "aria" }
+
+# https://github.com/tony19/logback-android
+logback-android = { group = "com.github.tony19", name = "logback-android", version.ref = "logback-android" }
+slf4j-api = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-api" }
+
+# https://github.com/dromara/forest
+forest = { group = "com.dtflys.forest", name = "forest-core", version.ref = "forest" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp3" }
+
+
+[plugins]
+android-library = { id = "com.android.library", version.ref = "agp" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-plugin-lombok = { id = "org.jetbrains.kotlin.plugin.lombok", version.ref = "kotlin" }
+kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+
+protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
+lombok = { id = "io.freefair.lombok", version.ref = "lombok-plugin" }
+github-release = { id = "com.github.breadmoirai.github-release", version.ref = "github-release" }
+android-assemble = { id = "io.github.sgpublic.android-assemble", version.ref = "android-assemble" }
+
+
+
+[bundles]
+

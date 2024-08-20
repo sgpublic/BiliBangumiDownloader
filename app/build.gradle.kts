@@ -1,35 +1,26 @@
 @file:Suppress("PropertyName")
 
-import com.android.build.api.dsl.VariantDimension
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import com.google.protobuf.gradle.proto
-import io.github.sgpublic.gradle.Dep
-import io.github.sgpublic.gradle.core.BuildTypes
-import io.github.sgpublic.gradle.core.SignConfig
-import io.github.sgpublic.gradle.core.VersionGen
-import io.github.sgpublic.gradle.util.ApkUtil
+import io.github.sgpublic.androidassemble.core.renameRule
+import io.github.sgpublic.androidassemble.util.VersionGen
+import io.github.sgpublic.androidassemble.util.buildConfigField
 import java.util.*
 
 plugins {
-    id("bilidl-version")
+    alias(bilidl.plugins.android.application)
 
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.parcelize")
-    id("org.jetbrains.kotlin.kapt")
+    alias(bilidl.plugins.kotlin.android)
+    alias(bilidl.plugins.kotlin.plugin.parcelize)
+    alias(bilidl.plugins.kotlin.kapt)
+    alias(bilidl.plugins.kotlin.plugin.lombok)
 
-    id("org.jetbrains.kotlin.plugin.lombok")
-    id("io.freefair.lombok") version "5.3.0"
-
-    id("com.google.protobuf")
+    alias(bilidl.plugins.protobuf)
+    alias(bilidl.plugins.lombok)
+    alias(bilidl.plugins.github.release)
+    alias(bilidl.plugins.android.assemble)
 }
 
-fun VariantDimension.buildConfigField(name: String, value: String) {
-    buildConfigField("String", name, "\"$value\"")
-}
-fun VariantDimension.buildConfigField(name: String, value: Int) {
-    buildConfigField("int", name, value.toString())
-}
+val mVersion = findProperty("bilidl.version")!!.toString()
 
 android {
     compileSdk = 34
@@ -42,7 +33,7 @@ android {
         val keyProps = Properties()
         keyProps.load(properties.inputStream())
         signingConfigs {
-            create(SignConfig.NAME) {
+            create("release") {
                 val SIGN_DIR: String by keyProps
                 val SIGN_PASSWORD_STORE: String by keyProps
                 val SIGN_ALIAS: String by keyProps
@@ -56,6 +47,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         viewBinding = true
     }
 
@@ -76,10 +68,8 @@ android {
         applicationId = "io.github.sgpublic.bilidownload"
         minSdk = 29
         targetSdk = 34
-        versionCode = VersionGen.COMMIT_VERSION
-        versionName = "3.5.0".also {
-            buildConfigField("ORIGIN_VERSION_NAME", it)
-        }
+        versionCode = VersionGen.COMMIT_COUNT_VERSION
+        versionName = mVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -90,61 +80,36 @@ android {
             buildConfigField("GITHUB_REPO_NAME", repo[1])
         }
         buildConfigField("PROJECT_NAME", rootProject.name)
-        buildConfigField("TYPE_RELEASE", BuildTypes.TYPE_RELEASE)
-        buildConfigField("LEVEL_RELEASE", BuildTypes.LEVEL_RELEASE)
-        buildConfigField("TYPE_BETA", BuildTypes.TYPE_BETA)
-        buildConfigField("LEVEL_BETA", BuildTypes.LEVEL_BETA)
-        buildConfigField("TYPE_ALPHA", BuildTypes.TYPE_ALPHA)
-        buildConfigField("LEVEL_ALPHA", BuildTypes.LEVEL_ALPHA)
-        buildConfigField("TYPE_DEBUG", BuildTypes.TYPE_DEBUG)
-        buildConfigField("LEVEL_DEBUG", BuildTypes.LEVEL_DEBUG)
     }
 
     buildTypes {
         all {
             isMinifyEnabled = false
             if (signInfoExit) {
-                signingConfig = signingConfigs.getByName(SignConfig.NAME)
+                signingConfig = signingConfigs.getByName("release")
             }
         }
 
         /** 自动化版本命名 */
-        named(BuildTypes.TYPE_RELEASE) {
-            versionNameSuffix = "-$name"
-            buildConfigField("VERSION_SUFFIX", "")
-            buildConfigField("BUILD_LEVEL", BuildTypes.LEVEL_RELEASE)
-        }
-        named(BuildTypes.TYPE_DEBUG) {
-            defaultConfig.versionCode = VersionGen.DATED_VERSION
-            isDebuggable = true
-            versionNameSuffix = "-$name"
-            buildConfigField("VERSION_SUFFIX", "")
-            buildConfigField("BUILD_LEVEL", BuildTypes.LEVEL_DEBUG)
-        }
-        if (signInfoExit) {
-            register(BuildTypes.TYPE_BETA) {
-                val suffix = VersionGen.GIT_HEAD
-                versionNameSuffix = "-$suffix-$name"
-                isDebuggable = true
-                buildConfigField("VERSION_SUFFIX", suffix)
-                buildConfigField("BUILD_LEVEL", BuildTypes.LEVEL_BETA)
+        release {
+            renameRule(project) {
+                "${rootProject.name} V${versionName}(${versionCode})"
             }
-            register(BuildTypes.TYPE_ALPHA) {
-                val suffix = VersionGen.TIME_MD5
-                defaultConfig.versionCode = VersionGen.DATED_VERSION
-                isDebuggable = true
-                versionNameSuffix = "-$suffix-$name"
-                buildConfigField("VERSION_SUFFIX", suffix)
-                buildConfigField("BUILD_LEVEL", BuildTypes.LEVEL_ALPHA)
+        }
+        debug {
+            isDebuggable = true
+
+            renameRule(project) {
+                "${rootProject.name}_${versionName}_${versionCode}"
             }
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         buildConfig = true
@@ -163,22 +128,22 @@ android {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:${Dep.Proto}"
+        artifact = "com.google.protobuf:protoc:${bilidl.versions.protobuf.asProvider().get()}"
     }
     plugins {
         register("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:${Dep.GrpcJava}"
+            artifact = "io.grpc:protoc-gen-grpc-java:${bilidl.versions.grpc.get()}"
         }
     }
     generateProtoTasks {
         for(task in all()) {
             task.builtins {
-                register("java") {
+                val java by creating {
                     option("lite")
                 }
             }
             task.plugins {
-                register("grpc") {
+                val grpc by creating {
                     option("lite")
                 }
             }
@@ -191,99 +156,97 @@ kapt {
 }
 
 dependencies {
-    implementation("androidx.test.ext:junit-ktx:1.2.1")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation("androidx.test:runner:1.6.2")
-    androidTestImplementation("androidx.test:rules:1.6.1")
-    implementation(kotlin("reflect"))
+    testImplementation(bilidl.junit)
+    androidTestImplementation(bilidl.androidx.test.ext)
+    androidTestImplementation(bilidl.androidx.test.espresso)
+    androidTestImplementation(bilidl.androidx.test.runner)
+    androidTestImplementation(bilidl.androidx.test.rules)
+    implementation(bilidl.kotlin.reflect)
 
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("com.google.android.material:material:1.12.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation(bilidl.androidx.core)
+    implementation(bilidl.androidx.appcompat)
+    implementation(bilidl.google.material)
+    implementation(bilidl.androidx.constraintlayout)
+    implementation(bilidl.androidx.swiperefreshlayout)
+    implementation(bilidl.androidx.navigation)
 
     /* https://github.com/zhpanvip/BannerViewPager */
-    implementation("com.github.zhpanvip:BannerViewPager:3.5.7")
+    implementation(bilidl.bannerviewpager)
     /* https://github.com/yanzhenjie/Sofia */
-    implementation("com.yanzhenjie:sofia:1.0.5")
+    implementation(bilidl.sofia)
     /* https://github.com/scwang90/MultiWaveHeader */
-    implementation("io.github.sgpublic:MultiWaveHeader:1.0.2")
+    implementation(bilidl.multiwaveheader)
     /* https://github.com/li-xiaojun/XPopup */
-    implementation("com.github.li-xiaojun:XPopup:2.9.1")
+    implementation(bilidl.xpopup)
     /* https://github.com/zxing/zxing qrcode */
-    implementation("com.google.zxing:core:3.5.0")
+    implementation(bilidl.zxing)
 //    /* https://github.com/KwaiAppTeam/AkDanmaku */
-//    implementation("com.kuaishou:akdanmaku:1.0.3")
-    /* https://docs.geetest.com/sensebot/deploy/client/android */
-    implementation("com.geetest.sensebot:sensebot:4.4.2.1")
+//    implementation(bilidl.akdanmaku)
+    implementation(bilidl.geetest)
 
     /* https://github.com/sgpublic/ExSharedPreference */
-    implementation("io.github.sgpublic:exsp-runtime:${Dep.EXSP}")
-    kapt("io.github.sgpublic:exsp-compiler:${Dep.EXSP}")
+    implementation(bilidl.exsp.runtime)
+    kapt(bilidl.exsp.compiler)
 
-    compileOnly("org.projectlombok:lombok:${Dep.Lombok}")
-    annotationProcessor("org.projectlombok:lombok:${Dep.Lombok}")
-    testCompileOnly("org.projectlombok:lombok:${Dep.Lombok}")
-    testAnnotationProcessor("org.projectlombok:lombok:${Dep.Lombok}")
-    androidTestCompileOnly("org.projectlombok:lombok:${Dep.Lombok}")
-    androidTestAnnotationProcessor("org.projectlombok:lombok:${Dep.Lombok}")
+    compileOnly(bilidl.lombok)
+    annotationProcessor(bilidl.lombok)
+    testCompileOnly(bilidl.lombok)
+    testAnnotationProcessor(bilidl.lombok)
+    androidTestCompileOnly(bilidl.lombok)
+    androidTestAnnotationProcessor(bilidl.lombok)
 
-    implementation("androidx.room:room-runtime:${Dep.Room}")
-    annotationProcessor("androidx.room:room-compiler:${Dep.Room}")
+    implementation(bilidl.androidx.room.runtime)
+    annotationProcessor(bilidl.androidx.room.compiler)
 
     /* https://github.com/google/protobuf-gradle-plugin */
-    implementation("com.google.protobuf:protobuf-java:${Dep.Proto}")
+    implementation(bilidl.protobuf)
     // 阿b用的 cronet，如果用 okhttp 会导致 io.grpc.StatusRuntimeException: INTERNAL: Received unexpected EOS on DATA frame from server.
-    implementation("io.grpc:grpc-cronet:${Dep.GrpcJava}")
-    implementation("com.google.android.gms:play-services-cronet:18.1.0")
-    implementation("org.chromium.net:cronet-fallback:119.6045.31")
-    implementation("io.grpc:grpc-android:${Dep.GrpcJava}")
-    implementation("io.grpc:grpc-protobuf:${Dep.GrpcJava}")
-    implementation("io.grpc:grpc-stub:${Dep.GrpcJava}")
-    implementation("org.apache.tomcat:annotations-api:6.0.53")
+    implementation(bilidl.grpc.cronet)
+    implementation(bilidl.google.play.cronet)
+    implementation(bilidl.cronet.fallback)
+    implementation(bilidl.grpc.android)
+    implementation(bilidl.grpc.protobuf)
+    implementation(bilidl.grpc.stub)
+    implementation(bilidl.tomcat.annotations)
 
     /* https://github.com/bumptech/glide */
-    implementation("com.github.bumptech.glide:glide:${Dep.Glide}")
-    kapt("com.github.bumptech.glide:compiler:${Dep.Glide}")
-    implementation("jp.wasabeef:glide-transformations:4.3.0")
+    implementation(bilidl.glide)
+    kapt(bilidl.glide.compiler)
+    implementation(bilidl.glide.transformations)
 
     /* https://github.com/google/ExoPlayer */
-    implementation("com.google.android.exoplayer:exoplayer-core:${Dep.ExoPlayer}")
-    implementation("com.google.android.exoplayer:exoplayer-dash:${Dep.ExoPlayer}")
-    implementation("com.google.android.exoplayer:exoplayer-ui:${Dep.ExoPlayer}")
+    implementation(bilidl.exoplayer.core)
+    implementation(bilidl.exoplayer.dash)
+    implementation(bilidl.exoplayer.ui)
 
     /* https://github.com/AriaLyy/Aria */
-    implementation("me.laoyuyu.aria:core:${Dep.Aria}")
-    kapt("me.laoyuyu.aria:compiler:${Dep.Aria}")
+    implementation(bilidl.aria.core)
+    kapt(bilidl.aria.compiler)
 
     /* https://github.com/tony19/logback-android */
-    implementation("com.github.tony19:logback-android:3.0.0")
-    implementation("org.slf4j:slf4j-api:2.0.13")
+    implementation(bilidl.logback.android)
+    implementation(bilidl.slf4j.api)
 
     /* https://github.com/dromara/forest */
-    implementation("com.dtflys.forest:forest-core:1.5.26")
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation(bilidl.forest)
+    implementation(bilidl.gson)
+    implementation(bilidl.okhttp3)
 }
 
-/** 自动修改输出文件名并定位文件 */
-android.applicationVariants.all {
-    for (output in outputs) {
-        if (output !is BaseVariantOutputImpl) {
-            continue
-        }
-        val name = output.name.split("-")
-            .joinToString("") { it.capitalize() }
-        val taskName = "assemble${name}AndLocate"
-        tasks.register(taskName) {
-            dependsOn("assemble${name}")
-            doLast {
-                ApkUtil.assembleAndLocate(output.name, output.outputFile, "./build/assemble")
-            }
-        }
-    }
+fun findEnv(name: String) = provider {
+    findProperty(name)?.toString()?.takeIf { it.isNotBlank() }
+        ?: System.getenv(name.replace(".", "_").uppercase())
+}
+
+githubRelease {
+    token(findEnv("publishing.github.token"))
+    owner = "sgpublic"
+    repo = "BiliBangumiDownloader"
+    tagName = "v${mVersion}"
+    releaseName = "v${mVersion}"
+    overwrite = true
+
+    releaseAssets(
+        "${rootDir}/assemble/${rootProject.name} V${mVersion}(${VersionGen.COMMIT_COUNT_VERSION}).apk"
+    )
 }

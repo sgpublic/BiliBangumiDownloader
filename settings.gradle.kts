@@ -18,6 +18,12 @@ dependencyResolutionManagement {
         mavenLocal()
         jcenter()
     }
+
+    versionCatalogs {
+        val bilidl by creating {
+            from(files(File(rootDir, "./gradle/bilidl.versions.toml")))
+        }
+    }
 }
 
 include(":app")

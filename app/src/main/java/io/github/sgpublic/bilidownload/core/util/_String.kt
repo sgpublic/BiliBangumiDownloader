@@ -152,23 +152,3 @@ fun Pattern.matchString(target: CharSequence, def: String): String {
 fun String.countLine(): Int {
     return split("\n").size
 }
-
-/** 比较版本号 */
-fun String.isHigherThanCurrent(): Boolean {
-    val origin = split("-")[0].split(".").map {
-        it.toIntOrNull() ?: return false
-    }
-    val target = BuildConfig.ORIGIN_VERSION_NAME.split(".").map {
-        it.toIntOrNull() ?: return false
-    }
-    val length = max(origin.size, target.size)
-    for (i in 0 until length) {
-        val originNum = origin.getOrElse(i) { 0 }
-        val targetNum = target.getOrElse(i) { 0 }
-        if (originNum == targetNum) {
-            continue
-        }
-        return originNum > targetNum
-    }
-    return false
-}
