@@ -32,8 +32,7 @@ fun VariantDimension.buildConfigField(name: String, value: Int) {
 }
 
 android {
-    compileSdk = 33
-    buildToolsVersion = "33.0.0"
+    compileSdk = 34
     namespace = "io.github.sgpublic.bilidownload"
 
     val properties = file("./sign/sign.properties")
@@ -75,8 +74,8 @@ android {
 
     defaultConfig {
         applicationId = "io.github.sgpublic.bilidownload"
-        minSdk = 26
-        targetSdk = 33
+        minSdk = 29
+        targetSdk = 34
         versionCode = VersionGen.COMMIT_VERSION
         versionName = "3.5.0".also {
             buildConfigField("ORIGIN_VERSION_NAME", it)
@@ -147,7 +146,11 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    packagingOptions {
+    buildFeatures {
+        buildConfig = true
+        viewBinding = true
+    }
+    packaging {
         resources.excludes.addAll(listOf(
             "META-INF/DEPENDENCIES",
             "META-INF/NOTICE",
@@ -188,27 +191,27 @@ kapt {
 }
 
 dependencies {
-    implementation("androidx.test.ext:junit-ktx:1.1.4")
+    implementation("androidx.test.ext:junit-ktx:1.2.1")
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.4")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
-    androidTestImplementation("androidx.test:runner:1.5.1")
-    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test:rules:1.6.1")
     implementation(kotlin("reflect"))
 
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.5.1")
-    implementation("com.google.android.material:material:1.7.0")
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
 
     /* https://github.com/zhpanvip/BannerViewPager */
     implementation("com.github.zhpanvip:BannerViewPager:3.5.7")
     /* https://github.com/yanzhenjie/Sofia */
     implementation("com.yanzhenjie:sofia:1.0.5")
     /* https://github.com/scwang90/MultiWaveHeader */
-    implementation("com.scwang.wave:MultiWaveHeader:1.0.0")
+    implementation("io.github.sgpublic:MultiWaveHeader:1.0.2")
     /* https://github.com/li-xiaojun/XPopup */
     implementation("com.github.li-xiaojun:XPopup:2.9.1")
     /* https://github.com/zxing/zxing qrcode */
@@ -216,7 +219,7 @@ dependencies {
 //    /* https://github.com/KwaiAppTeam/AkDanmaku */
 //    implementation("com.kuaishou:akdanmaku:1.0.3")
     /* https://docs.geetest.com/sensebot/deploy/client/android */
-    implementation("com.geetest.sensebot:sensebot:4.3.7")
+    implementation("com.geetest.sensebot:sensebot:4.4.2.1")
 
     /* https://github.com/sgpublic/ExSharedPreference */
     implementation("io.github.sgpublic:exsp-runtime:${Dep.EXSP}")
@@ -236,8 +239,8 @@ dependencies {
     implementation("com.google.protobuf:protobuf-java:${Dep.Proto}")
     // 阿b用的 cronet，如果用 okhttp 会导致 io.grpc.StatusRuntimeException: INTERNAL: Received unexpected EOS on DATA frame from server.
     implementation("io.grpc:grpc-cronet:${Dep.GrpcJava}")
-    implementation("com.google.android.gms:play-services-cronet:18.0.1")
-    implementation("org.chromium.net:cronet-fallback:106.5249.126")
+    implementation("com.google.android.gms:play-services-cronet:18.1.0")
+    implementation("org.chromium.net:cronet-fallback:119.6045.31")
     implementation("io.grpc:grpc-android:${Dep.GrpcJava}")
     implementation("io.grpc:grpc-protobuf:${Dep.GrpcJava}")
     implementation("io.grpc:grpc-stub:${Dep.GrpcJava}")
@@ -258,13 +261,13 @@ dependencies {
     kapt("me.laoyuyu.aria:compiler:${Dep.Aria}")
 
     /* https://github.com/tony19/logback-android */
-    implementation("com.github.tony19:logback-android:2.0.0")
-    implementation("org.slf4j:slf4j-api:1.7.36")
+    implementation("com.github.tony19:logback-android:3.0.0")
+    implementation("org.slf4j:slf4j-api:2.0.13")
 
     /* https://github.com/dromara/forest */
     implementation("com.dtflys.forest:forest-core:1.5.26")
-    implementation("com.google.code.gson:gson:2.9.1")
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
 
 /** 自动修改输出文件名并定位文件 */

@@ -17,7 +17,7 @@ class Welcome: BaseActivity<ActivityWelcomeBinding>() {
 
     private fun onSetupFinish() {
         if (!Token.isLogin) {
-            LoginPwd.startActivity(this@Welcome)
+            LoginQrcode.startActivity(this@Welcome)
             return
         }
         val data = intent.data

@@ -153,6 +153,14 @@ class LoginValidateAccount: BaseActivity<ActivityWebviewBinding>() {
 
     class Injection(private val onSave: (String) -> Unit) {
         @JavascriptInterface
+        fun logOnOpen(url: String) {
+            log.debug("logOnOpen: $url")
+        }
+        @JavascriptInterface
+        fun logOnSend(body: String) {
+            log.debug("logOnSend: $body")
+        }
+        @JavascriptInterface
         fun setVerifyBody(body: String) {
             log.debug("save verify body: $body")
             onSave.invoke(body)
@@ -171,19 +179,15 @@ class LoginValidateAccount: BaseActivity<ActivityWebviewBinding>() {
 
         override fun onPageFinished(view: WebView, url: String) {
             view.context.resources.assets.run {
-//                val implCode = StringJoiner("\\n\" + \n\"")
                 val implCode = StringJoiner("\n    ", "(function() {\n    ", "\n})();")
                 open("js/ajax_interception.js").reader().readLines().forEach {
-                    implCode.add(it.replace("\"", "\\\""))
+//                    implCode.add(it.replace("\"", "\\\""))
+                    implCode.add(it)
                 }
-//                open("js/ajax_interception.js").reader().readLines().forEach {
-//                    implCode.add(it)
-//                }
                 val preCode = open("js/phone_validate.js").reader().readText()
                     .replace("%%SRC_CODE%%", implCode.toString())
-//                val preCode = implCode.toString()
                 log.debug(preCode)
-                view.loadUrl("javascript:$preCode")
+                view.loadUrl("javascript:$implCode")
             }
         }
 

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWindowBackground"
-    tools:context="io.github.sgpublic.bilidownload.activity.LoginQrcode">
+    tools:context=".app.activity.LoginQrcode">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -35,31 +35,31 @@
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/login_qrcode_image"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:alpha="0"
-                android:visibility="gone"/>
-            <FrameLayout
-                android:id="@+id/login_qrcode_loading"
+                android:layout_height="match_parent"/>
+            <LinearLayout
+                android:id="@+id/login_qrcode_loading_base"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/color_login_transparent"
+                android:gravity="center"
                 android:orientation="vertical">
                 <ProgressBar
+                    android:id="@+id/login_qrcode_loading"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:layout_gravity="center" />
-            </FrameLayout>
-            <TextView
-                android:id="@+id/login_qrcode_notice"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:background="@color/color_login_transparent"
-                android:visibility="gone"
-                android:alpha="0"
-                android:gravity="center"
-                android:textColor="@color/color_text_normal"
-                android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/login_qrcode_notice"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:background="@color/color_login_transparent"
+                    android:visibility="gone"
+                    android:alpha="0"
+                    android:gravity="center"
+                    android:textColor="@color/color_text_normal"
+                    android:textSize="16sp" />
+            </LinearLayout>
         </FrameLayout>
         <TextView
             android:layout_width="wrap_content"
@@ -70,7 +70,16 @@
             android:text="@string/text_login_notice"
             android:textColor="@color/color_text_light"
             android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/login_qrcode_start"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="36dp"
+            android:layout_marginHorizontal="20dp"
+            android:text="@string/text_login_qrcode_start"/>
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

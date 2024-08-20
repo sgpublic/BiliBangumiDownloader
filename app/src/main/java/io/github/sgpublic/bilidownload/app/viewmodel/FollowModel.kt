@@ -32,11 +32,11 @@ class FollowModel(private val status: FollowStatus): BaseViewModel() {
         ForestClients.Api.follow(
             status.value, pageIndex, TokenPreference.accessToken
         ).biliapi(object : RequestCallback<FollowsResp.FollowsData>() {
-            override fun onFailure(code: Int, message: String?) {
+            override suspend fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
 
-            override fun onResponse(data: FollowsResp.FollowsData) {
+            override suspend fun onResponse(data: FollowsResp.FollowsData) {
                 pageIndex += 1
                 val liveData = Follows.value?.takeIf { !isRefresh }
                     ?: (ArrayList<FollowsResp.FollowsData.FollowItem>() to true)

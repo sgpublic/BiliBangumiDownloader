@@ -8,10 +8,15 @@ import io.github.sgpublic.bilidownload.base.app.BaseViewModel
 import io.github.sgpublic.bilidownload.base.app.postValue
 import io.github.sgpublic.bilidownload.core.forest.core.BiliApiException
 import io.github.sgpublic.bilidownload.core.forest.data.CaptchaResp
+import io.github.sgpublic.bilidownload.core.forest.data.CountryResp
 import io.github.sgpublic.bilidownload.core.forest.data.GetKeyResp
 import io.github.sgpublic.bilidownload.core.forest.data.LoginResp
+import io.github.sgpublic.bilidownload.core.forest.data.SmsSendResp
 import io.github.sgpublic.bilidownload.core.forest.data.UserInfoResp
 import io.github.sgpublic.bilidownload.core.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.spec.X509EncodedKeySpec
@@ -19,11 +24,62 @@ import java.util.*
 import java.util.regex.Pattern
 import javax.crypto.Cipher
 
-@Deprecated("Use sms sending instead.")
-class LoginPwdModel: BaseViewModel() {
+class LoginSmsModel: BaseViewModel() {
+    val CodeCd: MutableLiveData<Int> = MutableLiveData(-1)
+    val CountryData: MutableLiveData<Map<Int, CountryResp.CountryItem>> by lazy {
+        getCountryCode()
+        MutableLiveData()
+    }
+    var CountrySelected: Int = -1
+
     val CaptchaData: MutableLiveData<CaptchaResp.CaptchaData> = MutableLiveData()
     val LoginData: MutableLiveData<LoginResp.LoginData> = MutableLiveData()
     val UserInfo: MutableLiveData<UserInfoResp.UserInfo> = MutableLiveData()
+
+    private fun startCodeCd() {
+        viewModelScope.launch {
+            var time = 60
+            while (time >= 0) {
+                CodeCd.postValue(time)
+                delay(1000)
+                time -= 1
+            }
+        }
+    }
+
+    private fun getCountryCode() {
+        ForestClients.Passport.countryList().biliapi(object : RequestCallback<CountryResp.CountryData>() {
+            override suspend fun onFailure(code: Int, message: String?) {
+                log.warn("country code get failed.")
+            }
+
+            override suspend fun onResponse(data: CountryResp.CountryData) {
+                CountryData.postValue(data.common.associateBy(
+                    keySelector = { it.id },
+                ))
+            }
+        }, viewModelScope)
+    }
+
+    fun sendSms(
+        cid: Int, tel: Long,
+        buvid: String, loginSessionId: String,
+        token: String, challenge: String, validate: String, seccode: String,
+        onSuccess: (String) -> Unit,
+    ) {
+        ForestClients.Passport.smsSend(
+            cid, tel, loginSessionId, token, challenge, validate, seccode, buvid
+        ).biliapi(object : RequestCallback<SmsSendResp.SmsSendData>() {
+            override suspend fun onFailure(code: Int, message: String?) {
+                Exception.postValue(code, message)
+            }
+
+            override suspend fun onResponse(data: SmsSendResp.SmsSendData) {
+                startCodeCd()
+                onSuccess.invoke(data.captchaKey)
+            }
+        }, viewModelScope)
+    }
 
     fun getCaptcha() {
         ForestClients.Passport.captcha().biliapi(object : RequestCallback<CaptchaResp.CaptchaData>() {
@@ -35,50 +91,6 @@ class LoginPwdModel: BaseViewModel() {
                 CaptchaData.postValue(data)
             }
         }, viewModelScope)
-    }
-
-    private fun encryptPwd(password: String, callback: (String) -> Unit) {
-        ForestClients.Passport.pubKey().biliapi(object : RequestCallback<GetKeyResp.GetKeyData>() {
-            override suspend fun onFailure(code: Int, message: String?) {
-                Exception.postValue(code, message)
-            }
-
-            override suspend fun onResponse(data: GetKeyResp.GetKeyData) {
-                val pwdEncrypt = try {
-                    val pubKey = data.key.replace("\n", "")
-                        .substring(26, 242)
-                    val keySpec = X509EncodedKeySpec(Base64.getDecoder().decode(pubKey))
-                    val keyFactory: KeyFactory = KeyFactory.getInstance("RSA")
-                    val key: PublicKey = keyFactory.generatePublic(keySpec)
-                    val cp: Cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
-                    cp.init(Cipher.ENCRYPT_MODE, key)
-                    cp.doFinal((data.hash + password).toByteArray()).BASE_64
-                } catch (e: Exception) {
-                    log.error("密码加密失败", e)
-                    Exception.postValue(-125, e.message)
-                    return
-                }
-                callback(pwdEncrypt)
-            }
-        }, viewModelScope)
-    }
-
-    fun startAction(username: String, password: String, onPhoneValidate: (String) -> Unit) {
-        encryptPwd(password) { pwdEncrypt ->
-            try {
-                loginNextAction(ForestClients.Passport.login(
-                    username, pwdEncrypt
-                ), onPhoneValidate)
-            } catch (e: BiliApiException) {
-                if (e.code != -105) {
-                    log.error("登陆失败", e)
-                    Exception.postValue(e)
-                    return@encryptPwd
-                }
-                log.warn("登陆需要验证码", e)
-                parseCaptcha(e.body)
-            }
-        }
     }
 
 
@@ -118,23 +130,6 @@ class LoginPwdModel: BaseViewModel() {
                 CaptchaData.postValue(data)
             }
         }, viewModelScope)
-    }
-
-    fun startGeetestAction(
-        token: String, challenge: String, validate: String,
-        seccode: String, username: String, password: String,
-        onPhoneValidate: (String) -> Unit
-    ) {
-        encryptPwd(password) { pwdEncrypt ->
-            try {
-                loginNextAction(ForestClients.Passport.geetestLogin(
-                    token, challenge, validate, seccode, username, pwdEncrypt
-                ), onPhoneValidate)
-            } catch (e: BiliApiException) {
-                log.error("登陆失败", e)
-                Exception.postValue(e)
-            }
-        }
     }
 
     private fun loginNextAction(request: ForestRequest<LoginResp>, onPhoneValidate: (String) -> Unit) {

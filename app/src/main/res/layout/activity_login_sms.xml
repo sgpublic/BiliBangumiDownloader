@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".app.activity.LoginSms">
+
+    <TextView
+        android:id="@+id/login_welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_marginHorizontal="20dp"
+        android:text="@string/title_login_welcome"
+        android:textColor="@color/color_text_normal"
+        android:textSize="28sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/login_phone"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="20dp"
+        android:hint="@string/text_login_phone"
+        app:layout_constraintTop_toBottomOf="@id/login_welcome"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/login_country">
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:inputType="phone"
+            android:imeOptions="actionNext"
+            android:imeActionLabel="@string/ime_label_next" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Spinner
+        android:id="@+id/login_country"
+        android:layout_width="100dp"
+        android:layout_height="54dp"
+        android:layout_marginHorizontal="20dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/login_phone"
+        app:layout_constraintBottom_toBottomOf="@id/login_phone"
+        tools:listitem="@layout/item_country_list"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/login_code"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="16dp"
+        android:hint="@string/text_login_code"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_phone"
+        app:layout_constraintEnd_toStartOf="@id/login_get_code">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/login_code_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:inputType="number"
+            android:imeOptions="actionDone"
+            android:imeActionLabel="@string/text_login_action" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/login_get_code"
+        android:layout_width="110dp"
+        android:layout_height="60dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center"
+        android:text="@string/text_login_get_code"
+        android:textColor="@color/colorPrimary"
+        android:layout_marginEnd="20dp"
+        style="@style/Widget.Material3.Button.TextButton"
+        app:layout_constraintTop_toTopOf="@id/login_code"
+        app:layout_constraintBottom_toBottomOf="@id/login_code"/>
+
+    <Button
+        android:id="@+id/login_action"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginHorizontal="20dp"
+        android:text="@string/text_login_action"
+        app:layout_constraintTop_toBottomOf="@id/login_code"/>
+
+
+    <ImageView
+        android:id="@+id/login_banner_left"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_weight="1"
+        android:scaleType="fitStart"
+        android:src="@drawable/pic_login_banner_left_show"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:fitsSystemWindows="true"/>
+
+    <ImageView
+        android:id="@+id/login_banner_right"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_weight="1"
+        android:scaleType="fitEnd"
+        android:src="@drawable/pic_login_banner_right_show"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:fitsSystemWindows="true"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

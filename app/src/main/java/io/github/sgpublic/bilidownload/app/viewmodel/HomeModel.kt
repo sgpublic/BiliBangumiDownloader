@@ -22,11 +22,11 @@ class HomeModel : BaseViewModel() {
     fun getBannerInfo() {
         Loading.postValue(true)
         ForestClients.Api.banner(TokenPreference.accessToken).biliapi(object : RequestCallback<BannerResp.BannerData>() {
-            override fun onFailure(code: Int, message: String?) {
+            override suspend fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
 
-            override fun onResponse(data: BannerResp.BannerData) {
+            override suspend fun onResponse(data: BannerResp.BannerData) {
                 val banners: List<BannerResp.BannerData.BannerItem> = data.find()
                 BannerInfo.postValue(banners[0].items)
             }
@@ -45,11 +45,11 @@ class HomeModel : BaseViewModel() {
         ForestClients.Api.bangumi(
             TokenPreference.accessToken, cursor, isRefresh.take(1, 0)
         ).biliapi(object : RequestCallback<BangumiPageResp.BangumiPageData>() {
-            override fun onFailure(code: Int, message: String?) {
+            override suspend fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
 
-            override fun onResponse(data: BangumiPageResp.BangumiPageData) {
+            override suspend fun onResponse(data: BangumiPageResp.BangumiPageData) {
                 cursor = data.nextCursor
 
                 if (isRefresh) {

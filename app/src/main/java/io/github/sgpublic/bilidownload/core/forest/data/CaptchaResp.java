@@ -10,8 +10,6 @@ public class CaptchaResp extends DataResp<CaptchaResp.CaptchaData> {
     @Data
     public static class CaptchaData {
         /** 备用方案，直接打开一个 dialog 打开阿b给的极验链接 */
-        private String url;
-
         private String token;
         private CaptchaDataGeetest geetest = new CaptchaDataGeetest();
 

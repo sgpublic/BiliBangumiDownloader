@@ -31,11 +31,11 @@ object ForestClients {
 /** ForestRequest 封装异步请求 */
 inline fun <reified T: CommonResp<Data>, Data> ForestRequest<T>.biliapi(callback: RequestCallback<Data>, viewModelScope: CoroutineScope) {
     enqueue(object : RequestCallback<T>() {
-        override fun onFailure(code: Int, message: String?) {
+        override suspend fun onFailure(code: Int, message: String?) {
             callback.onFailure(code, message)
         }
 
-        override fun onResponse(data: T) {
+        override suspend fun onResponse(data: T) {
             callback.onResponse(data.data)
         }
     }, viewModelScope)
@@ -76,8 +76,8 @@ fun Exception?.requiredMessage(): String {
 }
 
 abstract class RequestCallback<Data> {
-    abstract fun onFailure(code: Int, message: String?)
-    abstract fun onResponse(data: Data)
+    abstract suspend fun onFailure(code: Int, message: String?)
+    abstract suspend fun onResponse(data: Data)
 
     companion object {
         const val CODE_NETWORK_ERROR = -1001
@@ -89,7 +89,7 @@ abstract class RequestCallback<Data> {
     }
 }
 
-fun <T> RequestCallback<T>.onFailure(ex: BiliApiException) {
+suspend fun <T> RequestCallback<T>.onFailure(ex: BiliApiException) {
     onFailure(ex.code, ex.requiredMessage())
 }
 

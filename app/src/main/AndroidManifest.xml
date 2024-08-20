@@ -38,6 +38,14 @@
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize"/>
         <activity
+            android:name=".app.activity.LoginSms"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".app.activity.LoginQrcode"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity
             android:name=".app.activity.LoginValidateAccount"
             android:windowSoftInputMode="adjustResize"/>
         <activity
@@ -59,4 +67,8 @@
         <service android:name=".app.service.DownloadService"
             android:exported="false"/>
     </application>
+
+    <queries>
+        <package android:name="tv.danmaku.bili" />
+    </queries>
 </manifest>

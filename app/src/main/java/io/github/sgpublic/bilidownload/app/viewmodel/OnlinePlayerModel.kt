@@ -47,11 +47,11 @@ class OnlinePlayerModel(sid: Long, epid: Long): BasePlayerModel() {
             ForestClients.Api.seasonRecommend(
                 sid, TokenPreference.accessToken
             ).biliapi(object : RequestCallback<SeasonRecommendResp.SeasonRecommend>() {
-                override fun onFailure(code: Int, message: String?) {
+                override suspend fun onFailure(code: Int, message: String?) {
 
                 }
 
-                override fun onResponse(data: SeasonRecommendResp.SeasonRecommend) {
+                override suspend fun onResponse(data: SeasonRecommendResp.SeasonRecommend) {
                     SeasonRecommend.postValue(data)
                 }
             }, viewModelScope)
@@ -71,11 +71,11 @@ class OnlinePlayerModel(sid: Long, epid: Long): BasePlayerModel() {
         log.info("getPlayUrl(epid: $epid, cid: $cid)")
         EpisodeId.postValue(epid to cid)
         AppClient.getPlayUrl(cid, epid, FittedQuality).enqueue(object : RequestCallback<PlayViewReply>() {
-            override fun onFailure(code: Int, message: String?) {
+            override suspend fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
 
-            override fun onResponse(data: PlayViewReply) {
+            override suspend fun onResponse(data: PlayViewReply) {
                 for (stream in data.videoInfo.streamListList) {
                     QualityData[stream.info.quality] = stream.info.newDescription
                 }

@@ -11,6 +11,12 @@ public class TokenPreference {
     private boolean login;
 
     @ExValue(defVal = "")
+    private String buvid;
+
+    @ExValue(defVal = "")
+    private String loginSessionId;
+
+    @ExValue(defVal = "")
     private String accessToken;
 
     @ExValue(defVal = "")

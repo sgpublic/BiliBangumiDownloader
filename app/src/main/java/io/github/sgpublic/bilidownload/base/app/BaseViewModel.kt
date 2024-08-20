@@ -22,11 +22,11 @@ abstract class BaseViewModel: ViewModel() {
 
     fun <T> newRequestCallback(reply: (T) -> Unit): RequestCallback<T> {
         return object : RequestCallback<T>() {
-            override fun onFailure(code: Int, message: String?) {
+            override suspend fun onFailure(code: Int, message: String?) {
                 Exception.postValue(code, message)
             }
 
-            override fun onResponse(data: T) {
+            override suspend fun onResponse(data: T) {
                 reply.invoke(data)
             }
         }
