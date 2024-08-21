@@ -243,6 +243,7 @@ githubRelease {
     owner = "sgpublic"
     repo = "BiliBangumiDownloader"
     tagName = "v${mVersion}"
+    targetCommitish = "master"
     releaseName = "v${mVersion}"
     overwrite = true
 
