@@ -1,8 +1,8 @@
 # 哔哩番剧
 
-![GitHub all releases](https://img.shields.io/github/downloads/sgpublic/BiliBangumiDownloader/total) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/sgpublic/BiliBangumiDownloader) ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/sgpublic/BiliBangumiDownloader?include_prereleases)
+精力有限，且本人没有 B 站看番的需求了，不再继续维护。推荐使用：[bggRGjQaUbCoE/PiliPlus](https://github.com/bggRGjQaUbCoE/PiliPlus)
 
-此仓库虽然没有积极更新，但作者仍愿意继续维护，若您发现了这个软件，希望作者继续更新，请点个 star 让我知道有人在关注这个软件，也可以进入我的主页加入我的社群直接催更，谢谢您！
+![GitHub all releases](https://img.shields.io/github/downloads/sgpublic/BiliBangumiDownloader/total) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/sgpublic/BiliBangumiDownloader) ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/sgpublic/BiliBangumiDownloader?include_prereleases)
 
 哔哩番剧正在迁移至Kotlin，Java实现项目地址：[BiliBangumiDownloader_Java](https://github.com/SGPublic/BiliBangumiDownloader_Java)
 
